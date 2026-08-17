@@ -122,7 +122,25 @@ textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;
 </div>
 <main>
 
-<section class="panel on" id="p-browse">
+<section class="panel on" id="p-daily">
+  <div class="intro">
+    <b>每日 5 分鐘套餐。</b> 唔使諗練咩 —— 撳「開始」，系統自動配一組：
+    <b>2 句新 + 3 句到期複習 + 1 個發音 + 1 個即興</b>。<br><br>
+    到期複習係按<b>間隔重複排程</b>揀，唔係隨機：你標低分嘅句今日到期，標高分嘅隔幾日先返嚟。
+    每日短時間遠勝週末一次過（🎓 Pedagogy 第 3 條）。
+  </div>
+  <div class="card" id="dayHead"></div>
+  <div class="card" id="dayBody" style="display:none">
+    <div class="rung" id="dayBar"></div>
+    <div class="runglab" id="dayLab"></div>
+    <div class="tag" id="dayTag">—</div>
+    <div id="dayMain"></div>
+    <div class="row" id="dayCtl"></div>
+    <div id="dayFb"></div>
+  </div>
+</section>
+
+<section class="panel" id="p-browse">
   <div class="intro">
     <b>第一句永遠係最簡單、最常用嗰句。</b> 下面嘅變體標明語氣或地道程度 ——
     標住「英式」嘅係地道但唔係必需，唔啱你語氣就唔好用，講出嚟會似演戲。<br><br>
@@ -282,6 +300,26 @@ textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;
   <div id="aiQout"></div>
 </section>
 
+<section class="panel" id="p-teach">
+  <div class="intro">
+    <b>教學專用 AI<span class="aitag">AI</span></b> — 三個工具，全部針對你嘅實際工作。<br><br>
+    <b>備課台詞</b>：貼低今日課題 → 生成你真正要講嘅英文，然後只操練嗰十句。呢個係全份材料入面
+    最有效嘅一環 —— 因為練習直接連到<b>明天嗰堂</b>，唔再係抽象操練。
+  </div>
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <button class="btn primary" id="tmPrep">📝 備課台詞</button>
+      <button class="btn primary" id="tmAsk">❓ 提問質素教練</button>
+      <button class="btn primary" id="tmMark">🖊 改卷評語</button>
+    </div>
+  </div>
+  <div id="tArea"></div>
+  <div class="card">
+    <div class="tag">評語句庫（唔使 AI，即用）</div>
+    <div id="tBank"></div>
+  </div>
+</section>
+
 <section class="panel" id="p-pron">
   <div class="intro">
     <b>重音錯 = 學生聽唔明，即使每個音都啱。</b> 英式發音（HK 學校跟 BrE）。紅色底線 = 重音音節。
@@ -308,6 +346,15 @@ textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;
       ⚠️ 老實講清楚：辨識器唔係語音學家。<b>一次錯係噪音，連續錯先係訊號。</b>
       所以要試夠三次以上先落判斷 —— 清單只計試過兩次或以上嘅字。
     </div>
+  </div>
+  <div class="card" style="border-color:var(--accent2)">
+    <div class="tag">👂 聽寫訓練</div>
+    <div style="font-size:14px">
+      練耳，唔練口。播一句英文，你打返出嚟。<b>你聽唔到嘅嘢，就係你講唔出嘅嘢</b> ——
+      漏聽 -s、-ed、縮寫，通常代表你講嗰陣都會漏。
+    </div>
+    <div class="row"><button class="btn primary" id="dicGo">開始聽寫</button></div>
+    <div id="dicArea"></div>
   </div>
   <div class="row" style="margin-bottom:14px"><select id="pronSel"></select></div>
   <div id="pronList"></div>
@@ -1947,8 +1994,8 @@ function recToggle(btn,mount){
 function wire(el){el.querySelectorAll(".spk[data-t]").forEach(b=>b.onclick=()=>speak(b.dataset.t));}
 
 /* ---------------- NAV ---------------- */
-const TABS=[["browse","📖 Browse 句庫"],["drill","🎯 Drill 抽卡"],["ladder","🪜 Ladder 階梯"],["sim","⏱ Simulator 情境"],
-            ["role","🎭 對話 AI"],["polish","✍️ 執句 AI"],["gen","↻ 生成 AI"],["quiz","🎯 出題 AI"],["nat","✨ Natural 自然度"],["pron","🔊 Pronunciation 發音"],["vocab","📚 Vocab 詞彙"],
+const TABS=[["daily","📅 Daily 每日"],["browse","📖 Browse 句庫"],["drill","🎯 Drill 抽卡"],["ladder","🪜 Ladder 階梯"],["sim","⏱ Simulator 情境"],
+            ["role","🎭 對話 AI"],["polish","✍️ 執句 AI"],["gen","↻ 生成 AI"],["quiz","🎯 出題 AI"],["teach","🍎 Teaching AI"],["nat","✨ Natural 自然度"],["pron","🔊 Pronunciation 發音"],["vocab","📚 Vocab 詞彙"],
             ["fix","🔧 Fix It 改錯"],["ped","🎓 Pedagogy 教學法"],["setup","⚙️ Setup 設定"],["prog","📊 Progress 進度"]];
 const nav=document.getElementById("nav");
 TABS.forEach(([k,label],idx)=>{
@@ -2289,6 +2336,7 @@ vocabSel.onchange=renderVocab;renderVocab();
 /* ---------------- PROGRESS ---------------- */
 function renderProg(){
   const l=document.getElementById("progList");l.innerHTML="";
+  try{l.innerHTML=chartHTML();}catch(e){}
   Object.entries(MODS).forEach(([k,v])=>{
     const items=P.filter(p=>p.m===k);
     const solid=items.filter(p=>state[p.id]==="solid").length;
@@ -2583,6 +2631,7 @@ document.getElementById("aiQgo").onclick=function(){
   .catch(function(e){out.innerHTML='<div class="err">出錯：'+esc(e.message||e)+'</div>';})
   .then(function(){document.getElementById("aiQs").textContent="";});
 };
+window.AICOACH={hasAI:hasAI,noAI:noAI,ask:ask,BASE:BASE};
 })();
 
 /* ================= REAL PRONUNCIATION TEST ================= */
@@ -2744,6 +2793,308 @@ document.getElementById("pwList").onclick=function(){
 };
 })();
 
+/* ================= SRS + DAILY + CHARTS + DICTATION ================= */
+let sched=JSON.parse(lsGet("emi-sched","{}"));
+let hist=JSON.parse(lsGet("emi-hist","{}"));
+let streak=JSON.parse(lsGet("emi-streak",'{"n":0,"last":""}'));
+function saveSched(){lsSet("emi-sched",JSON.stringify(sched));}
+function saveHist(){lsSet("emi-hist",JSON.stringify(hist));}
+function saveStreak(){lsSet("emi-streak",JSON.stringify(streak));}
+const DAY=86400000;
+function today(){const d=new Date();return d.getFullYear()+"-"+
+  String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function bump(k){const t=today();if(!hist[t])hist[t]={drill:0,solid:0};hist[t][k]=(hist[t][k]||0)+1;saveHist();}
+function srsGrade(id,q){
+  let s=sched[id]||{ivl:0,ease:2.5,reps:0};
+  if(q===0){s.ivl=0;s.ease=Math.max(1.3,s.ease-0.2);s.reps=0;}
+  else if(q===1){s.ivl=s.ivl?Math.max(1,Math.round(s.ivl*1.2)):1;s.ease=Math.max(1.3,s.ease-0.05);}
+  else{s.reps++;s.ivl=(s.reps===1)?1:((s.reps===2)?3:Math.max(1,Math.round((s.ivl||1)*s.ease)));
+       s.ease=Math.min(2.8,s.ease+0.05);}
+  s.due=Date.now()+s.ivl*DAY;sched[id]=s;saveSched();
+  bump("drill");if(q===2)bump("solid");
+}
+function isDue(p){const s=sched[p.id];return !s||s.due<=Date.now();}
+function dueCount(){return P.filter(isDue).length;}
+function seen(p){return !!sched[p.id];}
+
+/* ---- DAILY ---- */
+let dayQ=[],dayI=0,dayT=null;
+function pickDaily(){
+  const unseen=P.filter(function(p){return !seen(p);});
+  const due=P.filter(function(p){return seen(p)&&isDue(p);});
+  const sh=function(a){return a.slice().sort(function(){return Math.random()-0.5;});};
+  const q=[];
+  sh(unseen).slice(0,2).forEach(function(p){q.push({k:"new",p:p});});
+  sh(due).slice(0,3).forEach(function(p){q.push({k:"rev",p:p});});
+  while(q.length<5){const x=sh(P)[0];if(x)q.push({k:"rev",p:x});else break;}
+  q.push({k:"pron"});
+  q.push({k:"live",p:sh(P)[0]});
+  return q;
+}
+function dayHead(){
+  const el=document.getElementById("dayHead");
+  const t=today(),done=hist[t]?hist[t].drill:0;
+  el.innerHTML='<div style="font-size:15px"><b>🔥 連續 '+streak.n+' 日</b>'+
+    ' &nbsp;·&nbsp; 今日已練 <b>'+done+'</b> 個'+
+    ' &nbsp;·&nbsp; 今日到期複習 <b>'+dueCount()+'</b> 句</div>'+
+    '<div class="row"><button class="btn primary" id="dayGo">開始今日套餐 →</button></div>';
+  document.getElementById("dayGo").onclick=startDay;
+}
+function startDay(){
+  dayQ=pickDaily();dayI=0;
+  document.getElementById("dayBody").style.display="";
+  dayStep();
+}
+function dayStep(){
+  clearInterval(dayT);
+  const body=document.getElementById("dayBody");
+  if(dayI>=dayQ.length){
+    const t=today();
+    if(streak.last!==t){
+      const y=new Date(Date.now()-DAY);
+      const ys=y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+      streak.n=(streak.last===ys)?streak.n+1:1;streak.last=t;saveStreak();
+    }
+    body.innerHTML='<div style="text-align:center;padding:14px">'+
+      '<div style="font-size:40px">✓</div><div class="big">今日套餐完成</div>'+
+      '<div class="stat">連續 '+streak.n+' 日。聽落好少，但呢個先係有效嘅方式 —— 每日短時間遠勝週末一次過。</div>'+
+      '<div class="row" style="justify-content:center"><button class="btn" id="dayAgain">再嚟一組</button></div></div>';
+    document.getElementById("dayAgain").onclick=startDay;
+    dayHead();renderProg();return;
+  }
+  body.innerHTML='<div class="rung" id="dayBar"></div><div class="runglab" id="dayLab"></div>'+
+    '<div class="tag" id="dayTag">—</div><div id="dayMain"></div>'+
+    '<div class="row" id="dayCtl"></div><div id="dayFb"></div>';
+  let bar="";for(let i=0;i<dayQ.length;i++)bar+='<div class="'+(i<dayI?"done":(i===dayI?"now":""))+'"></div>';
+  document.getElementById("dayBar").innerHTML=bar;
+  const it=dayQ[dayI];
+  const LAB={new:"新句 — 未見過，先睇一次再講",rev:"複習 — 今日到期，先講先睇答案",
+             pron:"發音 — 單字測試",live:"即興 — 15 秒，唔准諗"};
+  document.getElementById("dayLab").textContent=(dayI+1)+" / "+dayQ.length+" · "+LAB[it.k];
+  const main=document.getElementById("dayMain"),ctl=document.getElementById("dayCtl"),fb=document.getElementById("dayFb");
+  const mk=function(t,c,fn){const b=document.createElement("button");b.className=c;b.textContent=t;b.onclick=fn;ctl.appendChild(b);};
+  const next=function(){dayI++;dayStep();};
+
+  if(it.k==="pron"){
+    const W=["costs","months","growth","think","three","really","thing","prices","worked","world","shifts","clothes"];
+    const w=W[Math.floor(Math.random()*W.length)];
+    document.getElementById("dayTag").textContent="Pronunciation";
+    main.innerHTML='<div class="big" style="font-size:32px">'+w+'</div>'+
+      '<div class="stat">單獨、清楚讀呢個字</div><div class="pwLive" style="font-size:18px;color:var(--accent2);min-height:24px"></div>';
+    mk("🔊 聽","btn",function(){speak(w);});
+    mk("🎙 講","btn pwStop",function(){
+      srOnce(document.getElementById("dayBody"),function(said){
+        const ok=(" "+said+" ").indexOf(" "+w.toLowerCase()+" ")>=0;
+        fb.innerHTML='<div class="note">'+(ok?'<span class="good">✓ 聽到「'+esc(said)+'」</span>'
+          :'<span class="bad">✗ 聽成「'+esc(said||"（冇聲）")+'」—— 去 🔊 Pronunciation 版做完整測試</span>')+'</div>';
+      });
+    });
+    mk("下一個 →","btn primary",next);
+    return;
+  }
+
+  const p=it.p,pr=primaryOf(p);
+  document.getElementById("dayTag").innerHTML=p.c+" "+starHTML(p);
+  wireStar(document.getElementById("dayTag"));
+
+  if(it.k==="new"){
+    main.innerHTML='<div class="zh">'+p.zh+'</div>'+
+      '<div class="big" style="color:var(--accent2)">'+esc(pr.t)+'</div>'+
+      (p.n?'<div class="note">💡 '+p.n+'</div>':'');
+    mk("🔊 聽","btn",function(){speak(pr.t);});
+    mk("我講咗三次 →","btn primary",function(){srsGrade(p.id,1);state[p.id]="shaky";save();next();});
+    return;
+  }
+  if(it.k==="rev"){
+    main.innerHTML='<div class="big">'+p.zh+'</div><div id="dayAns" class="hidden">'+
+      '<div class="en" style="font-size:19px;color:var(--accent2)">'+esc(pr.t)+'</div>'+altHTML(p,pr.t)+'</div>';
+    wire(main);
+    mk("Reveal ↓","btn primary",function(){
+      main.querySelector("#dayAns").classList.remove("hidden");
+      ctl.innerHTML="";
+      mk("講得出 ✓","btn g",function(){srsGrade(p.id,2);state[p.id]="solid";save();next();});
+      mk("吞吞吐吐 ~","btn s",function(){srsGrade(p.id,1);state[p.id]="shaky";save();next();});
+      mk("講唔出 ✗","btn b",function(){srsGrade(p.id,0);state[p.id]="missed";save();next();});
+    });
+    return;
+  }
+  // live
+  main.innerHTML='<div class="big">'+p.zh+'</div><div class="timer" id="dayTimer">15</div>'+
+    '<div id="dayAns2" class="hidden"><div class="en" style="color:var(--accent2)">'+esc(pr.t)+'</div>'+altHTML(p,pr.t)+'</div>';
+  wire(main);
+  let L=15;const tm=document.getElementById("dayTimer");
+  dayT=setInterval(function(){L--;tm.textContent=Math.max(L,0);
+    if(L<=5)tm.style.color="var(--warn)";
+    if(L<=0){clearInterval(dayT);tm.textContent="⏱";
+      main.querySelector("#dayAns2").classList.remove("hidden");speak(pr.t);}},1000);
+  mk("完成套餐 ✓","btn primary",function(){srsGrade(p.id,1);next();});
+}
+
+/* ---- DICTATION ---- */
+document.getElementById("dicGo").onclick=function(){
+  const area=document.getElementById("dicArea");
+  const p=P[Math.floor(Math.random()*P.length)],t=primaryOf(p).t;
+  area.innerHTML='<div class="card" style="margin-top:12px">'+
+    '<div class="stat">撳 🔊 聽（可以聽多次），然後打返出嚟。</div>'+
+    '<div class="row"><button class="btn primary dicPlay">🔊 播</button></div>'+
+    '<textarea class="dicIn" placeholder="Type exactly what you hear…"></textarea>'+
+    '<div class="row"><button class="btn dicChk">對答案 →</button>'+
+    '<button class="btn dicNext">下一句 →</button></div><div class="dicFb"></div></div>';
+  const c=area.querySelector(".card");
+  c.querySelector(".dicPlay").onclick=function(){speak(t);};
+  c.querySelector(".dicNext").onclick=function(){document.getElementById("dicGo").click();};
+  c.querySelector(".dicChk").onclick=function(){
+    const v=c.querySelector(".dicIn").value.trim();
+    if(!v)return;
+    showScore(t,v,c.querySelector(".dicFb"),"你聽到");
+  };
+  speak(t);
+};
+
+/* ---- CHARTS in progress ---- */
+function chartHTML(){
+  const days=[];
+  for(let i=13;i>=0;i--){
+    const d=new Date(Date.now()-i*DAY);
+    const k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    days.push({k:k,lab:(d.getMonth()+1)+"/"+d.getDate(),v:(hist[k]&&hist[k].drill)||0});
+  }
+  const max=Math.max(4,...days.map(function(d){return d.v;}));
+  const W=560,H=140,bw=W/days.length;
+  let bars="";
+  days.forEach(function(d,i){
+    const bh=Math.round(d.v/max*(H-28));
+    bars+='<rect x="'+(i*bw+4)+'" y="'+(H-24-bh)+'" width="'+(bw-8)+'" height="'+bh+
+      '" fill="var(--accent2)" rx="3"></rect>'+
+      '<text x="'+(i*bw+bw/2)+'" y="'+(H-8)+'" font-size="9" fill="#8a8880" text-anchor="middle">'+d.lab+'</text>'+
+      (d.v?'<text x="'+(i*bw+bw/2)+'" y="'+(H-28-bh)+'" font-size="10" fill="#6b6a66" text-anchor="middle">'+d.v+'</text>':'');
+  });
+  const tot=days.reduce(function(a,b){return a+b.v;},0);
+  return '<div class="card"><div class="en" style="font-size:15px">過去 14 日練習量</div>'+
+    '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:150px">'+bars+'</svg>'+
+    '<div class="stat">14 日合共 '+tot+' 個 · 🔥 連續 '+streak.n+' 日 · 今日到期 '+dueCount()+' 句</div>'+
+    '<div class="note">唔使追高數字。<b>格仔有冇斷</b>比每格幾高重要 —— 間隔效應靠嘅係頻率，唔係總量。</div></div>';
+}
+
+/* ================= TEACHING AI ================= */
+(function(){
+const area=document.getElementById("tArea");
+if(!area)return;
+const A=window.AICOACH||{};
+const hasAI=A.hasAI||function(){return false;},noAI=A.noAI||function(e){e.innerHTML="AI 未設定";},
+      ask=A.ask||function(){return Promise.reject(new Error("AI 未設定"));},BASE=A.BASE||"";
+const BANK=[
+["讚 — 具體先有用",
+ "Clear and well organised.",
+ "Good use of the correct term.",
+ "You've explained the mechanism, not just the result — that's what I want.",
+ "Strong example. It fits the point exactly.",
+ "You've spotted something a lot of people miss."],
+["改 — 講清楚差喺邊",
+ "You've told me what happens. Now tell me why.",
+ "Right idea, but the wording isn't precise enough. Check the definition.",
+ "This is a description. The question asks you to explain.",
+ "You've stopped one step too early. What happens next?",
+ "Check the direction — you've reversed the cause and effect.",
+ "Good start, but you haven't answered the question that was asked.",
+ "Add one real example and this becomes a strong answer.",
+ "Label your diagram. The examiner won't guess what you meant."],
+["下一步 — 一定要有動作",
+ "Next time, plan two lines before you write.",
+ "Redo question 4 using the framework we did in class.",
+ "Come and see me — this is a five-minute fix.",
+ "Read my comment, then rewrite just the last paragraph."]
+];
+(function(){
+  const b=document.getElementById("tBank");
+  b.innerHTML=BANK.map(function(g){
+    return '<div class="altlab" style="margin-top:10px">'+g[0]+'</div>'+
+      g.slice(1).map(function(s){
+        return '<div class="alt">'+esc(s)+' <button class="spk" data-t="'+esc(s)+'">🔊</button></div>';
+      }).join("");
+  }).join("")+'<div class="note">評語一定要有<b>下一步動作</b>。淨係話「唔夠好」，學生睇完唔知做咩，'+
+    '於是咩都唔做。「What → Why → 做咩」三段係最短嘅有效評語結構。</div>';
+  wire(b);
+})();
+
+function shell(title,ph,btnTxt,build){
+  area.innerHTML='<div class="card"><div class="tag">'+esc(title)+'</div>'+
+    '<textarea class="tin" placeholder="'+esc(ph)+'"></textarea>'+
+    '<div class="row"><button class="btn primary tgo">'+esc(btnTxt)+'</button>'+
+    '<span class="spin tst"></span></div></div><div class="tout"></div>';
+  const c=area.querySelector(".card"),out=area.querySelector(".tout"),st=c.querySelector(".tst");
+  c.querySelector(".tgo").onclick=function(){
+    const v=c.querySelector(".tin").value.trim();if(!v)return;
+    if(!hasAI())return noAI(out);
+    st.textContent="諗緊…";out.innerHTML="";
+    ask(build(v)).then(function(r){
+      out.innerHTML='<div class="card">'+fmt(r)+'</div>';wire(out);
+    }).catch(function(e){out.innerHTML='<div class="err">'+esc(e.message||e)+'</div>';})
+    .then(function(){st.textContent="";});
+  };
+}
+function fmt(r){
+  return String(r).split("\n").map(function(ln){
+    ln=ln.trim();if(!ln)return"";
+    const i=ln.indexOf(":");
+    if(i>0&&i<26&&ln.slice(0,i)===ln.slice(0,i).toUpperCase()&&/[A-Z]/.test(ln.slice(0,i))){
+      const k=ln.slice(0,i),v=ln.slice(i+1).trim();
+      return '<div class="opt"><div class="altlab">'+esc(k)+'</div><div style="font-size:16px">'+esc(v)+
+        (/[a-zA-Z]/.test(v)?' <button class="spk" data-t="'+esc(v)+'">🔊</button>':'')+'</div></div>';
+    }
+    return '<div style="font-size:15px;margin:5px 0">'+esc(ln)+'</div>';
+  }).join("");
+}
+
+document.getElementById("tmPrep").onclick=function(){
+  shell("📝 備課台詞","貼低今日課題／大綱，例如：\nS5 Econ — price elasticity of demand，要教點分 elastic 同 inelastic，同埋點解 total revenue 會反方向郁",
+    "生成台詞 →",function(v){
+    return BASE+"\n\nHis lesson: "+JSON.stringify(v)+"\n\n"+
+    "Write the actual English he will SAY in that lesson. Simple spoken English, contractions, short sentences a second-language student understands immediately. No jargon he has not defined.\n"+
+    "IMPORTANT: he refuses to teach decontextualised theory, and he refuses invented facts. If you are not certain of a real historical example, write 'ADD YOUR OWN REAL EXAMPLE HERE' instead of inventing one. Never fabricate dates, names or figures.\n\n"+
+    "Output EXACTLY these labelled lines, nothing else:\n"+
+    "OPENING: how he starts the lesson, one sentence\n"+
+    "RECAP: one sentence linking back to last lesson\n"+
+    "HOOK: a concrete real-world or historical anchor to open with - only if you are certain it is accurate, otherwise write ADD YOUR OWN REAL EXAMPLE HERE\n"+
+    "EXPLAIN1: first key idea, said in plain spoken English, max 2 sentences\n"+
+    "EXPLAIN2: second key idea, max 2 sentences\n"+
+    "EXPLAIN3: third key idea, max 2 sentences\n"+
+    "CHECK: one question that makes students explain it back in their own words\n"+
+    "THINK1: a thinking question, not a recall question\n"+
+    "THINK2: another thinking question\n"+
+    "TRAP: the sentence he should say to warn about the most common student error here\n"+
+    "TRANSITION: one sentence to move to practice\n"+
+    "CLOSE: one sentence to end the lesson";});
+};
+document.getElementById("tmAsk").onclick=function(){
+  shell("❓ 提問質素教練","貼低你打算問學生嘅問題，例如：\nWhat is the definition of opportunity cost?",
+    "分析呢條問題 →",function(v){
+    return BASE+"\n\nHe plans to ask students this question: "+JSON.stringify(v)+"\n\n"+
+    "He believes students should be able to explain in their own words, not recite. Judge the question on cognitive demand.\n"+
+    "Output EXACTLY these labelled lines, nothing else:\n"+
+    "TYPE: one of - RECALL (just remembering) / COMPREHENSION (restating) / THINKING (applying, comparing, judging, predicting)\n"+
+    "WHY: one short line in Traditional Chinese, Hong Kong Cantonese flavour, max 40 characters, saying what the question does and does not test\n"+
+    "BETTER1: an improved version, still easy enough for a weaker student to attempt\n"+
+    "BETTER2: a version that demands real thinking\n"+
+    "BETTER3: a version that forces them to justify or predict\n"+
+    "PROBE: what he should say immediately AFTER a student answers, to push further\n"+
+    "WAIT: one short line in Traditional Chinese reminding him about wait time or cold-calling for this specific question, max 35 characters";});
+};
+document.getElementById("tmMark").onclick=function(){
+  shell("🖊 改卷評語","描述學生嘅答案問題，例如：\n學生答對咗結論但完全冇解釋因果，而且冇用 ceteris paribus，字體好靚但內容得三行",
+    "生成評語 →",function(v){
+    return BASE+"\n\nHe is marking a student's work. The situation: "+JSON.stringify(v)+"\n\n"+
+    "Write feedback in English the student can read. Simple words. Honest but not crushing. Every comment must end with a concrete action, because feedback without an action changes nothing.\n"+
+    "Output EXACTLY these labelled lines, nothing else:\n"+
+    "WARM: one specific thing that is genuinely good - specific, not generic praise\n"+
+    "ISSUE: what exactly is missing or wrong, in plain student-friendly English, one or two sentences\n"+
+    "ACTION: exactly what to do next - concrete and small enough to actually do\n"+
+    "FULL: the complete comment he can copy onto the script, 2-3 sentences combining the above\n"+
+    "NOTE: one line in Traditional Chinese for the teacher only, on whether this error is worth a whole-class reteach or just an individual note, max 40 characters";});
+};
+})();
+
+try{dayHead();renderProg();}catch(e){console.error(e);}
 </script>
 </body>
 </html>
