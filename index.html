@@ -1,0 +1,2749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMI Teacher Talk Trainer</title>
+<style>
+:root{color-scheme:light;
+  --bg:#faf8f5; --card:#ffffff; --ink:#1c1c1a; --mute:#6b6a66;
+  --line:#e3ded6; --accent:#8a5a2b; --accent2:#2f6f5f;
+  --warn:#a8482f; --good:#2f6f5f; --shaky:#b07b1e;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans HK","PingFang HK",sans-serif;line-height:1.55}
+header{padding:20px 18px 12px;border-bottom:1px solid var(--line);background:var(--card)}
+h1{margin:0;font-size:19px;letter-spacing:-0.2px}
+.sub{color:var(--mute);font-size:13px;margin-top:3px}
+nav{display:flex;gap:4px;overflow-x:auto;padding:10px 12px;background:var(--card);
+  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:9}
+nav button{border:1px solid var(--line);background:transparent;color:var(--mute);
+  padding:7px 13px;border-radius:20px;font-size:13px;cursor:pointer;white-space:nowrap;font-family:inherit}
+nav button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+main{max-width:840px;margin:0 auto;padding:18px 14px 80px}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.zh{font-size:15px;color:var(--mute);margin-bottom:8px}
+.en{font-size:17px;font-weight:520;letter-spacing:-0.1px}
+.note{font-size:13px;color:var(--mute);margin-top:10px;padding-top:9px;border-top:1px dashed var(--line)}
+.tag{display:inline-block;font-size:11px;text-transform:uppercase;letter-spacing:.7px;
+  color:var(--accent);background:#f3ece3;padding:2px 8px;border-radius:4px;margin-bottom:8px}
+.alts{margin-top:11px}
+.altlab{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin-bottom:6px}
+.alt{font-size:15px;color:#3d3d38;padding:4px 0 4px 13px;border-left:2px solid #e0d3c0;margin-bottom:4px}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 16px;
+  border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit}
+.btn:hover{background:#f3ece3}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.g{border-color:var(--good);color:var(--good)}
+.btn.s{border-color:var(--shaky);color:var(--shaky)}
+.btn.b{border-color:var(--warn);color:var(--warn)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);
+  font-family:inherit;font-size:14px;color:var(--ink)}
+.big{font-size:22px;font-weight:560;line-height:1.4;margin:10px 0}
+.hidden{display:none}
+.timer{font-size:34px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.stress{font-size:23px;letter-spacing:.5px;margin-top:4px}
+.stress b{color:var(--warn);text-decoration:underline;text-underline-offset:4px}
+.bad{color:var(--warn);text-decoration:line-through;text-decoration-thickness:1px}
+.good{color:var(--good);font-weight:560}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 2px}
+.bar i{display:block;height:100%;background:var(--accent2)}
+.stat{font-size:13px;color:var(--mute)}
+.intro{background:#f3ece3;border:1px solid #e0d3c0;border-radius:12px;padding:16px;margin-bottom:16px;font-size:14px}
+.intro b{color:var(--accent)}
+.spk{border:none;background:transparent;cursor:pointer;font-size:16px;padding:1px 5px;opacity:.55}
+.spk:hover{opacity:1}
+h3{margin:22px 0 8px;font-size:15px;letter-spacing:.3px;color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+td,th{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#f3ece3;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--accent)}
+
+.star{border:none;background:none;cursor:pointer;font-size:17px;color:#dcccb4;padding:1px 5px}
+.star.on{color:#c8931f}
+.rung{display:flex;gap:5px;margin:12px 0 4px}
+.rung div{flex:1;height:7px;border-radius:4px;background:var(--line)}
+.rung div.done{background:var(--accent2)}
+.rung div.now{background:var(--accent)}
+.runglab{font-size:12px;color:var(--mute);margin-bottom:10px}
+.sr{font-size:17px;line-height:2.1;margin-top:12px}
+.sr span{padding:2px 6px;border-radius:5px;margin-right:3px;display:inline-block}
+.sr .hit{background:#dff0e8;color:#1d5c4a}
+.sr .miss{background:#fbe3dd;color:#8f3520}
+.gauge{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums}
+.chk{display:block;margin:7px 0;font-size:14px;cursor:pointer}
+.pill2{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:14px;
+  padding:4px 11px;margin:0 5px 0 0;cursor:pointer;background:var(--card)}
+.pill2.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+#toolbar{background:var(--card);border-bottom:1px solid var(--line);padding:9px 14px;
+  font-size:12px;color:var(--mute);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ped .why{background:#f3ece3;border-left:3px solid var(--accent);padding:10px 13px;
+  margin-top:9px;border-radius:0 8px 8px 0;font-size:13.5px}
+.ped h4{margin:0 0 4px;font-size:16px;color:var(--ink)}
+.src{font-size:12px;color:var(--mute);font-style:italic}
+.mic{border:1px solid var(--warn);color:var(--warn);background:var(--card);
+  padding:9px 16px;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit}
+.mic.rec{background:var(--warn);color:#fff}
+
+.msg{margin:9px 0;padding:10px 13px;border-radius:12px;max-width:88%;font-size:14.5px}
+.them{background:#eef2f0;border:1px solid #dbe5e1}
+.me{background:#f3ece3;border:1px solid #e0d3c0;margin-left:auto}
+.coach{border-left:3px solid var(--accent2);background:#f7faf9;padding:9px 12px;
+  margin:6px 0 12px;border-radius:0 9px 9px 0;font-size:13px}
+.coach .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--accent2)}
+.opt{border-left:2px solid #e0d3c0;padding:6px 0 6px 12px;margin-bottom:8px}
+.err{background:#fbe3dd;border:1px solid #f0c9bf;color:#8f3520;padding:11px 13px;
+  border-radius:9px;font-size:13.5px}
+.spin{color:var(--mute);font-size:13px}
+input[type=password]{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;font-family:inherit;font-size:15px;background:var(--card);color:var(--ink)}
+code{background:#f0e9df;padding:1px 5px;border-radius:4px;font-size:13px}
+textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;
+  font-family:inherit;font-size:15px;background:var(--card);color:var(--ink);min-height:70px;resize:vertical}
+.aitag{display:inline-block;font-size:10px;background:var(--accent2);color:#fff;
+  padding:2px 7px;border-radius:4px;margin-left:6px;letter-spacing:.5px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>EMI Teacher Talk Trainer</h1>
+  <div class="sub">通用課堂英語 · 每個情境有多個講法俾你揀 · 進度存喺呢部機</div>
+</header>
+
+<nav id="nav"></nav>
+<div id="toolbar">
+  <span><b style="color:var(--accent)">語氣 Tone</b></span>
+  <span class="pill2" data-tone="simple">簡單 Simple</span>
+  <span class="pill2 on" data-tone="neutral">中性 Neutral</span>
+  <span class="pill2" data-tone="idiom">地道 Idiomatic</span>
+  <span style="margin-left:auto" id="markCount"></span>
+</div>
+<main>
+
+<section class="panel on" id="p-browse">
+  <div class="intro">
+    <b>第一句永遠係最簡單、最常用嗰句。</b> 下面嘅變體標明語氣或地道程度 ——
+    標住「英式」嘅係地道但唔係必需，唔啱你語氣就唔好用，講出嚟會似演戲。<br><br>
+    <b>教學要簡單，唔係要漂亮。</b> 你嘅學生同你一樣係 L2。你用 idiom，佢哋要喺腦入面譯多一次先明 ——
+    咁佢嘅思考力就用咗喺你句嘢度，唔係用喺個概念度。<br>
+    · 對住 <b>學生</b>（module ①–⑤）：短、直接、細字。<br>
+    · 對住 <b>同事／承辦商</b>（module ⑥⑦）：可以地道啲、口語啲。<br><br>
+    唔好三個都背 —— <b>揀一個最似你嘅</b>，只練嗰一個到滾瓜爛熟。
+    一個講嘢有信心嘅老師唔係識好多講法，係有 <b>一套自己嘅講法</b>。
+    如果覺得背句好唔自然，去 <b>✨ Natural</b> 嗰版睇 Frames 句型 —— 背骨架好過背句。
+  </div>
+  <div class="row" style="margin-bottom:14px">
+    <select id="modSel"></select><select id="catSel"></select>
+  </div>
+  <div id="browseList"></div>
+</section>
+
+<section class="panel" id="p-drill">
+  <div class="intro">
+    <b>規則：一定要出聲。</b> 見到中文情境 → 大聲講出英文 → 先撳 Reveal。
+    講唔出就係 Missed。Shaky／Missed 嘅句會加倍返嚟。Reveal 之後會見到全部變體 —— 揀你想用嗰個再講一次。
+  </div>
+  <div class="row" style="margin-bottom:12px">
+    <select id="drillMod"></select><button class="btn" id="drillReset">重新開始</button>
+  </div>
+  <div class="card">
+    <div class="tag" id="dTag">—</div>
+    <div class="big" id="dZh">撳 Reveal 開始</div>
+    <div id="dAnswer" class="hidden">
+      <div class="en" id="dEn" style="font-size:19px;color:var(--accent2)"></div>
+      <div id="dAlts"></div>
+      <div class="note" id="dNote"></div>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="dReveal">Reveal ↓</button>
+      <button class="spk" id="dSpeak" style="font-size:20px" title="聽讀音">🔊</button>
+      <button class="mic" id="dMic">🎙 講一次，我幫你對比</button>
+    </div>
+    <div id="dSR"></div>
+    <div class="row hidden" id="dGrade">
+      <button class="btn g" data-g="solid">講得出 ✓</button>
+      <button class="btn s" data-g="shaky">吞吞吐吐 ~</button>
+      <button class="btn b" data-g="missed">完全講唔出 ✗</button>
+    </div>
+  </div>
+  <div class="stat" id="dStat"></div>
+</section>
+
+<section class="panel" id="p-sim">
+  <div class="intro">
+    <b>模擬堂上突發情況。</b> 15 秒倒數，情境一出即刻要出聲，唔准諗。練嘅唔係記憶，係<b>反射</b>。<br><br>
+    倒數完會畀你四種回饋：<b>語音逐字對比</b>（撳 🎙）、<b>自然度自檢清單</b>、
+    <b>模型答案同變體</b>、<b>相似情境</b>。設計原理係 desirable difficulties —— 覺得辛苦係啱嘅。
+  </div>
+  <div class="row" style="margin-bottom:12px">
+    <select id="simMod"></select>
+  </div>
+  <div class="card">
+    <div class="tag" id="sTag">—</div>
+    <div class="big" id="sZh">撳 Start 開始</div>
+    <div class="timer" id="sTimer">15</div>
+    <div class="row" style="justify-content:center">
+      <button class="btn primary" id="sStart">Start</button>
+      <button class="mic" id="sMic">🎙 講嘢畀我聽</button>
+      <button class="btn" id="sNext">下一個 →</button>
+    </div>
+    <div id="sSR"></div>
+    <div id="sAnswer" class="hidden" style="margin-top:14px">
+      <div class="en" style="color:var(--accent2);font-size:19px" id="sEn"></div>
+      <div id="sAlts"></div>
+      <div class="note" id="sNote"></div>
+      <div class="note"><b>自檢清單 — 老實答：</b>
+        <label class="chk"><input type="checkbox"> 我真係出咗聲（唔係心諗）</label>
+        <label class="chk"><input type="checkbox"> 我用咗縮略式（I'll / that's / don't）</label>
+        <label class="chk"><input type="checkbox"> 我句嘢喺 12 個字以內</label>
+        <label class="chk"><input type="checkbox"> 冇 er / um</label>
+        <label class="chk"><input type="checkbox"> 如果對住學生講，佢會即刻明</label>
+      </div>
+      <div id="sSim"></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="p-role">
+  <div class="intro">
+    <b>模擬對話<span class="aitag">AI</span></b> — 揀角色，佢用英文開口，你答。
+    每一 turn 即刻畀你<b>執句 + 原因 + 替代講法</b>。<br><br>
+    呢個補返固定 phrase bank 嘅根本缺口：真實課堂唔會跟你背過嘅劇本走。喺呢度卡住，好過喺堂上卡住。
+  </div>
+  <div class="card">
+    <div class="altlab">揀情境</div>
+    <select id="aiScn"></select>
+    <div class="row"><button class="btn primary" id="aiStart">開始 / 重新開始</button>
+      <span class="spin" id="aiRs"></span></div>
+  </div>
+  <div id="aiChat"></div>
+  <div class="card" id="aiBox" style="display:none">
+    <div class="altlab">你嘅回應（英文）</div>
+    <textarea id="aiSay" placeholder="Type what you would actually say out loud…"></textarea>
+    <div class="row"><button class="btn primary" id="aiSend">講出去 →</button>
+      <button class="mic" id="aiMic">🎙 講嘢</button><span class="spin" id="aiSs"></span></div>
+  </div>
+</section>
+
+<section class="panel" id="p-polish">
+  <div class="intro">
+    <b>執句<span class="aitag">AI</span></b> — 貼你打算講嘅嘢，畀返改正版、<b>三個語氣層次</b>、逐項錯處、一句中文重點。<br><br>
+    <b>對住學生用「最簡單」嗰個。</b>學生同你一樣係 L2 —— 你用 idiom，佢要喺腦入面譯多一次先明。
+  </div>
+  <div class="card">
+    <div class="altlab">你想講咩</div>
+    <textarea id="aiFin" placeholder="e.g. Today I will teach you the demand curve, please open your book page 47."></textarea>
+    <div class="altlab" style="margin-top:11px">場合</div>
+    <select id="aiCtx">
+      <option>對住 S4–S6 學生講堂</option><option>對住學生一對一輔導</option>
+      <option>對住家長</option><option>對住校長／上司</option>
+      <option>對住同事（教員室）</option><option>對住承辦商／供應商</option><option>寫電郵</option>
+    </select>
+    <div class="row"><button class="btn primary" id="aiFgo">幫我執 →</button><span class="spin" id="aiFs"></span></div>
+  </div>
+  <div id="aiFout"></div>
+</section>
+
+<section class="panel" id="p-gen">
+  <div class="intro">
+    <b>生成講法<span class="aitag">AI</span></b> — 用中文寫情境，我畀你 5 個英文講法，由最簡單排到最地道。<br><br>
+    唔好五個都記。揀<b>一個</b>最似你語氣嘅，落堂用一次。用過一次好過讀十次。
+  </div>
+  <div class="card">
+    <div class="altlab">情境（中文）</div>
+    <textarea id="aiGin" placeholder="e.g. 想叫學生停低手上嘢，專心聽我講下一個重點"></textarea>
+    <div class="altlab" style="margin-top:11px">對住邊個</div>
+    <select id="aiAud">
+      <option>S4–S6 學生（要最簡單易明）</option><option>同事 / 教員室</option>
+      <option>校長 / 上司</option><option>承辦商 / 供應商</option><option>家長</option>
+    </select>
+    <div class="row"><button class="btn primary" id="aiGgo">畀我 5 個講法 →</button><span class="spin" id="aiGs"></span></div>
+  </div>
+  <div id="aiGout"></div>
+</section>
+
+<section class="panel" id="p-quiz">
+  <div class="intro">
+    <b>即興出題<span class="aitag">AI</span></b> — 我生成新情境，你即場講。<br><br>
+    做法：睇住中文情境，<b>大聲</b>講出英文，然後先撳「睇參考」。偷睇 = 變成閱讀 = 冇效果（見 🎓 Pedagogy 第 2 條）。
+  </div>
+  <div class="card">
+    <div class="altlab">範圍</div>
+    <select id="aiArea">
+      <option>課堂指令同過渡</option><option>解釋概念、換講法</option>
+      <option>提問同回應學生答案</option><option>學生秩序、遲到、缺席</option>
+      <option>同承辦商傾工程／報價</option><option>會議、匯報校長、壞消息</option>
+      <option>教員室閒聊、外籍同事</option><option>全部混合（最貼近真實）</option>
+    </select>
+    <div class="row"><button class="btn primary" id="aiQgo">出 6 條 →</button><span class="spin" id="aiQs"></span></div>
+  </div>
+  <div id="aiQout"></div>
+</section>
+
+<section class="panel" id="p-pron">
+  <div class="intro">
+    <b>重音錯 = 學生聽唔明，即使每個音都啱。</b> 英式發音（HK 學校跟 BrE）。紅色底線 = 重音音節。
+    撳 🔊 聽，再自己讀三次。<br><br>
+    最後三組先係真正嘅分水嶺：<b>詞根重音轉移</b>、<b>名詞／動詞重音轉移</b>、
+    同 <b>句子節奏（弱讀與連音）</b>。第三組決定你聽落似「英文流利」定「一個字一個字咁讀」——
+    佢同你識幾多生字完全無關。<br><br>
+    想即時知自己讀啱未：去 🪜 Ladder 或 🎯 Drill 撳 🎙，語音辨識會逐字話你知邊個字冇講中。
+  </div>
+  <div class="card" style="border-color:var(--accent)">
+    <div class="tag">🎤 真發音測試</div>
+    <div style="font-size:14px">
+      上面嘅句子語音檢查係<b>字詞層面</b>，唔係發音評分 —— 因為辨識器會靠上下文猜返你想講咩，順手幫你遮醜。<br><br>
+      呢個測試唔同：<b>單字冇上下文可以猜</b>，辨識器聽到咩就報咩。你想講 sheep 佢打 ship，
+      就係硬證據。呢個係目前喺瀏覽器入面最誠實嘅發音檢查方法。
+    </div>
+    <div class="row">
+      <button class="btn primary" id="pwStart">單字測試</button>
+      <button class="btn primary" id="ppStart">最小對立對</button>
+      <button class="btn" id="pwList">我的發音問題清單</button>
+    </div>
+    <div id="pwArea"></div>
+    <div class="note">
+      ⚠️ 老實講清楚：辨識器唔係語音學家。<b>一次錯係噪音，連續錯先係訊號。</b>
+      所以要試夠三次以上先落判斷 —— 清單只計試過兩次或以上嘅字。
+    </div>
+  </div>
+  <div class="row" style="margin-bottom:14px"><select id="pronSel"></select></div>
+  <div id="pronList"></div>
+</section>
+
+<section class="panel" id="p-fix">
+  <div class="intro">
+    <b>42 個香港老師最常犯嘅句式錯。</b> 先自己心諗點改，再撳 Show fix。
+    呢啲錯多數唔會令人聽唔明，但會令你聽落唔似 native —— 而且學生會照抄落 exam script。<br><br>
+    最後 8 條係<b>辦公室英文</b>陷阱（revert / kindly / please be informed），同你嘅總務工作直接相關。
+  </div>
+  <div id="fixList"></div>
+</section>
+
+<section class="panel" id="p-ladder">
+  <div class="intro">
+    <b>五級階梯 — 由「識」行到「講得出」。</b> 直接由睇句子跳去即場開口，係自學最常失敗嘅一步：中間缺咗支架。
+    呢度幫你補返。<br><br>
+    <b>①聽 → ②跟讀 → ③填空 → ④中譯英 → ⑤情境即時。</b>
+    每級都要出聲，過咗先解鎖下一級。用嘅係 <b>Gradual Release of Responsibility</b>（漸進放手）——
+    支撐由多變少，直到你自己站得住。詳情見 🎓 Pedagogy。<br><br>
+    <b>語音檢查：</b>撳 🎙 講嘢，瀏覽器會轉文字同目標句逐字對比。<br>⚠️ 如果你係<b>雙擊個檔案</b>用 Chrome 開（網址係 file://…），咪一定用唔到 —— 呢個係 Chrome 嘅保安限制，唔係你部機問題。撳 🎙 之後會有完整解決方法，而且下面永遠有一個<b>打字／系統語音輸入</b>嘅框，一樣有逐字評分。
+  </div>
+  <div class="row" style="margin-bottom:12px">
+    <select id="ladMod"></select><button class="btn" id="ladSkip">換一句 →</button>
+  </div>
+  <div class="card">
+    <div class="rung" id="ladBar"></div>
+    <div class="runglab" id="ladLab"></div>
+    <div class="tag" id="ladTag">—</div>
+    <div id="ladBody"></div>
+    <div class="row" id="ladCtl"></div>
+    <div id="ladFb"></div>
+  </div>
+  <div class="stat" id="ladStat"></div>
+</section>
+
+<section class="panel" id="p-nat">
+  <div class="intro">
+    <b>點解會聽落似背書？</b> 唔一定係句子唔啱，多數係五件事：唔用縮略、句句講完整、冇起手詞、
+    句句講到絕、同埋用咗寫作先用嘅「大字」。<br><br>
+    <b>更重要嘅原則：教學英語要簡單，唔係要漂亮。</b> 你嘅學生同你一樣係 L2。
+    你用 idiom，佢哋要喺腦入面譯多一次先明 —— 咁佢嘅思考力就用喺你句嘢度，唔係用喺個概念度。
+    對住學生：<b>短、直接、細字</b>。對住同事同承辦商：可以地道啲。呢個 register 分界要分清楚。<br><br>
+    下面最尾一節 <b>Frames 句型</b> 係「唔似背書」嘅根本解藥 —— 背骨架，唔背句。
+  </div>
+  <div class="row" style="margin-bottom:14px"><select id="natSel"></select></div>
+  <div id="natList"></div>
+  <h3>Frames 句型 — 背骨架，唔背句</h3>
+  <div class="card" style="font-size:14px">
+    背死句嘅問題係：情境一唔啱，你就用唔到，於是又卡住。背 <b>frame</b> 就唔同 ——
+    一個 frame 可以生成無限句，而且因為你係即場填字，聽落自然就係即場諗嘅（因為真係）。<br><br>
+    練法：揀一個 frame，即場講出 <b>五個</b> 唔同嘅句。做到五個唔使停，個 frame 就係你嘅。
+  </div>
+  <div id="frameList"></div>
+</section>
+
+<section class="panel" id="p-vocab">
+  <div class="intro">
+    <b>詞彙唔係用嚟背，係用嚟認。</b> 呢度分六組。A–D 係你做總務時真係要用嘅字（同承辦商、校長、教育局講嘢）；
+    E 係閒聊慣用語；F 係<b>香港辦公室英文陷阱</b> —— 呢一組值得你今日就睇一次，因為呢啲錯唔會有人夾你講。<br><br>
+    用法：唔識嘅字唔使背，抄低三個你今個星期真係會用到嘅，喺真實情境用一次。用過一次好過讀十次。
+  </div>
+  <div class="row" style="margin-bottom:14px"><select id="vocabSel"></select></div>
+  <div id="vocabList"></div>
+</section>
+
+<section class="panel" id="p-ped">
+ <div class="intro">
+  <b>呢個工具唔係隨便砌出嚟嘅。</b> 每一個功能對應一個有研究基礎嘅學習原理。
+  你係老師，所以我唔淨止畀你工具，仲要話畀你聽<b>點解咁設計</b> —— 你可以判斷、可以拒絕、
+  亦可以將同一批原理搬去你自己嘅課堂。<br><br>
+  下面每一項嘅結構：<b>原理 → 出處 → 用喺邊 → 點解有效 → 你要點配合</b>。
+ </div>
+ <div class="ped">
+
+ <div class="card"><h4>1. 漸進放手 Gradual Release of Responsibility</h4>
+  <div class="src">Pearson &amp; Gallagher, 1983 — "I do / We do / You do"</div>
+  <div>用喺：<b>🪜 Ladder 五級階梯</b>。第①級我示範（I do），②③級我扶住你（We do），④⑤級你自己嚟（You do）。</div>
+  <div class="why"><b>點解有效：</b>大部分自學失敗唔係唔夠努力，係<b>跨度太大</b> ——
+  由「睇得明」直接跳去「即場講得出」，中間三個支撐級全部略過，於是每次都失敗，然後放棄。
+  階梯令每一步都只難少少。<br>
+  <b>你要配合：</b>唔好跳級。第②級跟讀覺得悶正正代表個支架喺度做緊嘢。</div></div>
+
+ <div class="card"><h4>2. 提取練習 Retrieval Practice（測試效應）</h4>
+  <div class="src">Roediger &amp; Karpicke, 2006</div>
+  <div>用喺：<b>🎯 Drill</b> 強制你先出聲講，先撳 Reveal。</div>
+  <div class="why"><b>點解有效：</b>重讀十次嘅長期記憶效果，差過測試一次。
+  提取（retrieval）本身會改寫記憶痕跡，唔止係檢查你記唔記得。呢個係認知心理學少數共識極強嘅發現。<br>
+  <b>你要配合：</b>一定要真係出咗聲先撳 Reveal。偷睇 = 變成重讀 = 失去全部效果。呢一步偷懶，個工具就冇用。</div></div>
+
+ <div class="card"><h4>3. 間隔重溫 Spacing</h4>
+  <div class="src">Ebbinghaus, 1885；Cepeda et al., 2006</div>
+  <div>用喺：Drill 隊列演算法 —— 你標 Missed 嘅句加權 4 倍、Shaky 3 倍、Solid 只 1 倍。</div>
+  <div class="why"><b>點解有效：</b>集中喺一日內狂練，短期表現好，長期保留差。
+  隔開重溫、容許自己忘記少少再撈返，記得更耐。<br>
+  <b>你要配合：</b>每日 10 分鐘 &gt;&gt; 星期日一次過兩粒鐘。呢個唔係勤力問題，係機制問題。</div></div>
+
+ <div class="card"><h4>4. 合意困難 Desirable Difficulties</h4>
+  <div class="src">Robert Bjork</div>
+  <div>用喺：<b>⏱ Simulator</b> 15 秒倒數；Ladder 第③級填空。</div>
+  <div class="why"><b>點解有效：</b>練習過程越順、感覺越好，通常學得越少；
+  適度嘅困難（時間壓力、缺失提示）反而提升長期保留。<br>
+  <b>你要配合：</b>Simulator 覺得辛苦、講到甩嘴，唔係代表你差，係代表個設計啱。
+  真正應該擔心嘅係「做得好順好舒服」。</div></div>
+
+ <div class="card"><h4>5. 程序化與自動化 Proceduralisation / Automaticity</h4>
+  <div class="src">DeKeyser 技能習得理論；Anderson, ACT-R</div>
+  <div>用喺：整個工具嘅根本目標。</div>
+  <div class="why"><b>點解有效：</b>你嘅英文問題唔係<b>知識</b>問題 ——
+  你知 "Does that make sense?" 點講。問題係佢仲停留喺 declarative（要諗先攞到），未變成 procedural（自動出到）。
+  兩者之間冇捷徑，只有大量出聲重複。呢個亦解釋咗點解「再學多啲生字」對你冇幫助。<br>
+  <b>你要配合：</b>接受重複係無可避免嘅。同一句講三十次先叫開始自動。</div></div>
+
+ <div class="card"><h4>6. 語塊 Formulaic Sequences / Chunking</h4>
+  <div class="src">Wray, 2002；Nattinger &amp; DeCarrico, 1992</div>
+  <div>用喺：整個 phrase bank 以「情境 → 整句」為單位，而唔係單字表。</div>
+  <div class="why"><b>點解有效：</b>母語者日常話語有相當大比例係現成語塊而非即場造句
+  （研究估算由三成到五成以上不等，視乎「語塊」點定義）。
+  以語塊為單位儲存，可以繞過即時造句嘅認知負荷 —— 呢個就係你講嘢卡住嘅位。<br>
+  <b>你要配合：</b>唔好拆散嚟背。"Does that make sense?" 係一嚿嘢，唔係四個字。</div></div>
+
+ <div class="card"><h4>7. 句型替換 Frames / Substitution</h4>
+  <div class="src">結構教學法傳統；配合上面嘅語塊研究</div>
+  <div>用喺：<b>✨ Natural → Frames 句型</b>（32 個可變骨架）。</div>
+  <div class="why"><b>點解有效：</b>純語塊有個缺點 —— 情境一唔啱就用唔到，而且死背嘅句聽落就係死背。
+  Frame 保留語塊嘅速度優勢，但留低可變位，令你係<b>即場生成</b>而唔係提取。
+  你聽落自然，因為你真係即場諗緊。<br>
+  <b>你要配合：</b>一個 frame 要即場講到五個唔同嘅句、唔停頓，先算你嘅。</div></div>
+
+ <div class="card"><h4>8. 跟讀 Shadowing</h4>
+  <div class="src">口譯員訓練傳統做法</div>
+  <div>用喺：Ladder 第②級 —— 聽住模型音，即刻同步重複。</div>
+  <div class="why"><b>點解有效：</b>跟讀繞過「諗好句先講」嘅路徑，直接訓練發音、節奏同重音嘅運動記憶。
+  對你嘅弱項（stress-timed 節奏、連音）特別有效，因為呢啲嘢<b>解釋咗都唔會識，要模仿先識</b>。<br>
+  <b>你要配合：</b>唔好等聽完先講，要幾乎同步。落後半秒係啱嘅。</div></div>
+
+ <div class="card"><h4>9. 可理解輸出 Comprehensible Output</h4>
+  <div class="src">Swain, 1985</div>
+  <div>用喺：語音檢查逼你真係產出完整句，唔畀你「心入面知」就算。</div>
+  <div class="why"><b>點解有效：</b>輸入（聽、讀）可以靠語意猜，唔使處理語法。
+  只有<b>輸出</b>先會逼你面對「我究竟要唔要加個 -s」。你唔開口，就永遠唔會發現自己漏咗。<br>
+  <b>你要配合：</b>講錯咗唔好即刻改，講完先睇對比。中途自我修正會令你避開錯處，反而學唔到。</div></div>
+
+ <div class="card"><h4>10. 注意假說 Noticing Hypothesis</h4>
+  <div class="src">Schmidt, 1990</div>
+  <div>用喺：語音檢查嘅<b>逐字紅綠對比</b>；✨ Natural 嘅「似讀稿 vs 自然」並排表。</div>
+  <div class="why"><b>點解有效：</b>你學唔到你冇留意到嘅嘢。
+  你講咗二十年 "I will send it" 而唔係 "I'll send it"，唔係因為你唔識縮寫，係因為冇人指出過。
+  並排對比嘅唯一作用，就係令差異<b>變得可見</b>。<br>
+  <b>你要配合：</b>睇對比表嗰陣，每次揀一樣嘢落堂試。一次一樣。</div></div>
+
+ <div class="card"><h4>11. 刻意練習 Deliberate Practice</h4>
+  <div class="src">Ericsson</div>
+  <div>用喺：Ladder 每級有明確通過標準；Simulator 有即時回饋；系統追蹤你嘅 Shaky / Missed。</div>
+  <div class="why"><b>點解有效：</b>純粹重複唔會令人進步 —— 開咗二十年車嘅人唔係賽車手。
+  要進步需要三樣：明確目標、即時回饋、針對弱點。所以個工具唔係隨機抽，係專攻你標低分嗰啲。<br>
+  <b>你要配合：</b>唔好淨係練你已經識嘅（因為感覺良好）。真係要練嗰啲，正正係你唔想撳嗰啲。</div></div>
+
+ <div class="card"><h4>12. 交錯練習 Interleaving</h4>
+  <div class="src">Rohrer &amp; Taylor 等關於分散 vs 集中練習嘅研究</div>
+  <div>用喺：Drill 同 Simulator 嘅「全部 modules 混合」。</div>
+  <div class="why"><b>點解有效：</b>一組一組練（blocked）短期表現靚，但保留同遷移都差；
+  混合唔同類別練習短期辛苦，長期表現好。原因係混合逼你每次都要先<b>判斷呢個係咩情境</b> ——
+  而真實課堂正正係咁。<br>
+  <b>你要配合：</b>頭三個星期分 module 練建立基礎，之後轉「全部混合」。</div></div>
+
+ <div class="card"><h4>13. 後設認知監控 Metacognitive Monitoring</h4>
+  <div class="src">學習判斷（judgements of learning）相關研究</div>
+  <div>用喺：Drill 三個自評掣；Simulator 自檢清單；語音檢查嘅客觀分數。</div>
+  <div class="why"><b>點解有效：</b>學習者普遍<b>高估</b>自己 —— 睇得明就以為識，係最常見嘅錯覺。
+  強制自評打破呢個錯覺。語音檢查更加係客觀第三方，唔畀你自己講數。<br>
+  <b>你要配合：</b>誠實評分。標高咗只係呃自己，而系統會信你，然後唔再畀嗰句你練。</div></div>
+
+ <div class="card"><h4>14. 認知負荷理論 Cognitive Load Theory</h4>
+  <div class="src">Sweller</div>
+  <div>用喺：「教學要簡單，唔要漂亮」呢條原則；✨ Natural 嘅「大字換細字」。</div>
+  <div class="why"><b>點解有效：</b>你嘅學生同你一樣係 L2，工作記憶容量有限。
+  你每用一個 idiom 或者拉丁大字，佢就要分一部分容量去解碼你句嘢 —— 嗰部分容量本來應該用嚟諗個概念。
+  <b>呢個係你日常教學上最直接可以改嘅一件事。</b><br>
+  <b>你要配合：</b>對學生用細字短句；對同事承辦商先地道啲。register 要分清楚。</div></div>
+
+ <div class="card"><h4>15. 等候時間 Wait Time（呢個係畀你用喺學生身上）</h4>
+  <div class="src">Mary Budd Rowe, 1972 / 1986</div>
+  <div>用喺：Q&amp;A module 有專門一句 —— "I'm going to give you ten seconds to think before anyone answers."</div>
+  <div class="why"><b>點解有效：</b>Rowe 發現老師提問後平均只等大約一秒就自己答或者轉問人。
+  延長到三秒以上，學生答案長度、主動作答人數、以及答案嘅推理質素都上升。<br>
+  <b>特別對 EMI 課堂重要：</b>你嘅學生要用第二語言組織答案，需要嘅時間本來就比母語課堂長。
+  一秒等候時間喺 EMI 環境下等於冇畀機會。<br>
+  <b>你要配合：</b>呢個唔使練英文，只需要你閉嘴三秒。可能係全份材料入面最容易做、回報最高嘅一項。</div></div>
+
+ <div class="card" style="background:#f3ece3">
+  <h4>如果你只記三件事</h4>
+  <div>1. <b>出聲</b>先有效（提取練習＋可理解輸出）。心入面默唸唔算。<br>
+  2. <b>每日短時間</b>勝過一次過長時間（間隔效應）。<br>
+  3. <b>覺得辛苦嗰陣</b>先係學緊嘢（合意困難）。順暢通常代表冇進步。</div>
+ </div>
+
+ </div>
+</section>
+
+<section class="panel" id="p-setup">
+  <div class="intro">
+    <b>一次過搞掂：🎙 麥克風 + 🤖 AI。</b> 呢一版係設定同自我診斷。
+    下面三個燈全部綠，你就乜都用得。
+  </div>
+  <div class="card">
+    <div class="altlab">即時診斷</div>
+    <div id="diagBox">檢查緊…</div>
+    <div class="row"><button class="btn" id="diagGo">重新檢查</button></div>
+  </div>
+
+  <h3>① 麥克風</h3>
+  <div class="card">
+    <div style="font-size:14px">
+      Chrome 只會喺 <b>安全來源</b>畀網頁攞麥克風。<code>https://</code> 同 <code>http://localhost</code> 算安全；
+      <b><code>file://</code> 唔算</b>。所以雙擊個檔案開係一定唔得 —— 呢個係規則，唔係 bug。
+    </div>
+    <div class="note">
+      <b>今晚就要用（最快，5 分鐘）：</b><br>
+      1. 將 <code>EMI-Teacher-Talk-Trainer.html</code> 放喺一個資料夾，例如 Desktop/econ<br>
+      2. Mac 開 <b>Terminal</b>（Windows 開 <b>PowerShell</b>）<br>
+      3. 打 <code>cd ~/Desktop/econ</code> 然後 Enter<br>
+      4. 打 <code>python3 -m http.server 8000</code> 然後 Enter（Windows 可能係 <code>python -m http.server 8000</code>）<br>
+      5. Chrome 開 <code>http://localhost:8000/EMI-Teacher-Talk-Trainer.html</code><br>
+      6. 撳 🎙，Chrome 彈窗問權限 → <b>允許</b><br><br>
+      個 Terminal 窗要開住。收工就撳 Ctrl+C 熄佢。
+    </div>
+    <div class="note">
+      <b>想部電話都用到：</b>要放上網（https）。同我講，我可以幫你部署上 GitHub Pages，免費，
+      之後任何裝置開條 link 就得，咪都自動有得用。
+    </div>
+  </div>
+
+  <h3>② AI（對話練習・執句・生成・出題）</h3>
+  <div class="card">
+    <div style="font-size:14px">
+      兩種方法二揀一：<br>
+      · <b>喺 Claude 側邊欄開</b>：唔使設定，即開即用，但淨係喺電腦部 Claude 入面。<br>
+      · <b>用你自己嘅 API key</b>：任何瀏覽器、任何裝置都用到，包括電話。要自己開個 key。
+    </div>
+    <div class="note">
+      <b>攞 API key：</b>去 <code>console.anthropic.com</code> → 登記 → Billing 入少少 credit →
+      API Keys → Create Key → copy 條 <code>sk-ant-...</code> 貼落下面。<br><br>
+      呢啲 prompt 都好短，用量好細。喺 console 度可以設每月上限，唔會失控。<br><br>
+      ⚠️ <b>條 key 只存喺你部機嘅瀏覽器度</b>，唔會傳去第三方。但因為咁 —— 
+      <b>唔好將呢個檔案連 key 派畀學生或同事</b>，佢哋會攞到你條 key。要派就派冇 key 嗰個版本。
+    </div>
+    <div class="altlab" style="margin-top:12px">你嘅 API key</div>
+    <input id="apiKey" type="password" placeholder="sk-ant-...">
+    <div class="altlab" style="margin-top:11px">模型</div>
+    <select id="apiModel">
+      <option value="claude-haiku-4-5-20251001">Haiku — 最平最快（日常操練夠用）</option>
+      <option value="claude-sonnet-5">Sonnet — 較貴，回饋更準（建議）</option>
+      <option value="claude-opus-5">Opus — 最貴，最深入</option>
+    </select>
+    <div class="row">
+      <button class="btn primary" id="apiSave">儲存</button>
+      <button class="btn" id="apiTest">測試連線</button>
+      <button class="btn b" id="apiClear">清除 key</button>
+      <span class="spin" id="apiSt"></span>
+    </div>
+    <div id="apiOut"></div>
+  </div>
+
+  <h3>③ 錄音對比</h3>
+  <div class="card">
+    <div style="font-size:14px">
+      錄音（🎙 錄音對比）同語音辨識一樣，都要安全來源。做好上面①就會同時搞掂。<br><br>
+      <b>用法提醒：</b>聽自己錄音嗰陣唔好聽內容，同 🔊 模型音<b>交替聽三次</b>，
+      只留意兩樣 —— <b>重音落喺邊個字</b>、<b>邊度停頓</b>。個別音素唔使理。
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="p-prog">
+  <div class="intro"><b>目標：每個 module 到 80% solid。</b> 每日 10 分鐘，大約 6 個星期。</div>
+  <div id="progList"></div>
+  <div class="row"><button class="btn b" id="wipe">清除所有進度</button></div>
+
+  <h3>核心練習：把 filler 換成停頓</h3>
+  <div class="card">
+    <div style="font-size:14px">
+      令你聽落「唔夠自信」嘅唔係英文水平，係 <b>filler</b>。而 filler 最快嘅解藥唔係學新字，係 <b>沉默</b>。
+      Native 老師停頓得比你多，唔係少。
+    </div>
+    <table>
+      <tr><th>要剷走（hesitation）</th><th>要留返（有意思）</th></tr>
+      <tr><td style="color:var(--warn)">er… um… 呢個…</td><td><b>兩秒完全靜音</b>。學生只會覺得你喺度諗嘢。</td></tr>
+      <tr><td style="color:var(--warn)">OK? OK? OK?（句尾追問）</td><td>Does that make sense?（一堂用兩三次就夠）</td></tr>
+      <tr><td style="color:var(--warn)">You know… / like…</td><td>省略。</td></tr>
+      <tr><td style="color:var(--warn)">Something like that</td><td>… or something like that.（放句尾就自然，放中間就係卡住）</td></tr>
+      <tr><td style="color:var(--warn)">I don't know how to say…</td><td>Let me think how to explain it.</td></tr>
+      <tr><td class="good">Right, … / OK, so… / Now, …</td><td><b>要留！</b>呢啲係段落分界，唔係 filler。</td></tr>
+      <tr><td class="good">Anyway, … / Look, … / The thing is, …</td><td><b>要留！</b>native 老師成日用。</td></tr>
+    </table>
+    <div class="note">⚠️ <b>更正：</b>我早前叫你剷走全部 filler，講得太籠統。要剷嘅係 <b>hesitation filler</b>（er, um）；
+      <b>discourse marker</b>（right, OK, so, now, anyway）要留 —— 佢哋幫學生知道你轉緊段。完全冇咗反而聽落硬同突兀。<br><br>
+      本週作業：錄自己教書 3 分鐘，只數 er / um 嘅次數。下堂刻意將每個換成一秒靜默。</div>
+  </div>
+
+  <h3>6 週計劃</h3>
+  <div class="card" style="font-size:14px">
+    <b>Week 1 — Lesson Glue.</b> 你堂上講最多、但最少人執嘅部分。<br><br>
+    <b>Week 2 — Thinking Aloud.</b> 直接攻 filler。效果最快見到。<br><br>
+    <b>Week 3 — Explaining.</b> 重點係 rephrasing 同因果鏈接駁詞。<br><br>
+    <b>Week 4 — Questioning &amp; Responding.</b> 最難，完全即興。每日行 Simulator 5 分鐘。<br><br>
+    <b>Week 5 — Pronunciation。</b> 特別攻最後三組（重音轉移＋句子節奏）。<br><br>
+    <b>Week 6 — Rapport + Fix It + 全部混合抽。</b>
+  </div>
+</section>
+
+</main>
+
+<script>
+const MODS={
+ glue:"① Lesson Glue 課堂膠水語",
+ think:"② Thinking Aloud 爭取時間・對付 er",
+ expl:"③ Explaining 講解任何概念",
+ qna:"④ Questioning 提問與回應",
+ rapp:"⑤ Rapport 師生關係",
+ work:"⑥ Workplace 職場・總務 General Affairs",
+ chat:"⑦ Small Talk 閒聊"};
+
+const P=[
+// ============ GLUE ============
+{m:"glue",c:"Opening 開場",zh:"打鐘，想收拾秩序開始",en:"Right — let's make a start.",
+ a:["OK everyone, let's get going.｜更隨和","Let's begin, please.｜更正式","In your seats, please. We're starting.｜更直接"]},
+{m:"glue",c:"Opening 開場",zh:"班房仲嘈，但你想開始",en:"Settle down, please. We've got a lot to get through today.",
+ a:["Let's settle, everyone.｜更短","Quieten down for me, please.｜更溫和"]},
+{m:"glue",c:"Opening 開場",zh:"想學生回憶返上堂",en:"What did we do last lesson?",
+ a:["Where did we get to last time?","Remind me — what were we looking at?","Cast your mind back to last lesson…｜好英式，但一堂用一次就夠"],
+ n:"最短嗰句用得最多。'Cast your mind back' 係真嘅 teacher idiom，但如果唔係你平時嘅語氣，講出嚟會似演戲。"},
+{m:"glue",c:"Opening 開場",zh:"快速重溫先",en:"Quick recap before we go on.",
+ a:["Let's just refresh first.","Two minutes of revision, then we move on."]},
+{m:"glue",c:"Opening 開場",zh:"講今日學習目標",en:"By the end of today, you should be able to do this on your own.",
+ a:["Here's what I want you walking out with.｜更有力","Today's aim is simple: …｜更直接"],
+ n:"'be able to + 動詞' 係國際通用嘅 learning objective 句式。"},
+{m:"glue",c:"Opening 開場",zh:"用一條問題貫穿成堂",en:"Today's all about one question.",
+ a:["Everything today comes back to one thing.","I want you thinking about this all lesson: …"],
+ n:"呢個 move 好有力 —— 即刻捉到注意力，而且畀咗成堂一個骨架。"},
+{m:"glue",c:"Opening 開場",zh:"叫佢哋停低手上嘢",en:"Pens down for a moment — just listen.",
+ a:["Nothing in your hands. Just listen to this bit.","Stop writing. This part you need to hear, not copy.｜更有理由"]},
+{m:"glue",c:"Opening 開場",zh:"開始前收集問題",en:"Before we start — anything left over from last time?",
+ a:["Any questions from the homework before we move on?","Anything still bothering you from Tuesday?｜更溫和"]},
+
+{m:"glue",c:"Transition 過渡",zh:"由理論轉去實例",en:"That's the theory. Now let's see it in action.",
+ a:["So much for the theory. Does it actually work?｜更挑釁","Right — theory done. Let's test it."]},
+{m:"glue",c:"Transition 過渡",zh:"有人問咗離題但好嘅問題",en:"Let's park that for now and come back to it at the end.",
+ a:["Good question — I'll come back to it, I promise.｜更溫和","Hold that one. It fits better later."],
+ n:"'park it' 好常用。加一句 'I promise' 令學生真係相信你會返嚟 —— 而你要真係返嚟。"},
+{m:"glue",c:"Transition 過渡",zh:"學生太早問到後面內容",en:"Hold that thought — it'll make more sense in five minutes.",
+ a:["You're one step ahead of me. Give me two minutes.｜讚埋佢","Keep that in your head. We're getting there."]},
+{m:"glue",c:"Transition 過渡",zh:"講完一半，準備講另一半",en:"So that's the first half of the story. Here's the other half.",
+ a:["That's one side of it. Now the other side.","Half done. Stay with me."]},
+{m:"glue",c:"Transition 過渡",zh:"連返之前教過嘅嘢",en:"This links straight back to what we did last week.",
+ a:["You've seen this before, in a different disguise.｜更有趣","Sound familiar? It should."]},
+{m:"glue",c:"Transition 過渡",zh:"簡單過場",en:"Right — moving on.",
+ a:["OK. Next.｜最短","Let's crack on.｜英式，同事之間用得多過對學生"]},
+{m:"glue",c:"Transition 過渡",zh:"轉去完全另一個 mode",en:"Let's shift gear.",
+ a:["Change of pace now.","Right, something completely different."]},
+{m:"glue",c:"Transition 過渡",zh:"順勢帶到下一點",en:"That brings us to the next point.",
+ a:["Which is exactly where I wanted to go next.","And that leads straight into…"]},
+{m:"glue",c:"Transition 過渡",zh:"走之前仲有一樣嘢",en:"One more thing before we leave this.",
+ a:["Last point on this, then we move.","Before I let this go —"]},
+
+{m:"glue",c:"Instructions 指令",zh:"叫學生揭書",en:"Turn to page 47 — top of the page.",
+ a:["Page 47, please. Halfway down.","Open your books at 47."]},
+{m:"glue",c:"Instructions 指令",zh:"兩人一組討論",en:"In pairs, take two minutes.",
+ a:["Turn to the person next to you and talk it through.","With your partner — two minutes, go."]},
+{m:"glue",c:"Instructions 指令",zh:"叫佢哋唔好即刻寫，先諗",en:"Don't write anything yet — just think about it.",
+ a:["No pens. Just thinking for now.","Think first, write second."]},
+{m:"glue",c:"Instructions 指令",zh:"抄低之後再解釋",en:"Copy this down, then we'll talk it through.",
+ a:["Get this down first — the explanation follows.","Copy it now, understand it in a minute."],
+ n:"'talk it through' = 逐點傾清楚，比 'explain' 更有同行感。"},
+{m:"glue",c:"Instructions 指令",zh:"放佢哋開始做嘢",en:"You've got three minutes. Off you go.",
+ a:["Three minutes. Starting now.","Right — go."]},
+{m:"glue",c:"Instructions 指令",zh:"同隔籬位對答案",en:"Compare answers with the person next to you.",
+ a:["Check yours against your neighbour's.","See if you two agree."]},
+{m:"glue",c:"Instructions 指令",zh:"先自己做頭兩題",en:"Work through the first two on your own.",
+ a:["First two by yourself, no talking.","Try the first pair solo."]},
+{m:"glue",c:"Instructions 指令",zh:"做完舉手",en:"Put your hand up when you've finished.",
+ a:["Hand up when you're done.","Let me know when you've got something."]},
+{m:"glue",c:"Instructions 指令",zh:"卡住咗就跳過",en:"If you're stuck, skip it and come back to it.",
+ a:["Don't sit on one question. Move on and return.","Leave it, keep going, come back at the end."]},
+
+{m:"glue",c:"Timing 時間",zh:"仲有半分鐘",en:"About thirty seconds left.",
+ a:["Thirty seconds.","Start wrapping up."]},
+{m:"glue",c:"Timing 時間",zh:"時間到，收返上嚟",en:"Time's up — let's hear what you've got.",
+ a:["That's time. What did you come up with?","Pens down. Let's share."]},
+{m:"glue",c:"Timing 時間",zh:"堂快完，要加快",en:"We're running short on time, so let's pick up the pace.",
+ a:["We're tight for time — I'll move quickly.","I'm going to speed up. Stop me if I lose you.｜更負責任"]},
+{m:"glue",c:"Timing 時間",zh:"畀多一分鐘",en:"I'll give you one more minute.",
+ a:["Another minute — you're nearly there.","Sixty more seconds."]},
+{m:"glue",c:"Timing 時間",zh:"今日講唔完，要停",en:"We'll have to leave it there for today.",
+ a:["That's where we'll stop.","We'll pick this up next time."]},
+
+{m:"glue",c:"Checking 檢查理解",zh:"問佢哋明唔明（唔好講 Understand?）",en:"Does that make sense?",
+ a:["Is everyone with me?","Is that clear, or should I go over it again?","Should I explain it a different way?｜最溫和"],
+ n:"'Understand?' 聽落似盤問。以上每一句都畀咗學生一個安全嘅出口去講「唔明」。全部都用最簡單嘅字 —— 檢查理解嘅句子本身唔可以成為理解障礙。"},
+{m:"glue",c:"Checking 檢查理解",zh:"快速全班檢查",en:"Thumbs up if you're with me, thumbs down if you're lost.",
+ a:["Show me — one to five, how confident are you?","Hands up if that landed."]},
+{m:"glue",c:"Checking 檢查理解",zh:"要學生用自己嘅話講一次",en:"Who can put that in their own words for me?",
+ a:["Explain it back to me — but don't use my words.｜更嚴格","How would you say that to someone in Form 3?｜更有趣"],
+ n:"呢句應該成為你嘅口頭禪 —— 佢直接分辨到「真明」定「背咗」。"},
+{m:"glue",c:"Checking 檢查理解",zh:"想學生講出推理過程",en:"Talk me through it.",
+ a:["Walk me through your thinking.","How did you get there?"]},
+{m:"glue",c:"Checking 檢查理解",zh:"問自己講得太快",en:"Am I going too fast?",
+ a:["Do you need me to slow down?","Is this pace alright?"]},
+{m:"glue",c:"Checking 檢查理解",zh:"邀請佢哋隨時打斷",en:"Stop me if I lose you.",
+ a:["Interrupt me the moment it stops making sense.","Shout if I go too fast."]},
+
+{m:"glue",c:"Closing 收堂",zh:"總結成堂",en:"Let's pull it together. Three things to take away.",
+ a:["So — what have we actually learnt today?｜反問式","Right, summary. Three points."]},
+{m:"glue",c:"Closing 收堂",zh:"強調最重要一點",en:"If you remember nothing else from today, remember this.",
+ a:["One thing to walk out with: …","Forget the rest if you must — but keep this."]},
+{m:"glue",c:"Closing 收堂",zh:"派功課",en:"For homework, have a go at question 4.",
+ a:["Homework is question 4 — same idea, new context.","Try question 4 tonight. It should feel familiar."],
+ n:"'have a go at' = 試吓做，語氣輕鬆但一樣清楚。"},
+{m:"glue",c:"Closing 收堂",zh:"預告下堂",en:"Next lesson we'll pick this up and push it further.",
+ a:["Next time we take this apart properly.","More on this Thursday."]},
+{m:"glue",c:"Closing 收堂",zh:"收堂前肯定佢哋",en:"That's it for today. Well done — you worked hard.",
+ a:["Good lesson. Thank you.","You gave me a lot today. See you Thursday."]},
+
+{m:"glue",c:"Behaviour 秩序",zh:"班房嘈",en:"Let's have a bit of quiet, please.",
+ a:["Quieten down, please.","Noise level, everyone.｜更短更輕"]},
+{m:"glue",c:"Behaviour 秩序",zh:"唔想嗌，想用沉默施壓",en:"I'll wait.",
+ a:["I'm happy to wait.","（唔講嘢，企定定望住。）｜最強"],
+ n:"兩個字，可能係全個 bank 最有效嘅一句。講完閉嘴，唔好再出聲 —— 一出聲就冇晒力。"},
+{m:"glue",c:"Behaviour 秩序",zh:"幾個人同時講",en:"One voice at a time.",
+ a:["One at a time, please.","Let him finish."]},
+{m:"glue",c:"Behaviour 秩序",zh:"最後警告",en:"That's the last warning — then I'll move you.",
+ a:["I've asked twice. There won't be a third time.","Next time you're moving seats."]},
+{m:"glue",c:"Behaviour 秩序",zh:"要佢哋轉返身望前面",en:"I need you facing this way.",
+ a:["Turn round, please.","Eyes this way."]},
+{m:"glue",c:"Behaviour 秩序",zh:"要全班注意力",en:"Can I have your attention up here, please?",
+ a:["Eyes on me.","Everyone looking this way, please."]},
+{m:"glue",c:"Behaviour 秩序",zh:"收電話",en:"Phones away, please.",
+ a:["Phone in your bag, not your pocket.｜更明確","I shouldn't be able to see a phone."]},
+
+// ============ THINKING ALOUD ============
+{m:"think",c:"Buying time 爭取時間",zh:"畀人問到，需要一兩秒諗",en:"Good question. Let me think how to explain it.",
+ a:["Give me a moment to get the wording right.","Hmm. Let me think about that one."],
+ n:"呢句係「合法嘅停頓」。你唔係卡住，你係喺度揀最準嘅講法 —— 完全唔同觀感。"},
+{m:"think",c:"Buying time 爭取時間",zh:"要小心措辭",en:"Let me phrase that carefully.",
+ a:["I want to get the wording right here.","Let me be careful how I say this."]},
+{m:"think",c:"Buying time 爭取時間",zh:"諗緊點講好（可以講出口）",en:"How do I want to say this…",
+ a:["What's the clearest way to put this…","Right, how do I explain this properly…"]},
+{m:"think",c:"Buying time 爭取時間",zh:"需要幾秒",en:"Give me a second.",
+ a:["Bear with me one moment.","Hang on."]},
+{m:"think",c:"Buying time 爭取時間",zh:"完全唔知講咩好",en:"（唔講嘢。停兩秒。）",
+ a:["（望住個 whiteboard，慢慢寫個關鍵字。）｜爭取五秒","（飲一啖水。）｜爭取三秒，冇人會察覺"],
+ n:"最重要嘅一「句」係冇句。兩秒靜默喺學生耳中 = 你喺度諗；兩秒 'er…' = 你唔識。同樣時間，相反效果。"},
+
+{m:"think",c:"Hedging 留有餘地",zh:"大方向係咁，但有例外",en:"Broadly speaking, that's right.",
+ a:["In general terms, yes.","By and large, that holds."]},
+{m:"think",c:"Hedging 留有餘地",zh:"一般規律",en:"As a rule of thumb…",
+ a:["As a general rule…","Nine times out of ten…"]},
+{m:"think",c:"Hedging 留有餘地",zh:"多數情況下",en:"More often than not…",
+ a:["In most cases…","Usually, though not always…"]},
+{m:"think",c:"Hedging 留有餘地",zh:"啱到某個程度",en:"That's true up to a point.",
+ a:["Yes — but only so far.","There's something in that, but not the whole story."]},
+{m:"think",c:"Hedging 留有餘地",zh:"承認自己簡化咗",en:"I'm simplifying here, and I'll come clean about that.",
+ a:["This is the simplified version. The real thing has more moving parts.","I'm cutting corners here deliberately — I'll fill them in later."],
+ n:"誠實承認簡化，反而令你聽落更權威 —— 因為你知道埋複雜嗰面。"},
+{m:"think",c:"Hedging 留有餘地",zh:"實情複雜啲，但暫時咁講",en:"It's more complicated than that, but for now let's keep it simple.",
+ a:["The full picture is messier. We'll get there.","There's more to it, but this'll do for today."]},
+
+{m:"think",c:"Signposting 講出結構",zh:"預告有幾點",en:"There are three things going on here. Let me take them one at a time.",
+ a:["Two parts to this. First…","I want to split this into three."],
+ n:"講出結構 = 你唔使即場諗點組織，個框架已經幫你頂住咗。呢招對流暢度嘅幫助大過任何生字。"},
+{m:"think",c:"Signposting 講出結構",zh:"叫佢哋忍一忍",en:"Bear with me — this'll make sense in a moment.",
+ a:["Stay with me. It comes together shortly.","Trust me for thirty seconds."]},
+{m:"think",c:"Signposting 講出結構",zh:"呢點遲啲會返嚟",en:"I'm going to come back to this, so just note it for now.",
+ a:["Park this one. We need it later.","Write it down — you'll want it in ten minutes."]},
+{m:"think",c:"Signposting 講出結構",zh:"要精準講定義",en:"Let me be precise about the wording here.",
+ a:["The exact words matter here.","I'm going to be fussy about this sentence."]},
+{m:"think",c:"Signposting 講出結構",zh:"由頭再嚟過",en:"Let me start again from the top.",
+ a:["Right — from the beginning.","Let's rebuild this from scratch."]},
+
+{m:"think",c:"Self-repair 自我修正",zh:"講錯咗，想倒返轉",en:"Sorry — let me rewind.",
+ a:["Let me back up a step.","Rewind. I went too fast there."]},
+{m:"think",c:"Self-repair 自我修正",zh:"上一句唔好，換過",en:"Scrap that. Here's a better way to put it.",
+ a:["Forget that sentence. Try this one.","Bad explanation. Let me do it properly."]},
+{m:"think",c:"Self-repair 自我修正",zh:"補充講清楚",en:"What I mean is…",
+ a:["To put it another way…","In other words…"]},
+{m:"think",c:"Self-repair 自我修正",zh:"即時修正措辭",en:"Or rather…",
+ a:["— or more accurately…","— well, more precisely…"],
+ n:"兩個字，令一次口誤變成一次精準化。極好用，而且極短。"},
+{m:"think",c:"Self-repair 自我修正",zh:"發現自己講錯事實",en:"Actually, ignore what I just said — that's not right.",
+ a:["Cross that out. I got it wrong.","Hold on — that's wrong. Let me correct it."]},
+{m:"think",c:"Self-repair 自我修正",zh:"自己搞亂咗自己",en:"Sorry, I've confused myself. Let me take that again.",
+ a:["I've tied myself in knots. Starting over.｜幽默","Right, I've lost my own thread. From the top."]},
+
+// ============ EXPLAINING ============
+{m:"expl",c:"Defining 落定義",zh:"要畀精準嘅正式定義",en:"Formally, it's defined as follows.",
+ a:["The technical definition is this.","Here's the exact wording you need."]},
+{m:"expl",c:"Defining 落定義",zh:"學生講法差少少",en:"Strictly speaking, that's not quite right. The precise wording is…",
+ a:["Close — but the exam wants these exact words.","Almost. Tighten it up like this."]},
+{m:"expl",c:"Defining 落定義",zh:"日常意思同學術意思唔同",en:"In everyday English we'd say that, but here it means something much narrower.",
+ a:["Careful — this word means something specific in here.","Ordinary meaning and technical meaning part company at this point."]},
+{m:"expl",c:"Defining 落定義",zh:"強調定義入面嘅關鍵字",en:"The key words are 'willing' and 'able' — both have to be true.",
+ a:["Notice the 'and'. It's doing a lot of work.｜更引導","Circle those two words. Drop either and it's wrong."],
+ n:"重讀 'and'。定義入面嘅連接詞往往就係得分位。"},
+{m:"expl",c:"Defining 落定義",zh:"提醒唔好撈亂",en:"Don't confuse the everyday meaning with the technical one.",
+ a:["Same word, two jobs. Keep them apart.","This is a false friend. Be careful."]},
+{m:"expl",c:"Defining 落定義",zh:"介紹一個專有名詞",en:"There's a word for this, and it's worth knowing.",
+ a:["This has a name. Here it is.","Economists call this…｜替換你科名"]},
+
+{m:"expl",c:"Concrete 具體化",zh:"由抽象轉去具體",en:"Let me make that concrete.",
+ a:["That's abstract. Let's ground it.","Enough theory — here's a real one."]},
+{m:"expl",c:"Concrete 具體化",zh:"舉真實例子",en:"Take a real case.",
+ a:["Here's one that actually happened.","A real example, not a made-up one."]},
+{m:"expl",c:"Concrete 具體化",zh:"用故事開頭",en:"Picture this. It's 1929, and nobody has seen this coming.",
+ a:["Let me tell you what happened in 1929.","Set the scene: it's 1929."],
+ n:"用現在式講歷史（historic present）—— 講故仔即刻生動咗，係好強嘅 teacher move。"},
+{m:"expl",c:"Concrete 具體化",zh:"介紹反例",en:"Here's a case that breaks the rule — and that's exactly what makes it interesting.",
+ a:["Now here's an awkward one for the theory.","This example refuses to behave. Why?｜更引導"]},
+{m:"expl",c:"Concrete 具體化",zh:"承認現實比課本亂",en:"That's the textbook version. In practice it's a lot messier.",
+ a:["Real life doesn't read the textbook.","The tidy version is what you write in the exam. The messy version is what actually happens."]},
+{m:"expl",c:"Concrete 具體化",zh:"叫學生自己舉例",en:"Give me an example from your own life.",
+ a:["Where have you seen this happen?","Find me one from this week."]},
+
+{m:"expl",c:"Analogy 比喻",zh:"打個比喻",en:"Think of it like a tap — you can turn it up or down, but the pipe stays the same.",
+ a:["It works a bit like a thermostat.","Here's an analogy that might help."]},
+{m:"expl",c:"Analogy 比喻",zh:"相似但有一個關鍵分別",en:"It's a bit like that, but with one important difference.",
+ a:["Same idea, one crucial twist.","Nearly the same — except for one thing."]},
+{m:"expl",c:"Analogy 比喻",zh:"提醒個比喻唔可以推太遠",en:"The analogy breaks down here, so don't push it too far.",
+ a:["Every analogy has a limit. This one ends here.","Stop the comparison at this point — beyond it, it misleads."],
+ n:"呢句係高手 move。承認比喻嘅極限，教學生比喻係工具唔係真理。"},
+
+{m:"expl",c:"Distinguishing 分辨",zh:"提醒呢度最多人錯",en:"This is where people usually go wrong.",
+ a:["This is the classic trap.","Most people get this bit wrong."]},
+{m:"expl",c:"Distinguishing 分辨",zh:"同一個字兩個意思",en:"Same word, different meaning. Watch out for that.",
+ a:["The word is doing two jobs. Don't mix them.","One word, two definitions. Context decides."]},
+{m:"expl",c:"Distinguishing 分辨",zh:"想並排比較",en:"Let's put them side by side.",
+ a:["Two columns. Left and right.","Let's compare them directly."]},
+{m:"expl",c:"Distinguishing 分辨",zh:"點出關鍵分別",en:"What separates the two is the direction.",
+ a:["The difference comes down to one thing.","Everything hinges on this distinction."]},
+{m:"expl",c:"Distinguishing 分辨",zh:"表面似但本質唔同",en:"They look similar on the surface, but they behave completely differently.",
+ a:["Same shape, opposite behaviour.","Superficially alike, fundamentally different."]},
+
+{m:"expl",c:"Cause & effect 因果",zh:"講三步因果",en:"A leads to B, which in turn causes C.",
+ a:["A causes B, and B then triggers C.","Follow it through: A, then B, then C."],
+ n:"'which in turn' 係因果鏈嘅萬用接駁位。背熟佢 —— 你講因果幾乎每次都會用到。"},
+{m:"expl",c:"Cause & effect 因果",zh:"影響傳導到另一邊",en:"That feeds through to everything else.",
+ a:["The effect spreads outward from there.","It ripples through the whole system."]},
+{m:"expl",c:"Cause & effect 因果",zh:"講連鎖後果",en:"The knock-on effect is significant.",
+ a:["There's a second-round effect too.","And then there's the consequence of the consequence."]},
+{m:"expl",c:"Cause & effect 因果",zh:"其他條件不變",en:"Holding everything else constant…",
+ a:["All else equal…","Assuming nothing else changes…"]},
+{m:"expl",c:"Cause & effect 因果",zh:"帶學生逐步推",en:"Trace the chain with me. Step one… step two…",
+ a:["Let's walk it through together.","One link at a time."]},
+{m:"expl",c:"Cause & effect 因果",zh:"講因果方向",en:"The causation runs from A to B, not the other way round.",
+ a:["Which one is doing the causing? That's the question.｜更引導","Direction matters here."]},
+{m:"expl",c:"Cause & effect 因果",zh:"提醒相關唔等於因果",en:"That's correlation. Is it causation? Not necessarily.",
+ a:["They move together — but does one cause the other?","Two things happening at once is not the same as one causing the other."]},
+{m:"expl",c:"Cause & effect 因果",zh:"兩股力量相反，結果唔定",en:"Two forces pulling in opposite directions — the net effect depends on which one dominates.",
+ a:["It cuts both ways. Which effect wins?","Two opposing pressures. The outcome is an empirical question."],
+ n:"呢句係高分答案嘅標準結尾。答 'it depends' 冇分，答呢句有分。"},
+
+{m:"expl",c:"Rephrasing 換講法",zh:"學生聽唔明，換個講法",en:"Let me put that another way.",
+ a:["Different words, same idea:","Try this version instead."]},
+{m:"expl",c:"Rephrasing 換講法",zh:"換個角度切入",en:"Let's try it from a different angle.",
+ a:["Come at it from the other side.","New approach — forget how I just said it."]},
+{m:"expl",c:"Rephrasing 換講法",zh:"叫佢唔好卡喺字面",en:"Forget the wording for a second — what's actually happening?",
+ a:["Never mind the vocabulary. What's the idea?","Drop the jargon. Say it in plain English."]},
+{m:"expl",c:"Rephrasing 換講法",zh:"剝到最簡單",en:"Let's make this as simple as possible.",
+ a:["At its simplest, it's this.","Let's strip it right back.｜英式口語"]},
+{m:"expl",c:"Rephrasing 換講法",zh:"承認自己講得唔好",en:"I don't think I explained that well. Let me try again.",
+ a:["That was my fault, not yours. Once more.","Judging by your faces, I explained that badly.｜輕鬆啲"],
+ n:"把責任放喺自己身上，唔係學生。呢個 move 令成班鬆晒，願意再試。"},
+
+{m:"expl",c:"Emphasis 強調",zh:"值得抄低",en:"This one's worth writing down.",
+ a:["Get this down.","If you're taking notes, take this one."]},
+{m:"expl",c:"Emphasis 強調",zh:"今日最重要一點",en:"If you take one thing from today, take this.",
+ a:["This is the headline.","Everything else today is detail. This is the point."]},
+{m:"expl",c:"Emphasis 強調",zh:"重複一次",en:"I'll say that again, because it matters.",
+ a:["Once more, slowly.","Let me repeat that — it's important."]},
+{m:"expl",c:"Emphasis 強調",zh:"年年都考",en:"This comes up every single year.",
+ a:["You will see this in the exam.","Examiners love this one."]},
+
+// ============ Q&A ============
+{m:"qna",c:"Eliciting 引導",zh:"想知學生點諗",en:"What do you think?",
+ a:["What's your first thought?","Thoughts?｜最短","What do you reckon?｜英式口語，隨和啲"],
+ n:"對住學生用最簡單嗰個。學生都係 L2 —— 你用 idiom，佢哋要喺腦入面譯多一次先明，思考嘅力就用喺你句嘢度，唔係用喺個概念度。"},
+{m:"qna",c:"Eliciting 引導",zh:"唔要答案，要方法",en:"Don't tell me the answer — tell me how you'd start.",
+ a:["Where would you begin?","What's your first move?"]},
+{m:"qna",c:"Eliciting 引導",zh:"鼓勵亂估",en:"Give me a rough guess. You can't get it wrong at this stage.",
+ a:["Just try. Anything will do.","Wrong answers are fine right now."]},
+{m:"qna",c:"Eliciting 引導",zh:"全班投票",en:"Hands up if you think yes. Hands up if you think no.",
+ a:["Quick vote. A or B?","Show me with your hands."]},
+{m:"qna",c:"Eliciting 引導",zh:"想叫未講過嘢嘅學生",en:"Someone who hasn't spoken yet.",
+ a:["Let's hear a new voice.","Someone from this side of the room."]},
+{m:"qna",c:"Eliciting 引導",zh:"畀思考時間先答",en:"I'm going to give you ten seconds to think before anyone answers.",
+ a:["No hands for ten seconds. Just think.","Everyone thinks first. Then we talk."],
+ n:"Wait time。研究上單一最有效嘅提問改善，而且完全唔使英文好。多數老師只等一秒。"},
+{m:"qna",c:"Eliciting 引導",zh:"預告會點名（公平地）",en:"No hands this time — I'll pick.",
+ a:["I'm choosing, so everyone needs an answer ready.","Cold call this round. Be ready."]},
+
+{m:"qna",c:"Wrong answer 答錯",zh:"方向錯但概念啱",en:"You're on the right track — but check the direction.",
+ a:["Right idea, wrong way round.","You've got the mechanism. Now flip it."]},
+{m:"qna",c:"Wrong answer 答錯",zh:"答錯，但想佢講埋思路",en:"Not quite — but tell me why you thought that.",
+ a:["That's wrong, and I want to know how you got there.｜更直接","Interesting. Walk me through your reasoning."],
+ n:"全個 bank 最重要嘅一句。佢將「錯」變成「資料」，學生就唔會收聲。"},
+{m:"qna",c:"Wrong answer 答錯",zh:"答咗另一個概念",en:"That's the definition of the other one. Close, though.",
+ a:["You've swapped the two. Which is which?","Right definition, wrong term."]},
+{m:"qna",c:"Wrong answer 答錯",zh:"呢個係常見誤解",en:"That's what most people say first. Here's the catch.",
+ a:["Everyone says that. And everyone's wrong — here's why.｜更戲劇性","That's the intuitive answer. It's also the trap."]},
+{m:"qna",c:"Wrong answer 答錯",zh:"溫和挑戰",en:"I can see where that's coming from. Let's test it.",
+ a:["Fair reasoning. Does it survive an example?","Let's push on that and see if it holds."]},
+{m:"qna",c:"Wrong answer 答錯",zh:"差一步",en:"Nearly. You're one step away.",
+ a:["So close. One more move.","You've done the hard bit. Finish it."]},
+
+{m:"qna",c:"Partial 答一半",zh:"答啱一半",en:"Half of that is spot on. Push it further.",
+ a:["Good start. Keep building.","That's the first half. Where's the second?"]},
+{m:"qna",c:"Partial 答一半",zh:"有結論冇理由",en:"Good — now add the 'because'.",
+ a:["Right answer. Now justify it.","And your reasoning?"]},
+{m:"qna",c:"Partial 答一半",zh:"要佢解釋原因",en:"You've given me the what. I want the why.",
+ a:["That's the description. Now explain it.","Why does that happen?"]},
+{m:"qna",c:"Partial 答一半",zh:"想佢講多啲",en:"Say more.",
+ a:["Go on.","Expand on that."]},
+{m:"qna",c:"Partial 答一半",zh:"佢停低咗，想佢繼續",en:"Keep going — you're doing fine.",
+ a:["Don't stop. You're onto something.","And then?"]},
+
+{m:"qna",c:"Redirect 轉問全班",zh:"掟返畀全班",en:"Does everyone agree with that? Anyone want to challenge it?",
+ a:["Show of hands — who agrees?","Any objections to that?"]},
+{m:"qna",c:"Redirect 轉問全班",zh:"叫另一個學生接落去",en:"Someone build on that.",
+ a:["Who can add to it?","Take it further for me."]},
+{m:"qna",c:"Redirect 轉問全班",zh:"指名接力",en:"Kelvin says yes. Yan — what do you think?",
+ a:["You've heard Kelvin. Do you buy it?","Yan, respond to that."]},
+{m:"qna",c:"Redirect 轉問全班",zh:"兩個相反答案",en:"Two different answers. Let's find out which one survives.",
+ a:["We've got a disagreement. Good.｜更鼓勵爭辯","Both can't be right. How do we decide?"]},
+
+{m:"qna",c:"I don't know 唔識答",zh:"學生話唔識",en:"That's fine. Take a guess and I'll help you tidy it up.",
+ a:["No problem. Guess, and we'll fix it together.","Have a go anyway — I'll catch you."]},
+{m:"qna",c:"I don't know 唔識答",zh:"收窄範圍幫佢",en:"Let me narrow it down. Is it A or B? Just that.",
+ a:["Easier question: up or down?","Forget the whole thing. Just this bit."]},
+{m:"qna",c:"I don't know 唔識答",zh:"畀佢下台階，遲啲再問",en:"I'll come back to you in a minute — have a think.",
+ a:["Hold that. I'll ask you again shortly.","Take a minute. I'll return."],
+ n:"保住咗個學生嘅面，同時佢知道你會返嚟，所以真係會諗。記得真係要返嚟。"},
+
+{m:"qna",c:"Teacher stuck 你唔識",zh:"問到你唔肯定嘅嘢",en:"That's a really good question, and I don't want to give you a sloppy answer. Let me check and come back to you next lesson.",
+ a:["I'd be guessing, and I'd rather not guess at you. Let me look it up.","Good question — one I need to check properly."],
+ n:"保住專業信譽，同時示範咗「唔確定就唔亂噏」—— 正正係你想學生學嘅嘢。"},
+{m:"qna",c:"Teacher stuck 你唔識",zh:"有初步答案但要核實",en:"I think so, but let me check before you write it down.",
+ a:["Off the top of my head, yes — but don't quote me yet.","Probably. I'll confirm next lesson."]},
+{m:"qna",c:"Teacher stuck 你唔識",zh:"坦白唔知",en:"Honestly? I'm not sure. Let's find out together.",
+ a:["I don't know. Shall we look?","That one's beyond me. Let's dig."]},
+
+{m:"qna",c:"Praise 稱讚",zh:"完全答啱（唔好次次 correct）",en:"That's exactly it.",
+ a:["Spot on.","Yes — precisely that.","That's the one."]},
+{m:"qna",c:"Praise 稱讚",zh:"用字好準確",en:"Nice — that's the precise wording.",
+ a:["Good vocabulary. That's the technical term.","You said it exactly right."]},
+{m:"qna",c:"Praise 稱讚",zh:"係攞滿分嘅答法",en:"That's the kind of answer that gets full marks.",
+ a:["Write that down — all of you.","Exam-standard answer, that."]},
+{m:"qna",c:"Praise 稱讚",zh:"睇到人哋睇唔到嘅嘢",en:"You've spotted something a lot of people miss.",
+ a:["That's a subtle point. Well seen.","Most classes never notice that."]},
+{m:"qna",c:"Praise 稱讚",zh:"佢講得比你好",en:"That's a better way of saying it than mine.",
+ a:["I'm stealing that. Better than my version.｜幽默","I'll use your wording from now on."],
+ n:"敢咁講嘅老師，班房會突然多好多人肯開口。"},
+{m:"qna",c:"Praise 稱讚",zh:"讚佢肯質疑",en:"I like that you challenged it.",
+ a:["Good — keep being suspicious.","That's exactly the right instinct."]},
+
+// ============ RAPPORT ============
+{m:"rapp",c:"Encouragement 鼓勵",zh:"見到長期進步",en:"You've come a long way since September.",
+ a:["Compare this to your first piece of work. Big difference.","You're not the same student you were in September."]},
+{m:"rapp",c:"Encouragement 鼓勵",zh:"比上次好",en:"That's a big improvement on last time.",
+ a:["Real progress here.","Much stronger than the last one."]},
+{m:"rapp",c:"Encouragement 鼓勵",zh:"承認難，叫佢頂住",en:"I know it's hard. Stick with it.",
+ a:["This topic defeats a lot of people. Keep going.","It's meant to be difficult. That's not a sign you're failing."]},
+{m:"rapp",c:"Encouragement 鼓勵",zh:"建立安全嘅班房氣氛",en:"Don't worry about being wrong in here. That's what this room is for.",
+ a:["Nobody gets laughed at in my classroom.","Being wrong out loud is how this works."]},
+{m:"rapp",c:"Encouragement 鼓勵",zh:"佢覺得自己好差",en:"You're closer than you think.",
+ a:["You know more than you're giving yourself credit for.","The gap is smaller than it feels."]},
+
+{m:"rapp",c:"Individual help 個別輔導",zh:"約佢小息傾",en:"Come and see me at break and we'll go through it.",
+ a:["Find me at lunch — we'll sort it.","Stay behind for two minutes after class."]},
+{m:"rapp",c:"Individual help 個別輔導",zh:"問佢邊度唔明",en:"Which bit isn't making sense?",
+ a:["Where exactly does it stop being clear?","Point at the line where you lost it."],
+ n:"比 'What don't you understand?' 好 —— 假設咗佢明咗一部分，只係有一格塞住。"},
+{m:"rapp",c:"Individual help 個別輔導",zh:"叫佢指出卡住位",en:"Show me where you got stuck.",
+ a:["Talk me through what you tried.","What was your last confident step?"]},
+{m:"rapp",c:"Individual help 個別輔導",zh:"叫佢做多一次",en:"Try that one again on your own, and I'll check it in a minute.",
+ a:["Have another go. I'll be back.","Redo it — I'll look in five minutes."]},
+
+{m:"rapp",c:"Absence & lateness 缺席遲到",zh:"缺咗堂嘅學生",en:"You missed Tuesday — catch up with someone, and come to me if you're still stuck.",
+ a:["Borrow someone's notes for Tuesday, then see me.","You've got a gap from Tuesday. Let's fill it."]},
+{m:"rapp",c:"Absence & lateness 缺席遲到",zh:"有人遲到，唔想打斷成堂",en:"You're late. Sit down quietly — we'll talk afterwards.",
+ a:["Sit down. See me at the end.","In you come. We'll discuss it later."],
+ n:"處理咗，但唔畀佢成為全班焦點 —— 遲到嘅學生最想要嘅就係注意力。"},
+{m:"rapp",c:"Absence & lateness 缺席遲到",zh:"關心近排唔妥嘅學生",en:"Is everything alright? You've been quiet lately.",
+ a:["You don't seem yourself. Anything going on?","Everything OK? You know where I am if not."]},
+
+{m:"rapp",c:"Homework 功課",zh:"交功課限期",en:"Hand it in by Friday, please.",
+ a:["Friday, on my desk.","Due Friday — no extensions this time."]},
+{m:"rapp",c:"Homework 功課",zh:"預先講遲交規矩",en:"If you're going to be late with it, tell me beforehand, not afterwards.",
+ a:["Talk to me before the deadline, not after.","I'm reasonable in advance and less reasonable in hindsight.｜幽默但清晰"]},
+{m:"rapp",c:"Homework 功課",zh:"派返改好嘅功課",en:"I've marked these. A couple of general points before I hand them back.",
+ a:["Before you get these back — two things I noticed across the class."]},
+{m:"rapp",c:"Homework 功課",zh:"叫佢哋睇評語唔好淨係睇分",en:"Don't just look at the mark — read the comments.",
+ a:["The mark tells you where you are. The comments tell you how to move.","Five seconds on the grade, five minutes on the feedback."]},
+{m:"rapp",c:"Homework 功課",zh:"成班都做得唔好",en:"A lot of you lost marks on the same thing, so let's fix it together.",
+ a:["Same mistake, twenty times. My fault as much as yours.｜承擔","This one error cost the class a lot of marks."]},
+
+{m:"rapp",c:"Apologising 認錯",zh:"你自己講錯咗",en:"Good spot. I made a mistake there.",
+ a:["You're right and I was wrong. Thank you.","Well caught. Let me correct that."],
+ n:"當住全班認錯，係你教「知識係可以修正」最有力嘅一次示範。"},
+{m:"rapp",c:"Apologising 認錯",zh:"上堂教錯咗要更正",en:"I need to correct something I said last lesson.",
+ a:["Amendment from Tuesday — I got one thing wrong.","Before we start: last lesson I misled you slightly."]},
+{m:"rapp",c:"Apologising 認錯",zh:"答唔到學生嘅質疑",en:"That's a fair point, and I don't have a good answer to it.",
+ a:["You've got me. I can't defend that.","Fair challenge. I'll have to think about it."]},
+
+{m:"rapp",c:"Warmth 輕鬆氣氛",zh:"星期五下晝，全班好攰",en:"I know it's Friday afternoon. Bear with me.",
+ a:["Last lesson of the week. Let's make it painless.","I can see the weekend in your eyes."]},
+{m:"rapp",c:"Warmth 輕鬆氣氛",zh:"感覺全班快瞓著",en:"Right — before you all fall asleep on me…",
+ a:["I'm losing you. Everyone stand up for ten seconds.｜真係有效","Energy check. Sit up."]},
+{m:"rapp",c:"Warmth 輕鬆氣氛",zh:"考試前安撫",en:"You're better prepared than you feel. Trust that.",
+ a:["Nerves are normal. They're not evidence you're unready.","You've done the work. Let it do its job."]},
+{m:"rapp",c:"Warmth 輕鬆氣氛",zh:"放假前",en:"Have a good break. Rest properly — you've earned it.",
+ a:["Enjoy the holiday. Don't think about me.｜幽默","Switch off properly. See you in September."]},
+
+// ============ WORKPLACE / GENERAL AFFAIRS ============
+{m:"work",c:"Meetings 會議",zh:"開始個會",en:"Shall we make a start?",
+ a:["Right, let's get going.｜更直接","I think we're all here — let's begin.｜更正式"]},
+{m:"work",c:"Meetings 會議",zh:"介紹議程",en:"There are three items on the agenda today.",
+ a:["We've got three things to cover.｜更口語","I'll keep this short — three items, then we're done.｜體貼"]},
+{m:"work",c:"Meetings 會議",zh:"想插嘴發言",en:"Can I come in on that?",
+ a:["Sorry — may I add something?｜更客氣","Just a quick point on that.｜最短"],
+ n:"英文會議插嘴要有「敲門聲」。直接開口講會顯得粗魯；呢三句就係敲門。"},
+{m:"work",c:"Meetings 會議",zh:"以總務身份表達立場",en:"Speaking for General Affairs, the main concern is cost.",
+ a:["From my side, the issue is manpower.","My worry is the timeline, not the budget."]},
+{m:"work",c:"Meetings 會議",zh:"同意",en:"That works for me.",
+ a:["I'm happy with that.","Agreed — no objection from me.｜更正式"]},
+{m:"work",c:"Meetings 會議",zh:"部分同意",en:"I take your point, but there's a practical problem.",
+ a:["I agree in principle — the budget just won't stretch.","Yes in theory. In practice it's harder."],
+ n:"'I take your point, but…' 係英文職場最有用嘅一個轉折。先承認對方，再反對，唔會傷和氣。"},
+{m:"work",c:"Meetings 會議",zh:"不同意但要有禮",en:"I'm not sure that'll work, and here's why.",
+ a:["Can I offer a different view?｜最溫和","I'd push back on that slightly.｜英式含蓄但清楚"]},
+{m:"work",c:"Meetings 會議",zh:"要查資料先答得到",en:"Can I get back to you on that? I need to check the figures.",
+ a:["Let me confirm and come back to you.","I don't want to guess — give me until tomorrow."],
+ n:"⚠️ 香港辦公室常講 'I will revert to you'。'revert' 喺標準英式英文意思係「回復原狀」，唔係「回覆」。用 get back to you。"},
+{m:"work",c:"Meetings 會議",zh:"澄清對方意思",en:"Just so I'm clear — are we saying A or B?",
+ a:["Can I check my understanding?","Sorry, which of the two are we going with?"]},
+{m:"work",c:"Meetings 會議",zh:"討論兜圈，想收窄",en:"Are we going round in circles here?",
+ a:["Shall we park this and come back to it?","I think we've exhausted this one."]},
+{m:"work",c:"Meetings 會議",zh:"確認決定",en:"So are we agreed on that?",
+ a:["Can I take that as a decision?","Is everyone happy to go with option two?"]},
+{m:"work",c:"Meetings 會議",zh:"分派跟進工作",en:"Who's taking that forward?",
+ a:["Let's put a name against each item.｜更有系統","I'll pick that one up.｜自己認"]},
+{m:"work",c:"Meetings 會議",zh:"問限期",en:"When do you need this by?",
+ a:["What's the deadline on that?","Can we say end of next week?"]},
+{m:"work",c:"Meetings 會議",zh:"結束會議",en:"I think that covers everything.",
+ a:["Unless anyone has anything else, let's wrap up.","Any other business? No? Good — thank you all."]},
+{m:"work",c:"Meetings 會議",zh:"會後跟進",en:"I'll circulate the notes this afternoon.",
+ a:["I'll send round a summary with the action points.","You'll have the minutes by tomorrow."]},
+
+{m:"work",c:"Requests 請求委派",zh:"客氣請人幫手",en:"Would you mind having a look at this?",
+ a:["Could you do me a favour?｜較熟嘅同事","When you get a chance, could you check this over?｜唔急"],
+ n:"英文請求嘅禮貌程度靠句式，唔靠 'please'。'Would you mind…' 比 'Please do…' 客氣好多。"},
+{m:"work",c:"Requests 請求委派",zh:"急事請求",en:"I'm sorry to rush you, but I need this by three.",
+ a:["This one's urgent, I'm afraid.","I hate to push, but the deadline's today."]},
+{m:"work",c:"Requests 請求委派",zh:"委派工作",en:"Can I hand this one to you?",
+ a:["I'd like you to take the lead on this.｜更有信任感","Would you be able to own this?"]},
+{m:"work",c:"Requests 請求委派",zh:"講清楚要求",en:"What I need from you is the quotation by Friday.",
+ a:["Two things: the headcount and the venue.","Just to be specific — A first, then B."]},
+{m:"work",c:"Requests 請求委派",zh:"第一次追進度",en:"Just checking in on the quotation.",
+ a:["Any movement on the lift repair?","Where are we with the tender?"]},
+{m:"work",c:"Requests 請求委派",zh:"第二次追，要硬啲",en:"I chased this last week — can you give me a date?",
+ a:["I'll have to escalate this if I don't hear back today.｜最硬","This is now holding up the whole project."],
+ n:"英文職場升溫係循序漸進嘅。第一次軟、第二次點名時間、第三次先提 escalate。跳步會嚇親人。"},
+{m:"work",c:"Requests 請求委派",zh:"拒絕（唔傷和氣）",en:"I'd like to help, but I haven't got the capacity this week.",
+ a:["I'm afraid that's not something I can approve.｜職權上拒絕","Not this term, I'm afraid.｜最短"],
+ n:"'I'm afraid…' 係英式拒絕嘅標準緩衝。冇咗佢，同一句會聽落好硬。"},
+{m:"work",c:"Requests 請求委派",zh:"有條件答應",en:"I can do that, but something else will have to give.",
+ a:["Happy to — provided we push the deadline.","Yes, if you can take the ordering off me."]},
+{m:"work",c:"Requests 請求委派",zh:"多謝人幫手",en:"Thanks for turning that around so quickly.",
+ a:["I appreciate you sorting this out.","That's a big help — thank you."]},
+
+{m:"work",c:"Vendors 供應商承辦商",zh:"索取報價",en:"Could you send me a quotation for this?",
+ a:["Can you quote for the works described?｜更正式","I'll need it in writing, please."]},
+{m:"work",c:"Vendors 供應商承辦商",zh:"問大概價錢",en:"What are we looking at, roughly?",
+ a:["Can you give me a ballpark figure?","Rough order of cost?"]},
+{m:"work",c:"Vendors 供應商承辦商",zh:"議價",en:"Is there any room on the price?",
+ a:["That's higher than we budgeted for. Can you sharpen it?｜專業講法","What can you do if we commit for two years?｜換條件"],
+ n:"'Is there any room?' 係英文議價最自然嘅開場，比 'Can you cheaper?' 專業好多。"},
+{m:"work",c:"Vendors 供應商承辦商",zh:"問交貨／到場時間",en:"What's the lead time on that?",
+ a:["How soon can you get someone on site?","When could the works actually start?"]},
+{m:"work",c:"Vendors 供應商承辦商",zh:"安排工程時間",en:"Can the works be done during the school holidays?",
+ a:["We can't have drilling during lesson time.","It'll have to be after four, I'm afraid."]},
+{m:"work",c:"Vendors 供應商承辦商",zh:"投訴工程質素",en:"I'm not happy with the standard of work.",
+ a:["This isn't what we agreed.","We'll need this put right before we sign off.｜最有力"]},
+{m:"work",c:"Vendors 供應商承辦商",zh:"指出缺失要求返工",en:"There are a few defects I need you to come back and fix.",
+ a:["The job isn't finished to my satisfaction.","I've listed the snagging items — see the attachment."],
+ n:"'snagging' = 工程完工後嘅執漏清單，係建築業標準用語。用得出即刻專業。"},
+{m:"work",c:"Vendors 供應商承辦商",zh:"未執好唔會簽收",en:"I can't sign this off until the snagging is done.",
+ a:["Payment follows completion, not the other way round.","We'll release it once I've inspected."]},
+{m:"work",c:"Vendors 供應商承辦商",zh:"講合約範圍",en:"That's outside the scope of the contract.",
+ a:["That falls under the warranty — there shouldn't be a charge.","That's a variation, so I'll need it costed separately."]},
+{m:"work",c:"Vendors 供應商承辦商",zh:"好聲好氣收尾",en:"Thanks — send me the invoice and I'll process it.",
+ a:["That's all in order. I'll get payment moving.","Good job. I'll be in touch about the next one."]},
+
+{m:"work",c:"Facilities 設施維修",zh:"報告故障",en:"The air conditioning in Room 302 has packed up.",
+ a:["We've got a leak in the staff room ceiling.","The lift is playing up again.｜間歇性故障"],
+ n:"'packed up' = 完全壞咗（英式口語）；'playing up' = 時好時壞。兩個都好地道。"},
+{m:"work",c:"Facilities 設施維修",zh:"講緊急程度（唔急）",en:"It's not urgent, but it needs doing before term starts.",
+ a:["No rush — just get it on the list.","Whenever you're next on site."]},
+{m:"work",c:"Facilities 設施維修",zh:"講緊急程度（好急）",en:"This one can't wait — it's a safety issue.",
+ a:["I need someone today, I'm afraid.","This is a hazard. It has to be dealt with now."]},
+{m:"work",c:"Facilities 設施維修",zh:"要求人來睇",en:"Can you come and take a look?",
+ a:["I'd like someone to inspect it this week.","Could you send an engineer out?"]},
+{m:"work",c:"Facilities 設施維修",zh:"描述問題歷史",en:"It's been intermittent for a couple of weeks, and it's getting worse.",
+ a:["It started after the typhoon.","It only happens when it rains heavily."]},
+{m:"work",c:"Facilities 設施維修",zh:"臨時封閉",en:"We've cordoned it off for now.",
+ a:["I've put it out of use until it's fixed.","It's taped off and signed."]},
+{m:"work",c:"Facilities 設施維修",zh:"通知全校",en:"The lift will be out of service on Thursday.",
+ a:["Apologies in advance for the noise — works are scheduled this week.","Please avoid the east staircase until further notice."]},
+
+{m:"work",c:"Budget 財政採購",zh:"喺預算內",en:"That's within budget.",
+ a:["We can absorb that.","No problem on the money side."]},
+{m:"work",c:"Budget 財政採購",zh:"冇預算",en:"We haven't got the budget for that this year.",
+ a:["That would take us over.","It's not in this year's allocation, I'm afraid."]},
+{m:"work",c:"Budget 財政採購",zh:"申請額外撥款",en:"I'll need to put in a request for additional funding.",
+ a:["I'll have to take this to the Principal for approval.","We'd need a supplementary allocation."]},
+{m:"work",c:"Budget 財政採購",zh:"比較報價",en:"We've got three quotations — this one's the most competitive.",
+ a:["Cheapest isn't always best value. Here's my recommendation.｜更專業","On balance I'd go with the second one."],
+ n:"'most competitive' 比 'cheapest' 專業；'best value' 更加係採購行內講法。"},
+{m:"work",c:"Budget 財政採購",zh:"講採購程序",en:"Anything over fifty thousand has to go to tender.",
+ a:["I'll need two more quotes before we can proceed.","Procurement rules mean I can't just award it."]},
+{m:"work",c:"Budget 財政採購",zh:"催發票",en:"Could you send the invoice through so I can process the payment?",
+ a:["I need the invoice before I can release funds.","Once I've got the paperwork, payment takes about a fortnight."]},
+
+{m:"work",c:"Principal 上司同事",zh:"簡短匯報",en:"Quick update on the roof works.",
+ a:["Two minutes on the canteen contract, if you've got them.","Nothing urgent — just keeping you in the loop."]},
+{m:"work",c:"Principal 上司同事",zh:"預警問題",en:"I wanted to flag something before it becomes a problem.",
+ a:["There's an issue I need to raise with you.","Heads up — this could get awkward."],
+ n:"'flag something' 同 'heads up' 係職場預警嘅標準講法。早講永遠好過遲講。"},
+{m:"work",c:"Principal 上司同事",zh:"提出建議",en:"My suggestion would be to hold off until August.",
+ a:["If it were up to me, I'd go with option two.","Can I recommend a different approach?"]},
+{m:"work",c:"Principal 上司同事",zh:"表達保留",en:"I've got some reservations about the timing.",
+ a:["My concern is that we're leaving it too late.","I'm not comfortable with the risk here."]},
+{m:"work",c:"Principal 上司同事",zh:"請示授權",en:"Are you happy for me to go ahead?",
+ a:["I'd rather check with you before I commit us.","Do I have your approval to sign?"]},
+{m:"work",c:"Principal 上司同事",zh:"有禮咁頂返上司",en:"I hear you, but I don't think that's realistic in the time we've got.",
+ a:["Can I be honest about the practicalities?","I'll do it if you want — but I should tell you the risk first.｜最安全嘅頂法"],
+ n:"最後嗰句係黃金句：唔係拒絕，係「我服從，但我盡咗告知責任」。上司多數會自己改變主意。"},
+{m:"work",c:"Principal 上司同事",zh:"承擔責任",en:"That one's on me. I'll sort it.",
+ a:["My mistake — I'll put it right.","I should have caught that. Leave it with me."]},
+{m:"work",c:"Principal 上司同事",zh:"應承同事",en:"Leave it with me.",
+ a:["I'll take care of it.","Consider it done.｜最有信心"]},
+
+{m:"work",c:"Bad news 壞消息道歉",zh:"預告壞消息",en:"I'm afraid I've got some bad news about the hall booking.",
+ a:["This isn't what you want to hear, but…","There's been a setback — let me explain."]},
+{m:"work",c:"Bad news 壞消息道歉",zh:"道歉",en:"I'm sorry — that was my oversight.",
+ a:["Apologies, that slipped through.","That shouldn't have happened, and it was my fault."]},
+{m:"work",c:"Bad news 壞消息道歉",zh:"提出補救",en:"Here's what I propose we do about it.",
+ a:["I can't undo it, but I can do this.","Give me a day and I'll have an alternative."],
+ n:"英文職場文化：道歉之後一定要即刻跟一個方案。只道歉唔提方案會被視為冇擔當。"},
+{m:"work",c:"Bad news 壞消息道歉",zh:"通知延誤",en:"It's going to be later than I said. Here's why.",
+ a:["We've slipped by about a week.","I need to revise the timeline — let me talk you through it."]},
+
+{m:"work",c:"Events 活動統籌",zh:"問人數",en:"How many are we expecting?",
+ a:["Can you give me a headcount by Wednesday?","Rough numbers will do for now."]},
+{m:"work",c:"Events 活動統籌",zh:"分工",en:"I'll sort the venue and the catering.",
+ a:["I'll handle logistics — you take the programme.","Leave the room booking and AV to me."]},
+{m:"work",c:"Events 活動統籌",zh:"問後備方案（香港必問）",en:"What's the wet weather plan?",
+ a:["What happens if there's a typhoon signal?","Do we have a fallback if it's cancelled?"]},
+{m:"work",c:"Events 活動統籌",zh:"綵排",en:"I'll do a run-through with the team on Friday.",
+ a:["Let's walk the site together beforehand.","Full rehearsal Thursday afternoon."]},
+
+{m:"work",c:"Safety 安全事故",zh:"報告事故",en:"Nobody was hurt, but I've filed a report.",
+ a:["Minor incident this morning — everyone's fine.","No injuries, but it was close."]},
+{m:"work",c:"Safety 安全事故",zh:"已採取措施",en:"I've made the area safe.",
+ a:["It's isolated and signed off.","Access is restricted until it's inspected."]},
+{m:"work",c:"Safety 安全事故",zh:"要正式記錄",en:"We need to log this as an incident.",
+ a:["This goes in the accident book.","I'll write it up formally."]},
+{m:"work",c:"Safety 安全事故",zh:"要求風險評估",en:"Can we do a risk assessment before we commit?",
+ a:["I'd want that checked by a professional first.","Not until someone qualified has signed it off."]},
+
+// ============ SMALL TALK ============
+{m:"chat",c:"Openers 開場",zh:"早上見到同事",en:"Morning! How's things?",
+ a:["Morning — how are you doing?｜最中性","Alright?｜英式，好隨和，唔係真係問你點"],
+ n:"⚠️ 'How are you?' / 'Alright?' 唔係真問題。標準答法係 'Good, thanks — you?' 然後就完。答足三分鐘身體狀況係典型嘅文化誤會。"},
+{m:"chat",c:"Openers 開場",zh:"覺得對方好忙",en:"Busy week?",
+ a:["You look like you've got a lot on.","Rushed off your feet?｜英式生動"]},
+{m:"chat",c:"Openers 開場",zh:"星期一",en:"How was your weekend?",
+ a:["Good weekend?","Did you get up to anything?"]},
+{m:"chat",c:"Openers 開場",zh:"對方放完假返嚟",en:"Have you been away?",
+ a:["Welcome back — good break?","How was the holiday?"]},
+{m:"chat",c:"Openers 開場",zh:"見到對方好早返",en:"You're in early.",
+ a:["Beat me in today!","Early start?"]},
+{m:"chat",c:"Openers 開場",zh:"下午見到，對方好攰",en:"Long day?",
+ a:["Nearly there.","Not long to go now."]},
+
+{m:"chat",c:"Weather 天氣（香港）",zh:"好熱",en:"It's absolutely boiling out there.",
+ a:["Have you seen the humidity today?","You step outside and you're wet through."],
+ n:"英國人真係成日講天氣，而香港天氣夠戲劇性 —— 呢個係同外籍同事最安全嘅開場話題。"},
+{m:"chat",c:"Weather 天氣（香港）",zh:"打風",en:"Looks like the typhoon's coming in on Thursday.",
+ a:["T8 tomorrow, by the looks of it.","Are they going to hoist the signal, do you think?"]},
+{m:"chat",c:"Weather 天氣（香港）",zh:"轉涼",en:"First proper cool day, isn't it?",
+ a:["Finally, some fresh air.","You can almost wear a jacket."]},
+{m:"chat",c:"Weather 天氣（香港）",zh:"落大雨淋濕",en:"I got absolutely soaked coming in.",
+ a:["The umbrella was useless.","It came down out of nowhere."]},
+
+{m:"chat",c:"Commute 交通",zh:"問返工路程",en:"Was the MTR bad this morning?",
+ a:["How long does it take you to get in?","Where do you come in from?"]},
+{m:"chat",c:"Commute 交通",zh:"塞車",en:"The traffic was a nightmare.",
+ a:["Took me twice as long as usual.","Something must have happened on the tunnel."]},
+
+{m:"chat",c:"Food 食",zh:"問人食咩午餐",en:"Where are you going for lunch?",
+ a:["Any good places round here?","Shall we grab something?"],
+ n:"⚠️ 「食咗飯未？」直譯 'Have you eaten?' 喺英文係真問題，對方會以為你想約佢食飯。想打招呼就用 'How's things?'。"},
+{m:"chat",c:"Food 食",zh:"推介餐廳",en:"I can recommend the place on the corner.",
+ a:["There's a decent noodle shop two streets down.","Worth trying if you haven't."]},
+{m:"chat",c:"Food 食",zh:"約食飯",en:"Shall we grab lunch sometime this week?",
+ a:["Fancy joining us?","We usually go down at half twelve — you're welcome to come."]},
+
+{m:"chat",c:"Weekend 假期",zh:"問週末計劃",en:"Any plans for the weekend?",
+ a:["Doing anything nice?","Got much on?"]},
+{m:"chat",c:"Weekend 假期",zh:"問長假",en:"Doing anything over Easter?",
+ a:["Did you get away at all in the summer?","Going anywhere for Chinese New Year?"]},
+{m:"chat",c:"Weekend 假期",zh:"對方去完旅行",en:"How was Japan?",
+ a:["Was it as good as everyone says?","Would you go back?"]},
+
+{m:"chat",c:"Keeping it going 接話",zh:"想對方講多啲（最重要）",en:"Oh really? How come?",
+ a:["That sounds like hard work.","And how did that go?"],
+ n:"閒聊嘅重點唔係你識講幾多，係你識唔識<b>接</b>。呢三句可以令對方講多兩分鐘，而你唔使諗新話題。"},
+{m:"chat",c:"Keeping it going 接話",zh:"表示同感",en:"Same here, actually.",
+ a:["I know exactly what you mean.","You and me both."]},
+{m:"chat",c:"Keeping it going 接話",zh:"想追問細節",en:"Tell me more.",
+ a:["Go on…","What happened in the end?"]},
+{m:"chat",c:"Keeping it going 接話",zh:"承認對方講得好",en:"That's a good point, actually.",
+ a:["I hadn't thought of it like that.","Fair enough."]},
+
+{m:"chat",c:"Reacting 反應",zh:"驚訝",en:"No way!",
+ a:["You're joking.","Seriously?"]},
+{m:"chat",c:"Reacting 反應",zh:"為對方開心",en:"That's brilliant.",
+ a:["Good for you!","That's great news."]},
+{m:"chat",c:"Reacting 反應",zh:"同情",en:"Oh dear. That's a shame.",
+ a:["That's rotten luck.","What a pain."]},
+{m:"chat",c:"Reacting 反應",zh:"開玩笑話唔想同對方換位",en:"Rather you than me!",
+ a:["Better you than me.","I don't envy you."],
+ n:"英式幽默，帶親切感。用喺同事講佢要做啲麻煩嘢嘅時候。"},
+
+{m:"chat",c:"Compliments 讚賞",zh:"讚同事表現",en:"That was a great assembly.",
+ a:["You handled that really well.","I don't know how you kept them that quiet."]},
+{m:"chat",c:"Compliments 讚賞",zh:"讚外表（安全版）",en:"That's a lovely jacket — where's it from?",
+ a:["You look well.","New glasses? They suit you."],
+ n:"職場讚外表要小心。安全嘅係讚<b>物件</b>（衫、袋、眼鏡）唔係讚<b>身體</b>。"},
+
+{m:"chat",c:"Sympathy 關心",zh:"聽到壞消息",en:"I'm sorry to hear that.",
+ a:["That must be tough.","I hope things settle down soon."]},
+{m:"chat",c:"Sympathy 關心",zh:"對方病咗",en:"Hope you feel better soon.",
+ a:["Get some rest.","Don't rush back."]},
+{m:"chat",c:"Sympathy 關心",zh:"想幫手",en:"Is there anything I can do?",
+ a:["Shout if you need cover.","Let me know if you want anything taken off your plate."]},
+
+{m:"chat",c:"Exiting 收尾（好重要）",zh:"想結束對話但唔失禮",en:"Anyway, I'd better let you get on.",
+ a:["Right, I'll leave you to it.","I'd better crack on.｜英式，講自己要做嘢"],
+ n:"好多人識開場唔識收尾，結果對話拖到尷尬。呢三句係英文閒聊嘅標準出口，用完就可以自然行開。"},
+{m:"chat",c:"Exiting 收尾（好重要）",zh:"友善道別",en:"Good to see you — catch you later.",
+ a:["See you around.","Have a good one."]},
+{m:"chat",c:"Exiting 收尾（好重要）",zh:"想真係約下次",en:"Let's grab a coffee properly sometime.",
+ a:["We should catch up properly.","Come and find me when you're free."]},
+
+{m:"chat",c:"Foreign colleagues 外籍同事",zh:"問佢住得慣唔慣",en:"How are you finding Hong Kong?",
+ a:["Have you settled in alright?","Is it what you expected?"]},
+{m:"chat",c:"Foreign colleagues 外籍同事",zh:"問來咗幾耐",en:"How long have you been out here?",
+ a:["Is this your first year at the school?","What brought you over?"]},
+{m:"chat",c:"Foreign colleagues 外籍同事",zh:"問返唔返鄉下",en:"Do you get back home much?",
+ a:["Will you be going back over the summer?","Is your family out here with you?"]},
+{m:"chat",c:"Foreign colleagues 外籍同事",zh:"介紹本地嘢",en:"If you ever want to try proper local food, let me know.",
+ a:["There's a hike near me you'd probably like.","Have you been out to the islands yet?"]},
+
+{m:"chat",c:"Parents 家長",zh:"歡迎家長",en:"Thanks for coming in.",
+ a:["It's good to put a face to the name.","I appreciate you making the time."]},
+{m:"chat",c:"Parents 家長",zh:"先安撫（唔係壞消息）",en:"Nothing to worry about — I just wanted a quick word.",
+ a:["This is a positive conversation, I promise.","No problems at all. Quite the opposite."]},
+{m:"chat",c:"Parents 家長",zh:"讚學生",en:"He's a pleasure to teach.",
+ a:["She contributes a lot in class.","He's well liked, and he works hard."]},
+{m:"chat",c:"Parents 家長",zh:"結束會面",en:"Do get in touch if anything comes up.",
+ a:["My door's open — just email me.","Thanks again for coming."]}
+];
+
+// ================= PRONUNCIATION =================
+const PRON=[
+{g:"A. 課堂高頻字 · 重音位",w:"develop",s:["de","VEL","op"],i:1,n:"重音第二音節。development / developing 跟同一重音。唔好讀 DEV-elop。"},
+{g:"A. 課堂高頻字 · 重音位",w:"particular",s:["par","TIC","u","lar"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"necessary",s:["NEC","es","sa","ry"],i:0,n:"重音第一音節。好多人誤讀 ne-CES-sa-ry。"},
+{g:"A. 課堂高頻字 · 重音位",w:"comfortable",s:["COMF","ta","ble"],i:0,n:"英式通常三個音節 KUMF-ta-bl，中間個 or 幾乎消失。"},
+{g:"A. 課堂高頻字 · 重音位",w:"vegetable",s:["VEG","ta","ble"],i:0,n:"同樣三個音節。"},
+{g:"A. 課堂高頻字 · 重音位",w:"interesting",s:["IN","tres","ting"],i:0,n:"英式常見三音節。重音一定第一。"},
+{g:"A. 課堂高頻字 · 重音位",w:"category",s:["CAT","e","go","ry"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"definitely",s:["DEF","i","nite","ly"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"specific",s:["spe","CIF","ic"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"significant",s:["sig","NIF","i","cant"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"characteristic",s:["char","ac","ter","IS","tic"],i:3},
+{g:"A. 課堂高頻字 · 重音位",w:"determine",s:["de","TER","mine"],i:1,n:"結尾讀 /mɪn/，唔係 /maɪn/。"},
+{g:"A. 課堂高頻字 · 重音位",w:"contribute",s:["con","TRIB","ute"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"distribute",s:["dis","TRIB","ute"],i:1,n:"英式重音第二音節。"},
+{g:"A. 課堂高頻字 · 重音位",w:"relevant",s:["REL","e","vant"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"available",s:["a","VAIL","a","ble"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"opportunity",s:["op","por","TU","ni","ty"],i:2},
+{g:"A. 課堂高頻字 · 重音位",w:"immediately",s:["im","ME","di","ate","ly"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"example",s:["ex","AM","ple"],i:1,n:"重音中間。唔好讀 EX-ample。"},
+{g:"A. 課堂高頻字 · 重音位",w:"environment",s:["en","VI","ron","ment"],i:1,n:"中間個 n 好多人吞咗：en-VI-ron-ment，唔係 en-VI-ment。"},
+{g:"A. 課堂高頻字 · 重音位",w:"government",s:["GOV","ern","ment"],i:0,n:"英式快讀似 GUV-mnt，但重音永遠第一。"},
+{g:"A. 課堂高頻字 · 重音位",w:"important",s:["im","POR","tant"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"difficult",s:["DIF","fi","cult"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"similar",s:["SIM","i","lar"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"question",s:["QUES","tion"],i:0,n:"讀 /ˈkwestʃən/ —— 'KWES-chun'。唔好逐個字母讀 ti-on。"},
+{g:"A. 課堂高頻字 · 重音位",w:"answer",s:["AN","swer"],i:0,n:"個 w 唔讀：/ˈɑːnsə/。"},
+{g:"A. 課堂高頻字 · 重音位",w:"pronunciation",s:["pro","nun","ci","A","tion"],i:3,n:"⚠️ 串法冇 o —— 唔係 pronounciation。而動詞 pronounce 先有。"},
+{g:"A. 課堂高頻字 · 重音位",w:"vocabulary",s:["vo","CAB","u","la","ry"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"material",s:["ma","TE","ri","al"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"experience",s:["ex","PE","ri","ence"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"experiment",s:["ex","PER","i","ment"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"individual",s:["in","di","VID","u","al"],i:2},
+{g:"A. 課堂高頻字 · 重音位",w:"university",s:["u","ni","VER","si","ty"],i:2},
+{g:"A. 課堂高頻字 · 重音位",w:"secondary",s:["SEC","ond","a","ry"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"curriculum",s:["cur","RIC","u","lum"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"syllabus",s:["SYL","la","bus"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"assessment",s:["as","SESS","ment"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"assignment",s:["as","SIGN","ment"],i:1,n:"個 g 唔讀：/əˈsaɪnmənt/。"},
+{g:"A. 課堂高頻字 · 重音位",w:"revision",s:["re","VI","sion"],i:1,n:"-sion 讀 /ʒən/，似 'zhun'。"},
+{g:"A. 課堂高頻字 · 重音位",w:"conclusion",s:["con","CLU","sion"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"evidence",s:["EV","i","dence"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"argument",s:["AR","gu","ment"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"consequence",s:["CON","se","quence"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"percentage",s:["per","CENT","age"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"diagram",s:["DI","a","gram"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"paragraph",s:["PAR","a","graph"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"exercise",s:["EX","er","cise"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"however",s:["how","EV","er"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"although",s:["al","THOUGH"],i:1},
+{g:"A. 課堂高頻字 · 重音位",w:"comparable",s:["COM","pa","ra","ble"],i:0,n:"英式傳統重音第一音節。com-PAR-able 亦愈來愈普遍，兩者都通。"},
+{g:"A. 課堂高頻字 · 重音位",w:"schedule",s:["SHED","ule"],i:0,n:"英式 SHED-yool；美式 SKED-jool。HK 學校一般用英式。"},
+{g:"A. 課堂高頻字 · 重音位",w:"Wednesday",s:["WENZ","day"],i:0,n:"中間個 d 唔讀。兩個音節。"},
+{g:"A. 課堂高頻字 · 重音位",w:"February",s:["FEB","ru","a","ry"],i:0},
+{g:"A. 課堂高頻字 · 重音位",w:"colleague",s:["COL","league"],i:0},
+
+{g:"B. 詞根重音轉移",w:"analyse → analysis → analytical",s:["AN-a-lyse","a-NAL-y-sis","an-a-LYT-i-cal"],i:-1,n:"⚠️ 同一字根，重音跳三次。教書時三個形式都會用到。"},
+{g:"B. 詞根重音轉移",w:"photograph → photography → photographic",s:["PHO-to-graph","pho-TOG-ra-phy","pho-to-GRAPH-ic"],i:-1,n:"最經典嘅示範。記熟呢個 pattern，其他字都跟同一規律。"},
+{g:"B. 詞根重音轉移",w:"politics → political → politician",s:["POL-i-tics","po-LIT-i-cal","pol-i-TI-cian"],i:-1},
+{g:"B. 詞根重音轉移",w:"strategy → strategic",s:["STRAT-e-gy","stra-TE-gic"],i:-1},
+{g:"B. 詞根重音轉移",w:"hypothesis → hypothetical",s:["hy-POTH-e-sis","hy-po-THET-i-cal"],i:-1},
+{g:"B. 詞根重音轉移",w:"economy → economic → economics",s:["e-CON-o-my","e-co-NOM-ic","e-co-NOM-ics"],i:-1,n:"⚠️ 你科最常撞。同一字根，重音完全唔同位。"},
+{g:"B. 詞根重音轉移",w:"explain → explanation",s:["ex-PLAIN","ex-pla-NA-tion"],i:-1,n:"注意連拼法都變咗（explain → explanation，冇個 i）。"},
+{g:"B. 詞根重音轉移",w:"compete → competition → competitive",s:["com-PETE","com-pe-TI-tion","com-PET-i-tive"],i:-1},
+{g:"B. 詞根重音轉移",w:"educate → education → educational",s:["ED-u-cate","ed-u-CA-tion","ed-u-CA-tion-al"],i:-1,n:"規律：-tion 結尾，重音永遠喺 -tion 前面嗰個音節。呢條規則覆蓋成千個字。"},
+{g:"B. 詞根重音轉移",w:"-tion 規律",s:["informATION","situATION","conclUSION","decISION"],i:-1,n:"記一條就夠：<b>重音永遠喺 -tion / -sion 前面嗰個音節</b>。唔使逐個字背。"},
+{g:"B. 詞根重音轉移",w:"-ity 規律",s:["abILity","opportUNity","possibILity","universITy"],i:-1,n:"同樣：<b>重音喺 -ity 前面嗰個音節</b>。"},
+{g:"B. 詞根重音轉移",w:"-ic 規律",s:["specIFic","economIC","dramATic","scientIFic"],i:-1,n:"<b>重音喺 -ic 前面嗰個音節</b>。三條規律加埋，你已經識晒大部分學術字嘅重音。"},
+
+{g:"C. 名詞／動詞轉移",w:"increase",s:["IN-crease (n)","in-CREASE (v)"],i:-1,n:"⚠️ 名詞前重、動詞後重。'an IN-crease' vs 'prices in-CREASE'。呢條規律覆蓋以下全部。"},
+{g:"C. 名詞／動詞轉移",w:"decrease",s:["DE-crease (n)","de-CREASE (v)"],i:-1},
+{g:"C. 名詞／動詞轉移",w:"record",s:["REC-ord (n)","re-CORD (v)"],i:-1,n:"'a REC-ord high' vs 're-CORD the data'。"},
+{g:"C. 名詞／動詞轉移",w:"present",s:["PRES-ent (n/adj)","pre-SENT (v)"],i:-1},
+{g:"C. 名詞／動詞轉移",w:"object",s:["OB-ject (n)","ob-JECT (v)"],i:-1},
+{g:"C. 名詞／動詞轉移",w:"contrast",s:["CON-trast (n)","con-TRAST (v)"],i:-1},
+{g:"C. 名詞／動詞轉移",w:"conduct",s:["CON-duct (n)","con-DUCT (v)"],i:-1},
+{g:"C. 名詞／動詞轉移",w:"project",s:["PROJ-ect (n)","pro-JECT (v)"],i:-1},
+{g:"C. 名詞／動詞轉移",w:"progress",s:["PROG-ress (n)","pro-GRESS (v)"],i:-1},
+{g:"C. 名詞／動詞轉移",w:"import / export",s:["IM-port (n)","im-PORT (v)"],i:-1},
+{g:"C. 名詞／動詞轉移",w:"separate",s:["SEP-rate (adj) /-rət/","SEP-a-rate (v) /-reɪt/"],i:-1,n:"⚠️ 呢組唔係重音變，係<b>尾音元音變</b>：形容詞讀輕音 /-rət/，動詞讀 /-reɪt/。"},
+{g:"C. 名詞／動詞轉移",w:"estimate",s:["EST-i-mat (n) /-mət/","EST-i-mate (v) /-meɪt/"],i:-1,n:"同上規律。"},
+{g:"C. 名詞／動詞轉移",w:"appropriate",s:["ap-PRO-pri-at (adj)","ap-PRO-pri-ate (v)"],i:-1},
+{g:"C. 名詞／動詞轉移",w:"deliberate",s:["de-LIB-er-at (adj)","de-LIB-er-ate (v)"],i:-1},
+
+{g:"D. 字尾與音串",w:"-ed 有三種讀法",s:["worked /t/","played /d/","wanted /ɪd/"],i:-1,n:"清音後 /t/、濁音後 /d/、t 或 d 之後先讀 /ɪd/。呢個 -ed 唔可以吞 —— 吞咗就變咗現在式，學生聽落時態全錯。"},
+{g:"D. 字尾與音串",w:"複數 -s 三種讀法",s:["books /s/","jobs /z/","classes /ɪz/"],i:-1,n:"同一規律。'classes' / 'answers' / 'exercises' 要多讀一個音節。"},
+{g:"D. 字尾與音串",w:"-ture 讀 /tʃə/",s:["picture","future","nature","temperature"],i:-1,n:"'PIK-chuh'，唔係 'pik-ture'。"},
+{g:"D. 字尾與音串",w:"-sure 讀 /ʒə/",s:["measure","pleasure","leisure"],i:-1,n:"'MEZH-uh'。"},
+{g:"D. 字尾與音串",w:"-ous 讀 /əs/",s:["famous","various","obvious","serious"],i:-1,n:"輕輕帶過，唔好讀成 'ous' 重音。"},
+{g:"D. 字尾與音串",w:"三合尾音串",s:["asked /ɑːskt/","texts /teksts/","costs /kɒsts/"],i:-1,n:"全英文最難嘅一組。分開慢練：ask → askt。唔好剩返 'ass'。"},
+{g:"D. 字尾與音串",w:"字尾輔音唔可以吞",s:["hand","and","find","world"],i:-1,n:"廣東話尾音會塞住（入聲），英文要放出嚟。'hand' 唔係 'han'。"},
+{g:"D. 字尾與音串",w:"啞音字母",s:["know","write","half","island","muscle","receipt"],i:-1,n:"呢啲字母完全唔讀。"},
+
+{g:"E. 音素陷阱",w:"think vs this",s:["think /θ/","this /ð/"],i:-1,n:"清 th 同濁 th。舌尖輕輕出牙。練句：'I think this thing is theirs.'"},
+{g:"E. 音素陷阱",w:"r vs l",s:["really","clearly","correct","reliable"],i:-1,n:"練句：'Really clearly correct.' 慢速三次。"},
+{g:"E. 音素陷阱",w:"v vs w",s:["very","view","we","wave"],i:-1,n:"v 上齒咬下唇；w 圓唇唔掂牙。練句：'We view it very well.'"},
+{g:"E. 音素陷阱",w:"n vs ng",s:["thin / thing","ban / bang","sin / sing"],i:-1,n:"-ng 係鼻音，舌根頂上顎。廣東話有呢個音，但英文字尾容易漏。"},
+{g:"E. 音素陷阱",w:"s vs sh",s:["see / she","sea / shear","sort / short"],i:-1},
+{g:"E. 音素陷阱",w:"長短元音",s:["ship / sheep","full / fool","bit / beat"],i:-1,n:"唔止長短，口型都唔同。/ɪ/ 鬆，/iː/ 緊而扁。"},
+
+{g:"F. 句子節奏（最關鍵）",w:"實詞重讀，虛詞弱讀",s:["I WANT you to LOOK at the DIAgram."],i:-1,n:"英文係 <b>stress-timed</b>：實詞（動詞、名詞、形容詞）重讀，虛詞（a, the, to, of, for）壓縮。廣東話係逐個字等重 —— 呢個係「聽落唔似 native」嘅最大單一原因，同你識幾多生字完全無關。"},
+{g:"F. 句子節奏（最關鍵）",w:"to 弱讀成 /tə/",s:["I want to go → 'wanna' /wɒntə/"],i:-1,n:"日常語速下 to 幾乎冇元音。刻意讀足 'too' 反而唔自然。"},
+{g:"F. 句子節奏（最關鍵）",w:"of 弱讀成 /əv/",s:["a lot of → 'a lotta' /ə lɒtəv/"],i:-1},
+{g:"F. 句子節奏（最關鍵）",w:"and 弱讀成 /ən/",s:["bread and butter → 'bread'n'butter'"],i:-1},
+{g:"F. 句子節奏（最關鍵）",w:"can 弱讀成 /kən/",s:["I can see it → /aɪ kən siː ɪt/"],i:-1,n:"重讀嘅 CAN 反而表示強調或否定對比。平時要弱讀。"},
+{g:"F. 句子節奏（最關鍵）",w:"連音：子音接元音",s:["look at it → 'loo-ka-tit'","an apple → 'a-napple'"],i:-1,n:"英文唔係一個字一個字咁分開講。字與字之間會黐埋 —— 呢個叫 linking，係流暢度嘅核心。"},
+{g:"F. 句子節奏（最關鍵）",w:"連音：相同子音只讀一次",s:["next time → 'nex-time'","big group → 'bi-group'"],i:-1},
+{g:"F. 句子節奏（最關鍵）",w:"對比重音",s:["I said MOVEment, not SHIFT."],i:-1,n:"要學生聽到分別，就要用重音標示出嚟。呢個係教學上最實用嘅一種重音運用。"}
+];
+
+// ================= FIX IT =================
+const FIX=[
+{b:"Because the price is high, so people buy less.",g:"Because the price is high, people buy less.",w:"because 同 so 只可以用一個。中文「因為…所以…」係雙的，英文唔係。"},
+{b:"Although it is expensive, but people still buy it.",g:"Although it is expensive, people still buy it.",w:"although 同 but 二揀一。呢個係香港學生 script 上最常見嘅扣分位。"},
+{b:"We will discuss about this topic.",g:"We'll discuss this topic.",w:"discuss 後面唔跟 about。"},
+{b:"I want to emphasise on this point.",g:"I want to emphasise this point.",w:"emphasise 後面唔跟 on。"},
+{b:"There have many reasons.",g:"There are many reasons.",w:"中文「有」直譯成 have。英文存在句一律 there is / there are。"},
+{b:"Do you have any question?",g:"Any questions?",w:"questions 要複數。而且簡短版更自然。"},
+{b:"This one is more better.",g:"This one is much better.",w:"better 已經係比較級，唔可以再加 more。要加強用 much / far。"},
+{b:"Open the light. / Open the projector.",g:"Turn on the lights. / Switch on the projector.",w:"電器用 turn on / switch on，唔用 open。"},
+{b:"He is lack of confidence.",g:"He lacks confidence. / He has a lack of confidence.",w:"lack 做動詞唔使 be + of；做名詞先用 a lack of。"},
+{b:"In nowadays, students are different.",g:"These days, students are different.",w:"nowadays 本身已經係副詞，前面唔加 in。"},
+{b:"This is depend on the situation.",g:"This depends on the situation.",w:"depend 係動詞，唔使 is。"},
+{b:"We can divide into two parts.",g:"We can divide it into two parts.",w:"divide 需要受詞。"},
+{b:"Understand?",g:"Does that make sense?",w:"Understand? 聽落似查問。Does that make sense? 把責任放喺解釋上，唔係放喺學生身上。"},
+{b:"Today I will teach you chapter five.",g:"Today we're going to look at chapter five.",w:"'I will teach you' 語氣單向。'we're going to look at' 把學生放埋一齊，係國際課堂嘅預設講法。"},
+{b:"Very much people made this mistake.",g:"A lot of people made this mistake.",w:"people 可數，用 many / a lot of，唔用 very much。"},
+{b:"It affects to the result.",g:"It affects the result.",w:"affect 係及物動詞，後面唔加 to。"},
+{b:"This will effect your grade.",g:"This will affect your grade.",w:"affect = 動詞（影響）；effect = 名詞（效果）。"},
+{b:"The price will raise.",g:"The price will rise. / They will raise the price.",w:"rise 不及物（自己升）；raise 及物（有人抬高佢）。"},
+{b:"According to the graph, we can see that it increase.",g:"The graph shows that it increases.",w:"'According to… we can see' 三重累贅，加漏第三人稱單數 -s。"},
+{b:"I very like this example.",g:"I really like this example.",w:"very 唔可以直接修飾動詞。用 really，或 very much 放句尾。"},
+{b:"He didn't came yesterday.",g:"He didn't come yesterday.",w:"did 已經標示咗過去式，後面用原形。"},
+{b:"I have finished it yesterday.",g:"I finished it yesterday.",w:"有明確過去時間（yesterday）就唔可以用 present perfect。"},
+{b:"Someone can answer?",g:"Can anyone answer? / Anyone?",w:"疑問句要倒裝，而且 someone 應改 anyone。"},
+{b:"You all understand or not?",g:"Is everyone with me?",w:"'…or not?' 係直譯「…定唔係？」，英文聽落好對抗性。"},
+{b:"That's mean the answer is B.",g:"That means the answer is B.",w:"That's = that is，後面唔可以再接動詞原形。"},
+{b:"Please explain me this question.",g:"Please explain this question to me.",w:"explain 唔可以直接跟人：explain something TO somebody。"},
+{b:"Let me to explain.",g:"Let me explain.",w:"let + 人 + 原形動詞，中間唔加 to。"},
+{b:"The reason is because he was absent.",g:"The reason is that he was absent.",w:"reason 同 because 意思重複。"},
+{b:"I am agree with you.",g:"I agree with you.",w:"agree 本身係動詞，唔使 am。"},
+{b:"He is very hardworking student.",g:"He is a very hardworking student.",w:"單數可數名詞前面一定要有冠詞。香港最高頻嘅語法漏洞。"},
+{b:"Two years ago I have taught this.",g:"Two years ago I taught this.",w:"明確過去時間 + present perfect 唔夾。"},
+{b:"Can you repeat again?",g:"Could you say that again?",w:"repeat 已經包含「再」，加 again 累贅。"},
+{b:"Sit down please, don't make noise.",g:"Sit down, please — and keep the noise down.",w:"'make noise' 唔自然。用 keep the noise down / quieten down。"},
+{b:"I hope everyone can pay attention.",g:"I need everyone's attention, please.",w:"'I hope you can…' 語氣太弱，學生唔會當係指令。指令要直接但有禮。"},
+{b:"Until now, we have learned three chapters.",g:"So far, we've covered three chapters.",w:"'until now' 暗示「而家開始唔同」。「到目前為止」要用 so far。"},
+{b:"I will revert to you tomorrow.",g:"I'll get back to you tomorrow.",w:"⚠️ 香港辦公室常見。'revert' 標準英文意思係「回復原狀」，唔係「回覆」。Native 聽落會一頭霧水。"},
+{b:"Please be informed that the lift is out of service.",g:"Just to let you know, the lift is out of service.",w:"'Please be informed' 過度官腔，係中式公文直譯。除非係正式通告，否則用自然語氣。"},
+{b:"Kindly advise the status of the quotation.",g:"Could you let me know where the quotation stands?",w:"'Kindly + 動詞' 係東南亞商業英語特色，native 用得極少，而且聽落有命令感。"},
+{b:"Please do the needful.",g:"Could you take care of it?",w:"'do the needful' 係印度／東南亞英語，英式美式都唔用。"},
+{b:"Attached herewith please find the invoice.",g:"I've attached the invoice.",w:"herewith 除法律文件外唔用。整句改成主動、簡短。"},
+{b:"How to say this in English?",g:"How do you say this in English? / What's the word for this?",w:"疑問句需要主語同助動詞。"},
+{b:"I will do it later.",g:"I'll do it this afternoon. / I'll have it to you by four.",w:"'later' 喺英文可以指一個鐘後，都可以指永遠。職場上要講具體時間，否則對方會焦慮。"}
+];
+
+// ================= VOCAB =================
+const VOCAB=[
+{g:"A. 設施・維修 Facilities & Maintenance",e:"premises",z:"校舍／處所"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"facilities management",z:"設施管理"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"preventive maintenance",z:"預防性保養",n:"對比 reactive maintenance（壞咗先修）。同承辦商傾合約時會用到。"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"refurbishment / renovation",z:"翻新／裝修",n:"refurbishment 偏重更新設備；renovation 偏重改動結構。"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"fit-out",z:"內部裝修工程"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"contractor / subcontractor",z:"承辦商／分判商"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"work order",z:"工程指令"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"site visit",z:"實地視察"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"inspection",z:"檢驗"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"defect",z:"缺陷"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"snagging list",z:"執漏清單",n:"完工後未達標項目嘅清單。用得出即刻專業。"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"lead time",z:"交付所需時間"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"downtime",z:"停用時間"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"out of service",z:"暫停使用"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"utilities",z:"水電煤",n:"electricity, water, gas 嘅統稱。"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"air conditioning / HVAC",z:"冷氣通風系統",n:"HVAC = heating, ventilation and air conditioning。讀 'H-V-A-C'。"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"plumbing / drainage",z:"水喉／排水"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"electrical wiring",z:"電線佈線"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"lift maintenance",z:"升降機保養",n:"英式用 lift，美式 elevator。HK 學校用 lift。"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"fire safety equipment",z:"消防設備"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"fire drill / evacuation",z:"消防演習／疏散"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"caretaker / janitor",z:"校工",n:"英式 caretaker，美式 janitor。"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"pest control",z:"滅蟲"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"waste disposal",z:"廢物處理"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"stocktake / inventory",z:"盤點／存貨"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"asset register",z:"資產登記冊"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"consumables",z:"消耗品"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"hazard",z:"危害"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"risk assessment",z:"風險評估"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"incident report",z:"事故報告"},
+{g:"A. 設施・維修 Facilities & Maintenance",e:"wear and tear",z:"正常損耗",n:"合約用語：normal wear and tear 通常唔算損壞，唔使賠。"},
+
+{g:"B. 採購・合約 Procurement & Contracts",e:"procurement",z:"採購",n:"讀 pro-CURE-ment，重音第二音節。"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"quotation / quote",z:"報價"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"tender / tendering",z:"招標"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"bid / bidder",z:"投標／投標者"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"invitation to tender (ITT)",z:"招標邀請"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"specification (spec)",z:"規格"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"scope of works",z:"工程範圍",n:"'That's outside the scope' 係你拒絕加工作嘅最有力一句。"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"variation",z:"工程變更",n:"範圍以外嘅改動，通常要另外計錢。"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"purchase order (PO)",z:"採購訂單"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"requisition",z:"請購"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"invoice",z:"發票",n:"讀 IN-voice，重音第一。"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"payment terms",z:"付款條件"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"deposit",z:"訂金"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"retention",z:"保留金",n:"完工後扣起一部分，保養期滿先付。"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"warranty / guarantee",z:"保養期／保證"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"service contract",z:"服務合約"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"renewal / termination",z:"續約／終止"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"penalty clause",z:"罰則條款"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"value for money",z:"物有所值",n:"比 'cheap' 專業。採購報告嘅標準用語。"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"competitive (price)",z:"有競爭力嘅價錢"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"budget allocation",z:"預算撥款"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"overspend / underspend",z:"超支／未用盡"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"financial year",z:"財政年度"},
+{g:"B. 採購・合約 Procurement & Contracts",e:"reimbursement",z:"報銷"},
+
+{g:"C. 會議・行政 Meetings & Admin",e:"agenda",z:"議程",n:"讀 a-JEN-da。"},
+{g:"C. 會議・行政 Meetings & Admin",e:"minutes",z:"會議紀錄",n:"永遠複數。'take the minutes' = 做紀錄。"},
+{g:"C. 會議・行政 Meetings & Admin",e:"action point",z:"跟進事項"},
+{g:"C. 會議・行政 Meetings & Admin",e:"AOB (any other business)",z:"其他事項",n:"會議議程最後一項嘅標準寫法。"},
+{g:"C. 會議・行政 Meetings & Admin",e:"circulate",z:"傳閱／發放"},
+{g:"C. 會議・行政 Meetings & Admin",e:"follow up",z:"跟進",n:"動詞分開寫 follow up；名詞連字 a follow-up。"},
+{g:"C. 會議・行政 Meetings & Admin",e:"escalate",z:"上報",n:"職場上係嚴肅字眼。用之前先諗清楚。"},
+{g:"C. 會議・行政 Meetings & Admin",e:"sign off",z:"批核／驗收"},
+{g:"C. 會議・行政 Meetings & Admin",e:"delegate",z:"委派",n:"動詞 del-e-GATE；名詞（代表）DEL-e-gate。"},
+{g:"C. 會議・行政 Meetings & Admin",e:"liaise with",z:"聯絡",n:"讀 li-AISE /liˈeɪz/。名詞 liaison /liˈeɪzɒn/。"},
+{g:"C. 會議・行政 Meetings & Admin",e:"keep someone in the loop",z:"保持知情"},
+{g:"C. 會議・行政 Meetings & Admin",e:"flag (an issue)",z:"提出／預警"},
+{g:"C. 會議・行政 Meetings & Admin",e:"ballpark figure",z:"大概數字"},
+{g:"C. 會議・行政 Meetings & Admin",e:"put it in writing",z:"白紙黑字"},
+{g:"C. 會議・行政 Meetings & Admin",e:"on file",z:"存檔"},
+{g:"C. 會議・行政 Meetings & Admin",e:"chase (someone) up",z:"追進度",n:"'I'll chase them up' —— 英式職場極常用。"},
+
+{g:"D. 學校運作 School Operations",e:"term / semester",z:"學期"},
+{g:"D. 學校運作 School Operations",e:"timetable",z:"時間表",n:"英式 timetable，美式 schedule。"},
+{g:"D. 學校運作 School Operations",e:"cover (a lesson)",z:"代課",n:"'Can you cover Form 4 period three?'"},
+{g:"D. 學校運作 School Operations",e:"assembly",z:"早會／集會"},
+{g:"D. 學校運作 School Operations",e:"staff meeting",z:"教職員會議"},
+{g:"D. 學校運作 School Operations",e:"open day",z:"開放日"},
+{g:"D. 學校運作 School Operations",e:"parents' evening",z:"家長晚會"},
+{g:"D. 學校運作 School Operations",e:"speech day / prize-giving",z:"頒獎禮"},
+{g:"D. 學校運作 School Operations",e:"field trip / excursion",z:"參觀／旅行"},
+{g:"D. 學校運作 School Operations",e:"typhoon signal",z:"颱風信號",n:"'They've hoisted the T8.' hoist = 懸掛（信號），係香港英文標準講法。"},
+{g:"D. 學校運作 School Operations",e:"class suspension",z:"停課"},
+{g:"D. 學校運作 School Operations",e:"Education Bureau (EDB)",z:"教育局"},
+{g:"D. 學校運作 School Operations",e:"Incorporated Management Committee (IMC)",z:"法團校董會"},
+{g:"D. 學校運作 School Operations",e:"school-based",z:"校本"},
+{g:"D. 學校運作 School Operations",e:"invigilate / invigilator",z:"監考／監考員",n:"英式用字。美式係 proctor。"},
+
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"How's things?",z:"點呀？",n:"最安全嘅日常開場，比 'How are you?' 隨和。"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"rushed off your feet",z:"忙到癲"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"get up to (anything)",z:"做過啲咩",n:"'Did you get up to much at the weekend?'"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"crack on",z:"繼續做嘢",n:"'I'd better crack on.' 係最自然嘅離場句。"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"leave you to it",z:"唔阻你"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"catch up",z:"敘舊",n:"'We should catch up properly sometime.'"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"grab a coffee",z:"飲杯嘢"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"Fancy…?",z:"想唔想…？",n:"英式：'Fancy a coffee?' = 想唔想飲咖啡？"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"I'm all ears",z:"洗耳恭聽"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"long story short",z:"長話短說"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"touch base",z:"聯絡一下"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"off the top of my head",z:"唔使諗即刻答"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"on my plate",z:"手頭上嘅工作",n:"'I've got a lot on my plate this week.'"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"a pain / a nightmare",z:"好煩／好大鑊"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"Fair enough.",z:"咁又係／明白"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"No worries.",z:"冇問題"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"Cheers.",z:"多謝",n:"英式，日常道謝極常用，唔止用嚟乾杯。"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"Have a good one.",z:"拜拜／祝你好"},
+{g:"E. 閒聊慣用語 Small Talk Idioms",e:"Long time no see.",z:"好耐冇見",n:"有趣：呢句本來係中式英文，但已經被英語完全吸收，native 照用。係少數獲承認嘅例外。"},
+
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"revert → get back to you",z:"回覆",n:"revert 標準意思係「回復原狀」。'I will revert to you' native 聽落好怪。"},
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"Please be informed that → Just to let you know",z:"通知",n:"中式公文直譯，過度官腔。"},
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"Kindly → Could you please",z:"請",n:"'Kindly + 動詞' 係東南亞商業英語特色，native 用得極少，聽落有命令感。"},
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"do the needful → take care of it",z:"處理",n:"印度／東南亞英語，英式美式都唔用。"},
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"herewith / hereby",z:"（避免）",n:"除法律文件外唔用。"},
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"As per our conversation → Following our chat",z:"如我哋所講",n:"'as per' 唔算錯，但好生硬。"},
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"actually 濫用",z:"",n:"香港人開口埋口 actually。Native 用得少好多，而且 actually 帶「其實你講錯咗」嘅意味，用多咗會顯得挑剔。"},
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"later → this afternoon / by four",z:"稍後",n:"later 喺英文可以指一個鐘後，都可以指永遠。職場上一定要講具體時間。"},
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"open / close the aircon → turn on / off",z:"開關冷氣"},
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"lah / la / lor / ah",z:"（語氣助詞）",n:"講英文時要完全掉走。呢個係最容易忘記、又最影響專業感嘅一項。"},
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"Have you eaten? ",z:"食咗飯未？",n:"喺英文係真問題，唔係打招呼。對方會以為你想約佢食飯。"},
+{g:"F. ⚠️ 香港辦公室英文陷阱",e:"How are you? 唔係真問題",z:"",n:"標準答法：'Good, thanks — you?' 然後就完。答足三分鐘身體狀況係典型文化誤會。"}
+];
+
+// ================= NATURALNESS =================
+const NAT=[
+{g:"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿",b:"I will send it to you.",n2:"I'll send it over."},
+{g:"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿",b:"That is not what we agreed.",n2:"That's not what we agreed."},
+{g:"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿",b:"I am not sure.",n2:"I'm not sure."},
+{g:"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿",b:"We are going to look at chapter five.",n2:"We're going to look at chapter five."},
+{g:"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿",b:"Let us begin.",n2:"Let's start."},
+{g:"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿",b:"It is going to be late.",n2:"It's going to be late."},
+{g:"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿",b:"I would like you to try question four.",n2:"I'd like you to try question four."},
+{g:"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿",b:"Do not worry about that.",n2:"Don't worry about that."},
+{g:"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿",b:"There is a problem with the booking.",n2:"There's a problem with the booking."},
+{g:"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿",b:"I have not marked them yet.",n2:"I haven't marked them yet."},
+{g:"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿",b:"What is the answer?",n2:"What's the answer?",n:"⚠️ 講嘢唔縮寫，聽落就似讀稿。呢個係「似背書」最單一嘅原因。但注意：gonna / wanna / gotta 只可以講，唔可以寫。"},
+
+{g:"2. 講短句 Fragments — 完整句係書面感",b:"Are there any questions?",n2:"Any questions?"},
+{g:"2. 講短句 Fragments — 完整句係書面感",b:"That is a good question.",n2:"Good question."},
+{g:"2. 講短句 Fragments — 完整句係書面感",b:"Is that clear to everybody?",n2:"Clear so far? / With me?"},
+{g:"2. 講短句 Fragments — 完整句係書面感",b:"I will do it.",n2:"Will do."},
+{g:"2. 講短句 Fragments — 完整句係書面感",b:"It does not matter.",n2:"Doesn't matter."},
+{g:"2. 講短句 Fragments — 完整句係書面感",b:"Do you have a moment?",n2:"Got a minute?"},
+{g:"2. 講短句 Fragments — 完整句係書面感",b:"What do you think about it?",n2:"Thoughts?"},
+{g:"2. 講短句 Fragments — 完整句係書面感",b:"That sounds good to me.",n2:"Sounds good."},
+{g:"2. 講短句 Fragments — 完整句係書面感",b:"Are you ready to start?",n2:"Ready?"},
+{g:"2. 講短句 Fragments — 完整句係書面感",b:"I would like everyone to be quiet.",n2:"Quiet, please."},
+{g:"2. 講短句 Fragments — 完整句係書面感",b:"Everybody please sit down now.",n2:"Sit down, everyone.",n:"真人講嘢好多時唔講完整句。你講足主語動詞受詞，反而聽落似朗讀課文。而且短句學生更易聽得明。"},
+
+{g:"3. 起手詞 Discourse markers — 呢啲要留返",b:"er… um… 呢個…",n2:"（靜音兩秒）",n:"⚠️ 更正我之前講過嘅嘢：我叫你剷走 filler 嗰陣講得太籠統。要剷嘅係 <b>hesitation filler</b>（er, um），唔係 <b>discourse marker</b>（right, OK, so, now）。Native 老師成日用後者做段落分界 —— 完全冇咗，聽落會硬同突兀。"},
+{g:"3. 起手詞 Discourse markers — 呢啲要留返",b:"（開始新一段）",n2:"Right, … / OK, so… / Now, …"},
+{g:"3. 起手詞 Discourse markers — 呢啲要留返",b:"（轉話題）",n2:"Anyway, … / Moving on, …"},
+{g:"3. 起手詞 Discourse markers — 呢啲要留返",b:"（要人認真聽）",n2:"Look, … / Listen, …"},
+{g:"3. 起手詞 Discourse markers — 呢啲要留返",b:"（帶出重點）",n2:"The thing is, …"},
+{g:"3. 起手詞 Discourse markers — 呢啲要留返",b:"（坦白講）",n2:"To be honest, …"},
+{g:"3. 起手詞 Discourse markers — 呢啲要留返",b:"（解釋自己頭先講咩）",n2:"I mean, …"},
+{g:"3. 起手詞 Discourse markers — 呢啲要留返",b:"（引起注意）",n2:"You know what? …",n:"用得啱嘅 marker 令人覺得你有組織；hesitation filler 令人覺得你冇準備。分別唔係聲量，係<b>有冇意思</b>。"},
+
+{g:"4. 緩和詞 Softeners — 唔好句句講到絕",b:"It is difficult.",n2:"It's a bit tricky."},
+{g:"4. 緩和詞 Softeners — 唔好句句講到絕",b:"You are wrong.",n2:"That's not quite right."},
+{g:"4. 緩和詞 Softeners — 唔好句句講到絕",b:"This is the opposite.",n2:"It's sort of the opposite."},
+{g:"4. 緩和詞 Softeners — 唔好句句講到絕",b:"Look at this.",n2:"Just have a look at this."},
+{g:"4. 緩和詞 Softeners — 唔好句句講到絕",b:"It will rain.",n2:"It'll probably rain."},
+{g:"4. 緩和詞 Softeners — 唔好句句講到絕",b:"The answer is B.",n2:"I'd say the answer is B."},
+{g:"4. 緩和詞 Softeners — 唔好句句講到絕",b:"It is good.",n2:"It's pretty good."},
+{g:"4. 緩和詞 Softeners — 唔好句句講到絕",b:"Come here.",n2:"Could you come here a sec?"},
+{g:"4. 緩和詞 Softeners — 唔好句句講到絕",b:"You must finish it today.",n2:"I'd like it finished today if you can.",n:"香港人講英文容易「講到絕」，聽落好硬。加一個 a bit / just / probably / I'd say / pretty，即刻軟返，而且更似真人。呢啲字冇實際意思 —— 佢哋嘅作用就係令你唔似機械人。"},
+
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"utilise",n2:"use"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"commence",n2:"start"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"endeavour",n2:"try"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"assist",n2:"help"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"obtain",n2:"get"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"require",n2:"need"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"sufficient",n2:"enough"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"purchase",n2:"buy"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"inform",n2:"tell / let you know"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"approximately",n2:"about / around"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"currently",n2:"at the moment"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"regarding",n2:"about"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"in order to",n2:"to"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"prior to",n2:"before"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"subsequently",n2:"then / after that"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"furthermore",n2:"also / and"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"due to the fact that",n2:"because"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"at this point in time",n2:"now"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"in the event that",n2:"if"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"demonstrate",n2:"show"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"comprehend",n2:"understand"},
+{g:"5. 大字換細字 — 講嘢唔好用寫作嘅字",b:"numerous",n2:"a lot of",n:"香港教育訓練出嚟嘅英文偏向拉丁詞源嘅「大字」。寫作可以，講嘢用就即刻似讀稿 —— 而且<b>學生更加聽唔明</b>，因為大字全部係佢哋未學過嘅。教學英語嘅第一原則係簡單，唔係漂亮。"}
+];
+
+const FRAMES=[
+{g:"教學 Teaching",f:"Let's have a look at ___.",ex:["Let's have a look at question three.","Let's have a look at what happens next."]},
+{g:"教學 Teaching",f:"What happens if ___?",ex:["What happens if the price goes up?","What happens if we change this number?"]},
+{g:"教學 Teaching",f:"The thing about ___ is ___.",ex:["The thing about this rule is that it only works sometimes.","The thing about exams is they reward clear writing."]},
+{g:"教學 Teaching",f:"So what we're saying is ___.",ex:["So what we're saying is the two are connected.","So what we're saying is it depends on the price."]},
+{g:"教學 Teaching",f:"Think of it as ___.",ex:["Think of it as a switch.","Think of it as two separate steps."]},
+{g:"教學 Teaching",f:"The difference is ___.",ex:["The difference is the direction.","The difference is one is a cause and one is a result."]},
+{g:"教學 Teaching",f:"It's basically ___.",ex:["It's basically the same idea.","It's basically a shortcut."]},
+{g:"教學 Teaching",f:"This is the bit where ___.",ex:["This is the bit where people get confused.","This is the bit where you need the formula."]},
+{g:"教學 Teaching",f:"Don't worry about ___ for now.",ex:["Don't worry about the numbers for now.","Don't worry about the wording for now."]},
+{g:"教學 Teaching",f:"Can anyone tell me ___?",ex:["Can anyone tell me why?","Can anyone tell me what comes next?"]},
+{g:"教學 Teaching",f:"What would happen to ___ if ___?",ex:["What would happen to the answer if we doubled it?","What would happen to demand if income fell?"]},
+{g:"教學 Teaching",f:"I want you to ___ for two minutes.",ex:["I want you to talk to your partner for two minutes.","I want you to try it on your own for two minutes."]},
+{g:"教學 Teaching",f:"Try ___ and see what you get.",ex:["Try question five and see what you get.","Try it the other way and see what you get."]},
+{g:"教學 Teaching",f:"You're almost there — just ___.",ex:["You're almost there — just check the last step.","You're almost there — just add the reason."]},
+{g:"教學 Teaching",f:"That's why ___.",ex:["That's why the answer is negative.","That's why we do it in this order."]},
+{g:"教學 Teaching",f:"Tell me more about ___.",ex:["Tell me more about that second point.","Tell me more about why you chose B."]},
+
+{g:"職場 Workplace",f:"Can I just check ___?",ex:["Can I just check the date?","Can I just check who's approving this?"]},
+{g:"職場 Workplace",f:"Would you be able to ___?",ex:["Would you be able to send it today?","Would you be able to come and take a look?"]},
+{g:"職場 Workplace",f:"I'm afraid ___.",ex:["I'm afraid we haven't got the budget.","I'm afraid that's not something I can approve."]},
+{g:"職場 Workplace",f:"Any chance you could ___?",ex:["Any chance you could get it to me by Friday?","Any chance you could take a look this week?"]},
+{g:"職場 Workplace",f:"Where are we with ___?",ex:["Where are we with the quotation?","Where are we with the lift repair?"]},
+{g:"職場 Workplace",f:"The problem is ___.",ex:["The problem is the timing.","The problem is we've already paid the deposit."]},
+{g:"職場 Workplace",f:"What I'd suggest is ___.",ex:["What I'd suggest is we wait until August.","What I'd suggest is getting a second quote."]},
+{g:"職場 Workplace",f:"Let me know if ___.",ex:["Let me know if that doesn't work.","Let me know if you need anything else."]},
+{g:"職場 Workplace",f:"I'll get back to you on ___.",ex:["I'll get back to you on the cost.","I'll get back to you on that tomorrow."]},
+{g:"職場 Workplace",f:"Do you want me to ___?",ex:["Do you want me to chase them?","Do you want me to book the hall?"]},
+{g:"職場 Workplace",f:"I'd rather ___ than ___.",ex:["I'd rather wait than rush it.","I'd rather check first than apologise later."]},
+
+{g:"閒聊 Small talk",f:"How's ___ going?",ex:["How's the new class going?","How's your week going?"]},
+{g:"閒聊 Small talk",f:"Did you ___ at the weekend?",ex:["Did you do anything at the weekend?","Did you get out at the weekend?"]},
+{g:"閒聊 Small talk",f:"Have you ___ yet?",ex:["Have you had lunch yet?","Have you been to the new place yet?"]},
+{g:"閒聊 Small talk",f:"I've been meaning to ___.",ex:["I've been meaning to ask you about that.","I've been meaning to try it."]},
+{g:"閒聊 Small talk",f:"I'd better ___.",ex:["I'd better get going.","I'd better let you get on."]}
+];
+
+
+/* ---------------- HELPERS ---------------- */
+const MEM={};
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v==null?d:v;}catch(e){return MEM[k]==null?d:MEM[k];}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){MEM[k]=v;}}
+const KEY="emi-teacher-trainer-v2";
+let state=JSON.parse(lsGet(KEY,"{}"));
+function save(){lsSet(KEY,JSON.stringify(state));}
+P.forEach((p,i)=>p.id="p"+i);
+function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+function clean(t){return String(t).replace(/｜.*$/,"").trim();}
+function speak(t){
+  if(!window.speechSynthesis)return;
+  const txt=clean(t).replace(/（[^）]*）/g,"").replace(/[（）]/g,"").trim();
+  if(!txt)return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang="en-GB";u.rate=0.85;
+  const v=speechSynthesis.getVoices().find(x=>x.lang==="en-GB");
+  if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+/* ===== settings · bookmarks · tone ===== */
+let cfg=JSON.parse(lsGet("emi-cfg",'{"tone":"neutral"}'));
+let marks=JSON.parse(lsGet("emi-marks","[]"));
+let rungs=JSON.parse(lsGet("emi-rungs","{}"));
+function saveCfg(){lsSet("emi-cfg",JSON.stringify(cfg));}
+function saveMarks(){lsSet("emi-marks",JSON.stringify(marks));updMark();}
+function saveRungs(){lsSet("emi-rungs",JSON.stringify(rungs));}
+function isMark(id){return marks.indexOf(id)>=0;}
+function togMark(id){const i=marks.indexOf(id);if(i>=0)marks.splice(i,1);else marks.push(id);saveMarks();}
+function updMark(){const e=document.getElementById("markCount");
+  if(e)e.innerHTML='★ 收藏 <b>'+marks.length+'</b> 句';}
+
+function allVars(p){
+  const out=[{t:p.en,label:""}];
+  (p.a||[]).forEach(x=>{const s=String(x).split("｜");out.push({t:s[0].trim(),label:(s[1]||"").trim()});});
+  const eng=out.filter(v=>/[a-zA-Z]/.test(v.t));
+  return eng.length?eng:out;
+}
+function primaryOf(p){
+  const vs=allVars(p);
+  if(cfg.tone==="simple")return vs.slice().sort(function(a,b){return a.t.length-b.t.length;})[0];
+  if(cfg.tone==="idiom"){
+    const i=vs.filter(function(v){return /英式|口語|幽默|地道/.test(v.label);})[0];
+    return i||vs.slice().sort(function(a,b){return b.t.length-a.t.length;})[0];
+  }
+  return vs[0];
+}
+function altHTML(p,skip){
+  const vs=allVars(p).filter(function(v){return v.t!==skip;});
+  if(!vs.length)return"";
+  let s='<div class="alts"><div class="altlab">其他講法 · 揀一個做你自己嘅</div>';
+  vs.forEach(function(v){
+    s+='<div class="alt">'+esc(v.t)+
+       (v.label?' <span style="font-size:11px;color:var(--accent)">'+esc(v.label)+'</span>':'')+
+       ' <button class="spk" data-t="'+esc(v.t)+'">🔊</button></div>';
+  });
+  return s+'</div>';
+}
+function starHTML(p){
+  return '<button class="star'+(isMark(p.id)?" on":"")+'" data-id="'+p.id+'" title="收藏">'+
+         (isMark(p.id)?"★":"☆")+'</button>';
+}
+function wireStar(el,after){
+  el.querySelectorAll(".star[data-id]").forEach(function(b){
+    b.onclick=function(){togMark(b.dataset.id);
+      b.classList.toggle("on");b.textContent=b.classList.contains("on")?"★":"☆";
+      if(after)after();};
+  });
+}
+function similar(p,n){
+  const same=P.filter(function(x){return x!==p&&x.c===p.c;});
+  const mod=P.filter(function(x){return x!==p&&x.m===p.m&&x.c!==p.c;});
+  const pool=same.concat(mod);const out=[];
+  while(out.length<(n||3)&&pool.length){
+    const i=Math.floor(Math.random()*pool.length);out.push(pool[i]);pool.splice(i,1);
+  }
+  return out;
+}
+function simBoxHTML(p){
+  const s=similar(p,3);
+  if(!s.length)return"";
+  let x='<div class="alts"><div class="altlab">相似情境 — 順便練埋</div>';
+  s.forEach(function(q){
+    const pr=primaryOf(q);
+    x+='<div class="alt"><span style="color:var(--mute);font-size:13px">'+q.zh+'</span><br>'+
+       esc(pr.t)+' <button class="spk" data-t="'+esc(pr.t)+'">🔊</button></div>';
+  });
+  return x+'</div>';
+}
+
+/* ===== speech recognition scoring ===== */
+const SRc=window.SpeechRecognition||window.webkitSpeechRecognition;
+const EXP={"i'll":"i will","it's":"it is","that's":"that is","don't":"do not","doesn't":"does not",
+"we're":"we are","i'm":"i am","let's":"let us","you've":"you have","i'd":"i would","can't":"cannot",
+"isn't":"is not","haven't":"have not","won't":"will not","what's":"what is","there's":"there is",
+"he's":"he is","she's":"she is","they're":"they are","we'll":"we will","you'll":"you will",
+"i've":"i have","didn't":"did not","couldn't":"could not","wouldn't":"would not",
+"shouldn't":"should not","that'll":"that will","it'll":"it will","we've":"we have","you're":"you are"};
+function normSay(s){
+  let x=" "+String(s).toLowerCase().replace(/[^a-z0-9'\s]/g," ")+" ";
+  for(const k in EXP){x=x.split(" "+k+" ").join(" "+EXP[k]+" ");}
+  return x.replace(/\s+/g," ").trim();
+}
+function scoreSay(target,said){
+  const t=normSay(target).split(" ").filter(Boolean);
+  const set={};normSay(said).split(" ").forEach(function(w){set[w]=1;});
+  let hit=0;
+  const m=t.map(function(w){const ok=!!set[w];if(ok)hit++;return{w:w,ok:ok};});
+  return {pct:t.length?Math.round(hit*100/t.length):0,m:m};
+}
+function srWhy(){
+  if(location.protocol==="file:")return "file";
+  if(!SRc)return "nosr";
+  const hn=location.hostname;
+  const secure=(location.protocol==="https:")||hn==="localhost"||hn==="127.0.0.1"||
+                hn==="[::1]"||window.isSecureContext===true;
+  if(!secure)return "insecure";
+  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia))return "nomic";
+  return "";
+}
+const SRERR={
+ "not-allowed":"瀏覽器拒絕咗麥克風權限。撳網址列左邊嘅 🔒 或 ⓘ → 麥克風 → 允許，然後 reload。",
+ "service-not-allowed":"系統阻止咗語音服務。可能係作業系統嘅麥克風私隱設定（Mac：系統設定 → 私隱與安全性 → 麥克風 → 開啟 Chrome）。",
+ "audio-capture":"搵唔到麥克風。檢查有冇插咪、或者揀錯咗輸入裝置。",
+ "no-speech":"收唔到人聲。可能講得太細聲、太遲開始、或者揀錯輸入裝置。",
+ "network":"語音辨識需要連線（Chrome 會將聲音送去 Google 處理）。檢查網絡。",
+ "aborted":"辨識被中斷咗。"
+};
+function srHelp(){
+  return '<div class="note"><b>點解用唔到咪？三個最常見原因：</b><br>'+
+   '1. <b>你用 file:// 直接開檔案。</b>Chrome 唔會喺 file:// 畀網頁用麥克風（保安限制）。<br>'+
+   '2. <b>未畀權限。</b>撳網址列嘅 🔒／ⓘ → 麥克風 → 允許 → reload。<br>'+
+   '3. <b>作業系統層面封咗。</b>Mac：系統設定 → 私隱與安全性 → 麥克風 → 開啟 Chrome。'+
+   'Windows：設定 → 私隱 → 麥克風 → 允許應用程式存取。<br><br>'+
+   '<b>最簡單嘅出路（唔使搞任何嘢）：</b>用下面個框。用你部機本身嘅語音輸入講入去 —— '+
+   'Windows 撳 <b>Win + H</b>，Mac 撳咪掣或 Edit → Start Dictation，手機撳鍵盤上嘅咪（語言揀 English）。'+
+   '講完撳「對比」，一樣有逐字紅綠評分。<br><br>'+
+   '<b>想真係用返個 🎙 掣：</b>要行 http 而唔係 file。Mac／Linux 開 Terminal，'+
+   'cd 去放檔案嗰個資料夾，打 <code>python3 -m http.server 8000</code>，'+
+   '然後 Chrome 去 <code>http://localhost:8000/EMI-Teacher-Talk-Trainer.html</code>。localhost 算安全來源，咪就開得着。</div>';
+}
+function showScore(target,said,wrap,lab){
+  const s=scoreSay(target,said);
+  const col=s.pct>=85?"var(--good)":(s.pct>=60?"var(--shaky)":"var(--warn)");
+  wrap.innerHTML='<div class="gauge" style="color:'+col+'">'+s.pct+'%</div>'+
+    '<div class="stat">'+(lab||"你講咗")+'：「'+esc(said)+'」</div>'+
+    '<div class="sr">'+s.m.map(function(x){
+      return '<span class="'+(x.ok?"hit":"miss")+'">'+esc(x.w)+'</span>';}).join("")+'</div>'+
+    '<div class="note">綠 = 講中；紅 = 漏咗或者聽唔出。<b>特別留意紅色嘅 -s、-ed、同縮寫</b> —— '+
+    '呢啲最容易吞音，吞咗學生就聽錯時態。<br><br>'+
+    '<b>診斷技巧：</b>辨識器寫低嘅係佢<b>聽到</b>咩，唔係你<b>想講</b>咩。'+
+    '同一個字連續三次都紅，就係你嘅發音問題，加入清單。</div>';
+  return s.pct;
+}
+function srListen(target,mount,done){
+  mount.innerHTML="";
+  const wrap=document.createElement("div");mount.appendChild(wrap);
+  const man=document.createElement("div");man.className="note";
+  man.innerHTML='<div style="margin-bottom:6px"><b>用唔到咪？打低（或用系統語音輸入講入）你頭先講咗咩：</b></div>'+
+    '<textarea class="mtxt" style="min-height:46px"></textarea>'+
+    '<div class="row"><button class="btn mgo">對比 →</button>'+
+    '<button class="btn mhelp">點解用唔到咪？</button></div><div class="mhbox"></div>';
+  mount.appendChild(man);
+  man.querySelector(".mgo").onclick=function(){
+    const v=man.querySelector(".mtxt").value.trim();
+    if(v){const p=showScore(target,v,wrap,"你打咗");if(done)done(p);}
+  };
+  const hb=man.querySelector(".mhbox");
+  man.querySelector(".mhelp").onclick=function(){hb.innerHTML=hb.innerHTML?"":srHelp();};
+
+  const why=srWhy();
+  if(why==="file"){
+    wrap.innerHTML='<div class="err"><b>⚠️ 你而家用 file:// 直接開緊個檔案。</b><br>'+
+      'Chrome 基於保安，唔會喺 file:// 畀網頁攞麥克風 —— 所以 🎙 一定收唔到聲。呢個唔係你部機壞。</div>'+srHelp();
+    if(done)done(null);return;
+  }
+  if(why==="nosr"){
+    wrap.innerHTML='<div class="err">呢個瀏覽器唔支援語音辨識。請用 <b>Chrome</b>（Safari 同 Firefox 都唔得）。</div>'+srHelp();
+    if(done)done(null);return;
+  }
+  if(why==="insecure"||why==="nomic"){
+    wrap.innerHTML='<div class="err">呢個環境唔畀網頁攞麥克風（非安全來源）。</div>'+srHelp();
+    if(done)done(null);return;
+  }
+
+  wrap.innerHTML='<div class="note">要求緊麥克風權限…如果彈窗出咗，撳「允許」。</div>';
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+    st.getTracks().forEach(function(t){t.stop();});
+    runSR(target,wrap,done);
+  }).catch(function(e){
+    wrap.innerHTML='<div class="err"><b>攞唔到麥克風</b>（'+esc(e.name||e.message||e)+'）。<br>'+
+      (SRERR["not-allowed"])+'</div>'+srHelp();
+    if(done)done(null);
+  });
+}
+function runSR(target,wrap,done){
+  const r=new SRc();
+  r.lang="en-GB";r.interimResults=true;r.continuous=true;r.maxAlternatives=3;
+  let finalTxt="",ended=false;
+  wrap.innerHTML='<div class="note" style="color:var(--warn);font-size:15px">'+
+    '🔴 <b>而家開始講。</b>講完撳「講完喇」。（唔使急，佢會等你）</div>'+
+    '<div class="stat" id="srLive" style="min-height:22px;font-size:15px;color:var(--accent2)"></div>'+
+    '<div class="row"><button class="btn primary srStop">講完喇 ✓</button></div>';
+  const live=wrap.querySelector("#srLive");
+  const stopBtn=wrap.querySelector(".srStop");
+  const finish=function(){
+    if(ended)return;ended=true;
+    try{r.stop();}catch(e){}
+    const said=(finalTxt||live.textContent||"").trim();
+    if(!said){
+      wrap.innerHTML='<div class="err"><b>完全收唔到人聲。</b><br>'+
+        '多數係揀錯咗輸入裝置（例如 Chrome 用緊耳機咪但你對住電腦講），或者講得太細聲。<br>'+
+        'Chrome 網址列 🔒 → 網站設定 → 麥克風，確認揀啱嗰個裝置。</div>'+srHelp();
+      if(done)done(null);return;
+    }
+    const p=showScore(target,said,wrap,"你講咗");
+    if(done)done(p);
+  };
+  stopBtn.onclick=finish;
+  r.onresult=function(e){
+    let interim="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript;
+      if(e.results[i].isFinal)finalTxt+=" "+t;else interim+=t;
+    }
+    live.textContent=(finalTxt+" "+interim).trim();
+  };
+  r.onerror=function(ev){
+    if(ev.error==="no-speech")return;
+    if(ended)return;ended=true;
+    wrap.innerHTML='<div class="err"><b>語音辨識出錯：</b>'+esc(ev.error)+'<br>'+
+      (SRERR[ev.error]||"未知錯誤。")+'</div>'+srHelp();
+    if(done)done(null);
+  };
+  r.onend=function(){if(!ended)finish();};
+  try{r.start();}catch(e){
+    wrap.innerHTML='<div class="err">啟動唔到語音辨識：'+esc(e.message||e)+'</div>'+srHelp();
+    if(done)done(null);
+  }
+}
+/* ===== recording ===== */
+let mr=null,rchunks=[],rURL=null;
+function recToggle(btn,mount){
+  if(mr&&mr.state==="recording"){mr.stop();return;}
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+    mr=new MediaRecorder(st);rchunks=[];
+    mr.ondataavailable=function(e){rchunks.push(e.data);};
+    mr.onstop=function(){
+      st.getTracks().forEach(function(t){t.stop();});
+      const b=new Blob(rchunks,{type:"audio/webm"});
+      if(rURL)URL.revokeObjectURL(rURL);
+      rURL=URL.createObjectURL(b);
+      mount.innerHTML='<div class="note">你嘅錄音。同上面 🔊 嘅模型音<b>交替聽三次</b>，只聽兩樣：'+
+        '<b>重音落喺邊個字</b>、<b>邊度停頓</b>。唔使理個別音素。</div>'+
+        '<audio controls src="'+rURL+'" style="width:100%;margin-top:6px"></audio>';
+      btn.classList.remove("rec");btn.textContent="🎙 錄音對比";
+    };
+    mr.start();btn.classList.add("rec");btn.textContent="⏹ 停止";
+    mount.innerHTML='<div class="note" style="color:var(--warn)">錄緊音…</div>';
+  }).catch(function(){mount.innerHTML='<div class="note">⚠️ 攞唔到麥克風權限。</div>';});
+}
+function wire(el){el.querySelectorAll(".spk[data-t]").forEach(b=>b.onclick=()=>speak(b.dataset.t));}
+
+/* ---------------- NAV ---------------- */
+const TABS=[["browse","📖 Browse 句庫"],["drill","🎯 Drill 抽卡"],["ladder","🪜 Ladder 階梯"],["sim","⏱ Simulator 情境"],
+            ["role","🎭 對話 AI"],["polish","✍️ 執句 AI"],["gen","↻ 生成 AI"],["quiz","🎯 出題 AI"],["nat","✨ Natural 自然度"],["pron","🔊 Pronunciation 發音"],["vocab","📚 Vocab 詞彙"],
+            ["fix","🔧 Fix It 改錯"],["ped","🎓 Pedagogy 教學法"],["setup","⚙️ Setup 設定"],["prog","📊 Progress 進度"]];
+const nav=document.getElementById("nav");
+TABS.forEach(([k,label],idx)=>{
+  const b=document.createElement("button");
+  b.textContent=label;if(idx===0)b.className="on";
+  b.onclick=()=>{
+    document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");
+    document.querySelectorAll(".panel").forEach(x=>x.classList.remove("on"));
+    document.getElementById("p-"+k).classList.add("on");
+    if(k==="prog")renderProg();
+    window.scrollTo(0,0);
+  };
+  nav.appendChild(b);
+});
+
+/* ---------------- shared pool ---------------- */
+function poolFor(v){
+  if(v==="★")return P.filter(function(p){return isMark(p.id);});
+  if(v==="*")return P.slice();
+  return P.filter(function(p){return p.m===v;});
+}
+function fillModSel(sel,withAll){
+  sel.innerHTML="";
+  if(withAll)sel.add(new Option("全部 modules 混合","*"));
+  Object.keys(MODS).forEach(function(k){sel.add(new Option(MODS[k],k));});
+  sel.add(new Option("★ 我的收藏 Bookmarks","★"));
+}
+
+/* ---------------- BROWSE ---------------- */
+const modSel=document.getElementById("modSel"),catSel=document.getElementById("catSel");
+fillModSel(modSel,false);
+function fillCat(){
+  catSel.innerHTML="";catSel.add(new Option("全部 categories","*"));
+  const seen={};
+  poolFor(modSel.value).forEach(function(p){if(!seen[p.c]){seen[p.c]=1;catSel.add(new Option(p.c,p.c));}});
+}
+function renderBrowse(){
+  const list=document.getElementById("browseList");list.innerHTML="";
+  const items=poolFor(modSel.value).filter(function(p){return catSel.value==="*"||p.c===catSel.value;});
+  if(!items.length){list.innerHTML='<div class="card">未有收藏。喺任何句子撳 ☆ 就會加入呢度。</div>';return;}
+  items.forEach(function(p){
+    const pr=primaryOf(p);
+    const d=document.createElement("div");d.className="card";
+    d.innerHTML='<div class="tag">'+p.c+'</div>'+starHTML(p)+
+      '<div class="zh">'+p.zh+'</div>'+
+      '<div class="en">'+esc(pr.t)+' <button class="spk" data-t="'+esc(pr.t)+'">🔊</button></div>'+
+      altHTML(p,pr.t)+(p.n?'<div class="note">💡 '+p.n+'</div>':'')+
+      '<div class="row"><button class="btn" data-sim="1">↻ 相似情境</button></div><div class="simbox"></div>';
+    const sb=d.querySelector(".simbox");
+    d.querySelector("[data-sim]").onclick=function(){sb.innerHTML=simBoxHTML(p);wire(sb);};
+    wire(d);wireStar(d,function(){if(modSel.value==="★")renderBrowse();});
+    list.appendChild(d);
+  });
+}
+modSel.onchange=function(){fillCat();renderBrowse();};
+catSel.onchange=renderBrowse;
+fillCat();renderBrowse();
+
+/* ---------------- DRILL ---------------- */
+const drillMod=document.getElementById("drillMod");
+fillModSel(drillMod,true);
+let queue=[],cur=null,curPrim=null;
+function weight(id){const s=state[id];if(!s)return 2;if(s==="missed")return 4;if(s==="shaky")return 3;return 1;}
+function buildQueue(){
+  const pool=poolFor(drillMod.value);queue=[];
+  pool.forEach(function(p){for(let i=0;i<weight(p.id);i++)queue.push(p);});
+  queue.sort(function(){return Math.random()-0.5;});
+}
+function nextCard(){
+  if(!queue.length)buildQueue();
+  if(!queue.length){document.getElementById("dZh").textContent="呢個組別未有句子（收藏係空嘅？）";cur=null;return;}
+  cur=queue.pop();curPrim=primaryOf(cur);
+  document.getElementById("dTag").innerHTML=cur.c+" "+starHTML(cur);
+  wireStar(document.getElementById("dTag"));
+  document.getElementById("dZh").textContent=cur.zh;
+  document.getElementById("dEn").textContent=curPrim.t;
+  const da=document.getElementById("dAlts");da.innerHTML=altHTML(cur,curPrim.t)+simBoxHTML(cur);wire(da);
+  const dn=document.getElementById("dNote");
+  dn.innerHTML=cur.n?("💡 "+cur.n):"";dn.style.display=cur.n?"block":"none";
+  document.getElementById("dAnswer").classList.add("hidden");
+  document.getElementById("dGrade").classList.add("hidden");
+  document.getElementById("dReveal").classList.remove("hidden");
+  document.getElementById("dSR").innerHTML="";
+  stat();
+}
+function stat(){
+  const done=Object.keys(state).length,solid=Object.values(state).filter(function(v){return v==="solid";}).length;
+  document.getElementById("dStat").textContent="已練 "+done+" / "+P.length+" 個情境 · 其中 "+solid+" 個 solid · ★ 收藏 "+marks.length;
+}
+document.getElementById("dReveal").onclick=function(){
+  if(!cur){nextCard();return;}
+  document.getElementById("dAnswer").classList.remove("hidden");
+  document.getElementById("dGrade").classList.remove("hidden");
+  document.getElementById("dReveal").classList.add("hidden");
+};
+document.getElementById("dSpeak").onclick=function(){if(cur)speak(curPrim.t);};
+document.getElementById("dMic").onclick=function(){
+  if(cur)srListen(curPrim.t,document.getElementById("dSR"),null);
+};
+document.querySelectorAll("#dGrade button").forEach(function(b){
+  b.onclick=function(){state[cur.id]=b.dataset.g;save();nextCard();};
+});
+drillMod.onchange=function(){buildQueue();nextCard();};
+document.getElementById("drillReset").onclick=function(){buildQueue();nextCard();};
+buildQueue();
+
+/* ---------------- LADDER ---------------- */
+const RUNGS=[
+{t:"① 聽 Listen",d:"撳 🔊 聽三次。只留意兩樣：<b>重音落喺邊個字</b>、<b>邊度停頓</b>。呢級唔使講。"},
+{t:"② 跟讀 Shadow",d:"撳 🔊 之後<b>幾乎同步</b>跟住講，落後半秒。模仿節奏，唔止模仿字。可以錄音對比。"},
+{t:"③ 填空 Gap-fill",d:"關鍵字冚咗。大聲講出<b>完整</b>句。"},
+{t:"④ 中譯英 Recall",d:"只得中文情境。大聲講出英文。"},
+{t:"⑤ 即時 Live",d:"8 秒倒數。情境一出即刻講，唔准諗。"}];
+const ladMod=document.getElementById("ladMod");
+fillModSel(ladMod,true);
+let ladCur=null,ladRung=0,ladT=null,ladLeft=8;
+function gapify(s){
+  return s.split(" ").map(function(x,i){
+    const core=x.replace(/[^A-Za-z']/g,"");
+    if(core.length>3&&i%2===1)return x.replace(core,"_".repeat(Math.max(core.length,3)));
+    return x;
+  }).join(" ");
+}
+function ladLoad(){
+  const pool=poolFor(ladMod.value).filter(function(p){return (rungs[p.id]||0)<5;});
+  const use=pool.length?pool:poolFor(ladMod.value);
+  if(!use.length){document.getElementById("ladBody").innerHTML='<div class="card">呢個組別未有句子。</div>';ladCur=null;return;}
+  ladCur=use[Math.floor(Math.random()*use.length)];
+  ladRung=rungs[ladCur.id]||0;
+  ladRender();
+}
+function ladRender(){
+  if(!ladCur)return;
+  clearInterval(ladT);
+  const pr=primaryOf(ladCur),tgt=pr.t;
+  let bar="";for(let i=0;i<5;i++)bar+='<div class="'+(i<ladRung?"done":(i===ladRung?"now":""))+'"></div>';
+  document.getElementById("ladBar").innerHTML=bar;
+  document.getElementById("ladLab").innerHTML="<b>"+RUNGS[Math.min(ladRung,4)].t+"</b> — "+RUNGS[Math.min(ladRung,4)].d;
+  document.getElementById("ladTag").innerHTML=ladCur.c+" "+starHTML(ladCur);
+  wireStar(document.getElementById("ladTag"));
+  const body=document.getElementById("ladBody"),ctl=document.getElementById("ladCtl"),fb=document.getElementById("ladFb");
+  fb.innerHTML="";ctl.innerHTML="";
+  let inner="";
+  if(ladRung===0){
+    inner='<div class="zh">'+ladCur.zh+'</div><div class="big" style="color:var(--accent2)">'+esc(tgt)+'</div>';
+  }else if(ladRung===1){
+    inner='<div class="big" style="color:var(--accent2)">'+esc(tgt)+'</div>';
+  }else if(ladRung===2){
+    inner='<div class="zh">'+ladCur.zh+'</div><div class="big" style="letter-spacing:1px">'+esc(gapify(tgt))+'</div>';
+  }else if(ladRung===3){
+    inner='<div class="big">'+ladCur.zh+'</div>';
+  }else{
+    inner='<div class="big">'+ladCur.zh+'</div><div class="timer" id="ladTimer">8</div>';
+  }
+  body.innerHTML=inner;
+  const mk=function(label,cls,fn){const x=document.createElement("button");x.className=cls;x.textContent=label;x.onclick=fn;ctl.appendChild(x);};
+  mk("🔊 模型音","btn",function(){speak(tgt);});
+  if(ladRung>=1)mk("🎙 講一次，我幫你對比","mic",function(){srListen(tgt,fb,null);});
+  if(ladRung===1)mk("🎙 錄音對比","btn",function(){recToggle(this,fb);});
+  if(ladRung>=2)mk("👁 睇答案","btn",function(){fb.innerHTML='<div class="en" style="color:var(--accent2);margin-top:8px">'+esc(tgt)+'</div>'+altHTML(ladCur,tgt);wire(fb);});
+  if(ladRung===4)mk("▶ 開始 8 秒","btn",function(){
+    ladLeft=8;const t=document.getElementById("ladTimer");if(!t)return;
+    t.textContent=ladLeft;t.style.color="var(--accent)";
+    clearInterval(ladT);
+    ladT=setInterval(function(){ladLeft--;t.textContent=Math.max(ladLeft,0);
+      if(ladLeft<=3)t.style.color="var(--warn)";
+      if(ladLeft<=0){clearInterval(ladT);t.textContent="⏱";
+        fb.innerHTML='<div class="en" style="color:var(--accent2)">'+esc(tgt)+'</div>'+altHTML(ladCur,tgt);wire(fb);speak(tgt);}},1000);
+  });
+  mk(ladRung>=4?"完成呢句 ✓":"過關，下一級 →","btn primary",function(){
+    ladRung++;rungs[ladCur.id]=Math.min(ladRung,5);saveRungs();
+    if(ladRung>=5){state[ladCur.id]="solid";save();ladLoad();}else ladRender();
+    ladStat();
+  });
+  mk("退返上一級 ←","btn",function(){if(ladRung>0){ladRung--;rungs[ladCur.id]=ladRung;saveRungs();ladRender();}});
+  ladStat();
+}
+function ladStat(){
+  const done=Object.keys(rungs).filter(function(k){return rungs[k]>=5;}).length;
+  document.getElementById("ladStat").textContent="已行完五級嘅句："+done+" / "+P.length;
+}
+ladMod.onchange=ladLoad;
+document.getElementById("ladSkip").onclick=ladLoad;
+ladLoad();
+
+/* ---------------- SIMULATOR ---------------- */
+const simMod=document.getElementById("simMod");
+fillModSel(simMod,true);
+let sCur=null,sPrim=null,sTimer=null,sLeft=15;
+function simPick(){
+  const pool=poolFor(simMod.value);
+  if(!pool.length){document.getElementById("sZh").textContent="呢個組別未有句子。";sCur=null;return;}
+  sCur=pool[Math.floor(Math.random()*pool.length)];sPrim=primaryOf(sCur);
+  document.getElementById("sTag").textContent=sCur.c;
+  document.getElementById("sZh").textContent=sCur.zh;
+  document.getElementById("sEn").textContent=sPrim.t;
+  const sa=document.getElementById("sAlts");sa.innerHTML=altHTML(sCur,sPrim.t);wire(sa);
+  const ss=document.getElementById("sSim");ss.innerHTML="";
+  document.getElementById("sNote").innerHTML=sCur.n?("💡 "+sCur.n):"";
+  document.getElementById("sSR").innerHTML="";
+  document.getElementById("sAnswer").classList.add("hidden");
+  document.querySelectorAll("#sAnswer input").forEach(function(c){c.checked=false;});
+}
+function simStart(){
+  clearInterval(sTimer);simPick();if(!sCur)return;
+  sLeft=15;const t=document.getElementById("sTimer");
+  t.textContent=sLeft;t.style.color="var(--accent)";
+  sTimer=setInterval(function(){
+    sLeft--;t.textContent=Math.max(sLeft,0);
+    if(sLeft<=5)t.style.color="var(--warn)";
+    if(sLeft<=0){
+      clearInterval(sTimer);t.textContent="⏱";
+      document.getElementById("sAnswer").classList.remove("hidden");
+      const ss=document.getElementById("sSim");ss.innerHTML=simBoxHTML(sCur);wire(ss);
+      speak(sPrim.t);
+    }
+  },1000);
+}
+document.getElementById("sStart").onclick=simStart;
+document.getElementById("sNext").onclick=simStart;
+document.getElementById("sMic").onclick=function(){
+  if(sCur)srListen(sPrim.t,document.getElementById("sSR"),null);
+};
+
+/* ---------------- TOOLBAR ---------------- */
+document.querySelectorAll("#toolbar .pill2").forEach(function(b){
+  if(b.dataset.tone===cfg.tone)b.classList.add("on");else b.classList.remove("on");
+  b.onclick=function(){
+    cfg.tone=b.dataset.tone;saveCfg();
+    document.querySelectorAll("#toolbar .pill2").forEach(function(x){x.classList.remove("on");});
+    b.classList.add("on");
+    renderBrowse();if(ladCur)ladRender();
+  };
+});
+updMark();
+
+/* ---------------- PRONUNCIATION ---------------- */
+const pronSel=document.getElementById("pronSel");
+const PGROUPS=[];
+PRON.forEach(function(p){if(PGROUPS.indexOf(p.g)<0)PGROUPS.push(p.g);});
+pronSel.add(new Option("全部組別","*"));
+PGROUPS.forEach(function(g){pronSel.add(new Option(g,g));});
+function renderPron(){
+  const l=document.getElementById("pronList");l.innerHTML="";
+  let last="";
+  PRON.filter(function(p){return pronSel.value==="*"||p.g===pronSel.value;}).forEach(function(p){
+    if(p.g!==last){const hd=document.createElement("h3");hd.textContent=p.g;l.appendChild(hd);last=p.g;}
+    const d=document.createElement("div");d.className="card";
+    const sep=(p.i===-1)?"<span style='color:#bbb'> &nbsp;|&nbsp; </span>":"<span style='color:#bbb'>·</span>";
+    const syl=p.s.map(function(s,i){return i===p.i?"<b>"+s+"</b>":s;}).join(sep);
+    d.innerHTML='<div class="en" style="font-size:18px">'+p.w+
+      ' <button class="spk" data-t="'+esc(p.w.replace(/→/g,","))+'">🔊</button></div>'+
+      '<div class="stress">'+syl+'</div>'+(p.n?'<div class="note">'+p.n+'</div>':'');
+    wire(d);l.appendChild(d);
+  });
+}
+pronSel.onchange=renderPron;renderPron();
+
+/* ---------------- FIX IT ---------------- */
+(function(){
+  const l=document.getElementById("fixList");
+  FIX.forEach(function(fx,i){
+    const d=document.createElement("div");d.className="card";
+    d.innerHTML='<div class="zh">錯句 '+(i+1)+'：</div><div class="en bad">'+esc(fx.b)+'</div>'+
+      '<div class="row"><button class="btn">Show fix</button></div>'+
+      '<div class="hidden ans"><div class="en good" style="margin-top:10px">✓ '+esc(fx.g)+'</div>'+
+      '<div class="note">'+fx.w+'</div></div>';
+    const btn=d.querySelector("button"),ans=d.querySelector(".ans");
+    btn.onclick=function(){
+      ans.classList.toggle("hidden");
+      const hid=ans.classList.contains("hidden");
+      btn.textContent=hid?"Show fix":"Hide";
+      if(!hid)speak(fx.g.split(" / ")[0]);
+    };
+    l.appendChild(d);
+  });
+})();
+
+/* ---------------- NATURALNESS ---------------- */
+const natSel=document.getElementById("natSel");
+const NGROUPS=[...new Set(NAT.map(v=>v.g))];
+natSel.add(new Option("全部組別","*"));
+NGROUPS.forEach(g=>natSel.add(new Option(g,g)));
+function renderNat(){
+  const l=document.getElementById("natList");l.innerHTML="";
+  NGROUPS.filter(g=>natSel.value==="*"||g===natSel.value).forEach(g=>{
+    const hh=document.createElement("h3");hh.textContent=g;l.appendChild(hh);
+    const c=document.createElement("div");c.className="card";
+    let rows='<tr><th style="width:46%">似讀稿 / 太書面</th><th>自然講法</th></tr>',note="";
+    NAT.filter(v=>v.g===g).forEach(v=>{
+      rows+='<tr><td style="color:var(--warn)">'+esc(v.b)+'</td>'+
+            '<td><b class="good">'+esc(v.n2)+'</b> <button class="spk" data-t="'+esc(v.n2)+'">🔊</button></td></tr>';
+      if(v.n)note=v.n;
+    });
+    c.innerHTML='<table>'+rows+'</table>'+(note?'<div class="note">💡 '+note+'</div>':'');
+    wire(c);l.appendChild(c);
+  });
+}
+natSel.onchange=renderNat;renderNat();
+(function(){
+  const l=document.getElementById("frameList");let last="";
+  FRAMES.forEach(fr=>{
+    if(fr.g!==last){const hh=document.createElement("h3");hh.style.color="var(--accent2)";
+      hh.textContent="· "+fr.g;l.appendChild(hh);last=fr.g;}
+    const d=document.createElement("div");d.className="card";
+    d.innerHTML='<div class="en" style="font-size:18px;color:var(--accent2)">'+esc(fr.f)+'</div>'+
+      '<div class="alts"><div class="altlab">填入例子</div>'+
+      fr.ex.map(x=>'<div class="alt">'+esc(x)+' <button class="spk" data-t="'+esc(x)+'">🔊</button></div>').join('')+
+      '</div>';
+    wire(d);l.appendChild(d);
+  });
+})();
+
+/* ---------------- VOCAB ---------------- */
+const vocabSel=document.getElementById("vocabSel");
+const VGROUPS=[...new Set(VOCAB.map(v=>v.g))];
+vocabSel.add(new Option("全部組別","*"));
+VGROUPS.forEach(g=>vocabSel.add(new Option(g,g)));
+function renderVocab(){
+  const l=document.getElementById("vocabList");l.innerHTML="";
+  VGROUPS.filter(g=>vocabSel.value==="*"||g===vocabSel.value).forEach(g=>{
+    const h=document.createElement("h3");h.textContent=g;l.appendChild(h);
+    const c=document.createElement("div");c.className="card";
+    let rows="";
+    VOCAB.filter(v=>v.g===g).forEach(v=>{
+      rows+='<tr><td style="width:44%"><b>'+esc(v.e)+'</b> '+
+            '<button class="spk" data-t="'+esc(v.e.split(" →")[0].split(" /")[0])+'">🔊</button></td>'+
+            '<td style="width:22%;color:var(--mute)">'+esc(v.z||"")+'</td>'+
+            '<td style="font-size:13px;color:var(--mute)">'+(v.n||"")+'</td></tr>';
+    });
+    c.innerHTML='<table>'+rows+'</table>';
+    wire(c);l.appendChild(c);
+  });
+}
+vocabSel.onchange=renderVocab;renderVocab();
+
+/* ---------------- PROGRESS ---------------- */
+function renderProg(){
+  const l=document.getElementById("progList");l.innerHTML="";
+  Object.entries(MODS).forEach(([k,v])=>{
+    const items=P.filter(p=>p.m===k);
+    const solid=items.filter(p=>state[p.id]==="solid").length;
+    const pct=Math.round(solid/items.length*100);
+    const d=document.createElement("div");d.className="card";
+    d.innerHTML='<div class="en" style="font-size:15px">'+v+'</div>'+
+      '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
+      '<div class="stat">'+solid+' / '+items.length+' 個情境 solid — '+pct+'%</div>';
+    l.appendChild(d);
+  });
+}
+document.getElementById("wipe").onclick=()=>{
+  if(confirm("清除所有練習進度？")){state={};save();renderProg();stat();}
+};
+stat();
+
+/* ================= AI COACH ================= */
+(function(){
+const BASE="You are coaching TNY, a Hong Kong secondary-school teacher. He teaches HKDSE Economics in an EMI school (Forms 4-6) and is also the school General Affairs officer (facilities, procurement, contractors). His English is good but sounds written rather than spoken. Target: natural, SIMPLE, spoken British English with contractions. His students are also second-language learners, so classroom English must be plain and short. Never use rare idioms when talking to students.";
+function apiKey(){return lsGet("emi-apikey","");}
+function apiModel(){return lsGet("emi-apimodel","claude-sonnet-5");}
+function hasAI(){return !!(window.cowork&&window.cowork.askClaude)||!!apiKey();}
+function noAI(el){el.innerHTML='<div class="err"><b>AI 未設定。</b><br><br>'+
+ '兩條路二揀一：<br>'+
+ '· <b>喺 Claude 側邊欄開呢個工具</b> — 唔使設定，即開即用。<br>'+
+ '· <b>去 ⚙️ Setup 版填你自己嘅 API key</b> — 之後任何瀏覽器、電話都用到。<br><br>'+
+ '其餘十版（句庫、階梯、模擬、發音、詞彙、自然度、改錯、教學法）唔需要 AI，照樣用得。</div>';}
+function unwrap(r){
+  if(typeof r==="string")return r;
+  if(r&&typeof r.text==="string")return r.text;
+  if(r&&r.content&&r.content[0]&&r.content[0].text)return r.content[0].text;
+  return String(r);
+}
+function ask(p){
+  if(window.cowork&&window.cowork.askClaude)
+    return window.cowork.askClaude(p,[]).then(unwrap);
+  const k=apiKey();
+  if(!k)return Promise.reject(new Error("未設定 API key。去 ⚙️ Setup 版設定，或者喺 Claude 側邊欄開呢個工具。"));
+  return fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"content-type":"application/json","x-api-key":k,
+      "anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:apiModel(),max_tokens:900,messages:[{role:"user",content:p}]})
+  }).then(function(res){
+    return res.json().catch(function(){return {};}).then(function(j){
+      if(!res.ok){
+        const m=(j&&j.error&&j.error.message)||("HTTP "+res.status);
+        if(res.status===401)throw new Error("API key 唔啱或者已失效（401）。去 ⚙️ Setup 重新貼一次。");
+        if(res.status===429)throw new Error("太頻密或者額度用盡（429）。等一陣再試。");
+        if(res.status===400&&/credit|balance/i.test(String(m)))
+          throw new Error("Credit 不足。去 console.anthropic.com → Billing 增值。");
+        throw new Error("API 錯誤 "+res.status+"："+m);
+      }
+      return (j.content&&j.content[0]&&j.content[0].text)||"";
+    });
+  }).catch(function(e){
+    if(String(e.message||e).indexOf("Failed to fetch")>=0)
+      throw new Error("連唔到 API。可能係網絡、學校防火牆、或者你用緊 file:// —— 部分瀏覽器喺 file:// 會封鎖跨域請求。試吓用 http://localhost（見 ⚙️ Setup ①）。");
+    throw e;
+  });
+}
+/* ---- setup panel ---- */
+function runDiag(){
+  const box=document.getElementById("diagBox");if(!box)return;
+  const w=srWhy(),micOK=!w;
+  const micMsg=micOK?"可以用":(w==="file"?"你而家用緊 file:// —— 照下面①做":
+    (w==="nosr"?"呢個瀏覽器唔支援語音辨識，請用 Chrome":"非安全來源，唔畀攞咪 —— 照下面①做"));
+  const cw=!!(window.cowork&&window.cowork.askClaude),k=!!apiKey();
+  const aiMsg=cw?"用緊 Claude 內建（唔使設定）":(k?("用緊你嘅 API key · "+apiModel()):"未設定 —— 照下面②做");
+  let st=true;try{localStorage.setItem("__t","1");localStorage.removeItem("__t");}catch(e){st=false;}
+  const rows=[["🎙 麥克風",micOK,micMsg],["🤖 AI",cw||k,aiMsg],
+              ["💾 進度儲存",st,st?"正常，進度會記住":"呢個環境存唔到，熄咗就冇（其他功能照用）"]];
+  box.innerHTML='<table>'+rows.map(function(r){
+    return '<tr><td style="width:26%"><b>'+r[0]+'</b></td><td style="width:10%">'+
+      (r[1]?'<span class="good" style="font-size:20px">●</span>':'<span class="bad" style="font-size:20px">●</span>')+
+      '</td><td>'+esc(r[2])+'</td></tr>';}).join("")+'</table>'+
+    '<div class="note">目前網址協定：<code>'+esc(location.protocol)+'</code></div>';
+}
+(function(){
+  const kEl=document.getElementById("apiKey"),mEl=document.getElementById("apiModel"),
+        out=document.getElementById("apiOut"),st=document.getElementById("apiSt");
+  if(!kEl)return;
+  if(apiKey())kEl.value=apiKey();
+  mEl.value=apiModel();
+  document.getElementById("apiSave").onclick=function(){
+    lsSet("emi-apikey",kEl.value.trim());lsSet("emi-apimodel",mEl.value);
+    out.innerHTML='<div class="note good">已儲存。撳「測試連線」確認。</div>';runDiag();
+  };
+  document.getElementById("apiClear").onclick=function(){
+    lsSet("emi-apikey","");kEl.value="";
+    out.innerHTML='<div class="note">已清除。</div>';runDiag();
+  };
+  document.getElementById("apiTest").onclick=function(){
+    lsSet("emi-apikey",kEl.value.trim());lsSet("emi-apimodel",mEl.value);
+    st.textContent="測試緊…";out.innerHTML="";
+    ask("Reply with exactly: OK").then(function(r){
+      out.innerHTML='<div class="note good">✓ 連線成功。回應：「'+esc(String(r).trim().slice(0,60))+'」<br>四個 AI 版而家用得。</div>';
+      runDiag();
+    }).catch(function(e){
+      out.innerHTML='<div class="err">✗ '+esc(e.message||e)+'</div>';
+    }).then(function(){st.textContent="";});
+  };
+  document.getElementById("diagGo").onclick=runDiag;
+  runDiag();
+})();
+function field(txt,key){
+  const lines=String(txt).split("\n");
+  for(let i=0;i<lines.length;i++){
+    const t=lines[i].trim();
+    if(t.toUpperCase().indexOf(key.toUpperCase())===0){
+      let rest=t.slice(key.length);
+      while(rest.length&&(rest[0]===" "||rest[0]===":"||rest[0]==="："||rest[0]==="\t"))rest=rest.slice(1);
+      return rest.trim();
+    }
+  }
+  return "";
+}
+function delist(s){
+  let t=String(s).trim();
+  while(t.length&&(t[0]>="0"&&t[0]<="9"))t=t.slice(1);
+  while(t.length&&(t[0]==="."||t[0]===")"||t[0]===" "))t=t.slice(1);
+  return t;
+}
+const SCN=[
+["S5 學生答錯咗但方向啱","You are Kelvin, a Form 5 Economics student. Willing but often half-right, and you sometimes say you do not understand. Start by giving a confident but partly WRONG answer about something in the lesson."],
+["S4 學生完全聽唔明，開始收聲","You are Yan, a quiet Form 4 student who is lost and embarrassed. Very short, uncertain answers. Start by admitting you do not really get it."],
+["S6 學生問一條你未必識答嘅難題","You are a sharp Form 6 student who asks difficult probing questions beyond the syllabus. Start with one such question."],
+["家長會 — 家長擔心個仔成績","You are a concerned Hong Kong parent at parents evening. Polite but worried about your son grades. Start by greeting him and raising your worry."],
+["承辦商拖延冷氣維修，你要追","You are a maintenance contractor who has delayed an air-conditioning repair twice. Friendly but full of excuses. Start with an excuse."],
+["校長要你三星期內搞掂翻新","You are the Principal. You want a refurbishment finished in three weeks, which is unrealistic. Pleasant but pushing hard. Start by asking him to do it."],
+["供應商報價太貴，你要議價","You are a supplier whose quotation came in over budget. You defend your price but can move a little. Start by asking if he has reviewed the quote."],
+["教員室閒聊 — 新嚟嘅外籍同事","You are a British NET teacher who joined last month. Friendly and chatty in the staffroom. Start with casual small talk."],
+["學生第三次遲到，你唔想嗌","You are a Form 5 student arriving late for the third time this week, slightly defensive. Start by coming in late with a weak excuse."]
+];
+const scn=document.getElementById("aiScn");
+SCN.forEach(function(s,i){const o=document.createElement("option");o.value=i;o.textContent=s[0];scn.appendChild(o);});
+let hist=[];
+function bubble(who,txt){
+  const d=document.createElement("div");d.className="msg "+(who==="them"?"them":"me");
+  d.innerHTML=esc(txt);document.getElementById("aiChat").appendChild(d);
+  d.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function coachBox(fix,why,next){
+  const ok=(!fix)||/^ok$/i.test(fix);
+  const d=document.createElement("div");d.className="coach";
+  d.innerHTML='<div class="k">Coach</div>'+
+    (ok?'<div class="good">✓ 呢句冇問題，照咁講得。</div>'
+       :'<div class="good">→ '+esc(fix)+'</div>')+
+    (why?'<div style="margin-top:5px;color:var(--mute)">'+esc(why)+'</div>':'')+
+    (next?'<div style="margin-top:5px">💡 都可以用：<b>'+esc(next)+'</b></div>':'');
+  document.getElementById("aiChat").appendChild(d);
+}
+document.getElementById("aiStart").onclick=function(){
+  const out=document.getElementById("aiChat");out.innerHTML="";hist=[];
+  if(!hasAI())return noAI(out);
+  document.getElementById("aiBox").style.display="";
+  document.getElementById("aiRs").textContent="準備緊…";
+  ask(BASE+"\n\nROLE: "+SCN[scn.value][1]+
+    "\n\nSpeak ONE OR TWO short spoken sentences only. Simple words. Stay in character. Output ONLY the line of dialogue - no name, no quotes, no explanation.")
+  .then(function(r){bubble("them",r.trim());hist.push("THEM: "+r.trim());})
+  .catch(function(e){out.innerHTML='<div class="err">出錯：'+esc(e.message||e)+'</div>';})
+  .then(function(){document.getElementById("aiRs").textContent="";});
+};
+function sendTurn(){
+  const inp=document.getElementById("aiSay");const v=inp.value.trim();
+  if(!v)return;
+  if(!hasAI())return noAI(document.getElementById("aiChat"));
+  bubble("me",v);inp.value="";
+  document.getElementById("aiSs").textContent="諗緊…";
+  document.getElementById("aiSend").disabled=true;
+  ask(BASE+"\n\nROLE: "+SCN[scn.value][1]+
+    "\n\nCONVERSATION SO FAR:\n"+hist.slice(-8).join("\n")+
+    "\n\nHE JUST SAID: "+JSON.stringify(v)+"\n\n"+
+    "Output EXACTLY these four labelled lines and nothing else:\n"+
+    "REPLY: your in-character spoken reply, 1-2 short simple sentences\n"+
+    "FIX: if his English had a grammar error or sounded written/unnatural, give the corrected natural spoken version. If it was already fine, write exactly OK\n"+
+    "WHY: one short line in Traditional Chinese with Hong Kong Cantonese flavour explaining the fix, or praising what he did well. Max 30 characters. No English.\n"+
+    "NEXT: one alternative English sentence he could have used here, simple and natural")
+  .then(function(r){
+    const reply=field(r,"REPLY")||String(r).trim().split("\n")[0];
+    coachBox(field(r,"FIX"),field(r,"WHY"),field(r,"NEXT"));
+    bubble("them",reply);
+    hist.push("HIM: "+v);hist.push("THEM: "+reply);
+  })
+  .catch(function(e){
+    const d=document.createElement("div");d.className="err";d.textContent="出錯："+(e.message||e);
+    document.getElementById("aiChat").appendChild(d);
+  })
+  .then(function(){
+    document.getElementById("aiSs").textContent="";
+    document.getElementById("aiSend").disabled=false;
+  });
+}
+document.getElementById("aiSend").onclick=sendTurn;
+document.getElementById("aiSay").addEventListener("keydown",function(e){
+  if(e.key==="Enter"&&(e.metaKey||e.ctrlKey))sendTurn();
+});
+document.getElementById("aiMic").onclick=function(){
+  const st=document.getElementById("aiSs");
+  if(!SRc){st.textContent="呢度用唔到語音，請打字。";return;}
+  try{
+    const r=new SRc();r.lang="en-GB";r.interimResults=false;
+    st.textContent="🎙 聽緊…";
+    r.onresult=function(e){document.getElementById("aiSay").value=e.results[0][0].transcript;st.textContent="";};
+    r.onerror=function(){st.textContent="收唔到聲，請打字。";};
+    r.start();
+  }catch(e){st.textContent="呢度用唔到語音，請打字。";}
+};
+
+document.getElementById("aiFgo").onclick=function(){
+  const out=document.getElementById("aiFout");out.innerHTML="";
+  const v=document.getElementById("aiFin").value.trim();if(!v)return;
+  if(!hasAI())return noAI(out);
+  document.getElementById("aiFs").textContent="執緊…";
+  ask(BASE+"\n\nSituation: "+document.getElementById("aiCtx").value+
+    "\n\nHIS SENTENCE: "+JSON.stringify(v)+"\n\n"+
+    "Output EXACTLY these labelled lines, nothing else:\n"+
+    "CORRECT: grammatically correct version keeping his meaning\n"+
+    "SIMPLE: the simplest clearest spoken version - a Form 4 student understands it instantly, short words only\n"+
+    "NEUTRAL: natural everyday spoken English for this situation, with contractions\n"+
+    "IDIOM: a more idiomatic native British version\n"+
+    "ERRORS: each error as wrong -> right, separated by semicolons. If none, write 冇文法錯\n"+
+    "NOTE: the single most useful point, in Traditional Chinese with Hong Kong Cantonese flavour, max 45 characters")
+  .then(function(r){
+    const rows=[["改正 Correct",field(r,"CORRECT")],["最簡單（對學生用）",field(r,"SIMPLE")],
+                ["中性 Neutral",field(r,"NEUTRAL")],["較地道 Idiomatic",field(r,"IDIOM")]];
+    let html='<div class="card">';let any=false;
+    rows.forEach(function(x){if(x[1]){any=true;
+      html+='<div class="opt"><div class="altlab">'+x[0]+'</div><div class="good" style="font-size:16px">'+esc(x[1])+
+      ' <button class="spk" data-t="'+esc(x[1])+'">🔊</button></div></div>';}});
+    const er=field(r,"ERRORS");if(er)html+='<div class="coach"><div class="k">錯處</div>'+esc(er)+'</div>';
+    const nt=field(r,"NOTE");if(nt)html+='<div class="coach"><div class="k">重點</div>'+esc(nt)+'</div>';
+    out.innerHTML=any?(html+'</div>'):('<div class="card">'+esc(r)+'</div>');
+    wire(out);
+  })
+  .catch(function(e){out.innerHTML='<div class="err">出錯：'+esc(e.message||e)+'</div>';})
+  .then(function(){document.getElementById("aiFs").textContent="";});
+};
+
+document.getElementById("aiGgo").onclick=function(){
+  const out=document.getElementById("aiGout");out.innerHTML="";
+  const v=document.getElementById("aiGin").value.trim();if(!v)return;
+  if(!hasAI())return noAI(out);
+  document.getElementById("aiGs").textContent="生成緊…";
+  ask(BASE+"\n\nSituation he wants to express, written in Chinese: "+JSON.stringify(v)+
+    "\nAudience: "+document.getElementById("aiAud").value+
+    "\n\nGive 5 ways to say it in natural SPOKEN English, ordered simplest first, most idiomatic last. Use contractions. Every one must be something a real person actually says out loud - no textbook sentences.\n"+
+    "Output exactly 5 lines in this format and nothing else:\n"+
+    "english sentence|short Traditional Chinese label, max 10 characters, e.g. 最簡單 or 較地道 or 更客氣")
+  .then(function(r){
+    let html='<div class="card">';let n=0;
+    String(r).split("\n").forEach(function(ln){
+      ln=delist(ln);if(!ln||ln.indexOf("|")<0)return;
+      const a2=ln.split("|");n++;
+      html+='<div class="opt"><span class="good" style="font-size:16px">'+esc(a2[0].trim())+'</span>'+
+        ' <button class="spk" data-t="'+esc(a2[0].trim())+'">🔊</button>'+
+        '<span class="tag" style="margin-left:6px">'+esc((a2[1]||"").trim())+'</span></div>';
+    });
+    out.innerHTML=n?(html+'</div>'):('<div class="card">'+esc(r)+'</div>');
+    wire(out);
+  })
+  .catch(function(e){out.innerHTML='<div class="err">出錯：'+esc(e.message||e)+'</div>';})
+  .then(function(){document.getElementById("aiGs").textContent="";});
+};
+
+document.getElementById("aiQgo").onclick=function(){
+  const out=document.getElementById("aiQout");out.innerHTML="";
+  if(!hasAI())return noAI(out);
+  document.getElementById("aiQs").textContent="出緊題…";
+  ask(BASE+"\n\nGenerate 6 realistic situations he faces at school, in this area: "+
+    document.getElementById("aiArea").value+
+    "\nThey must be specific and concrete, not generic. Vary them.\n"+
+    "Output exactly 6 lines in this format and nothing else:\n"+
+    "situation described in Traditional Chinese with Hong Kong Cantonese flavour, max 28 characters|one natural simple spoken English sentence he could say")
+  .then(function(r){
+    let n=0;
+    String(r).split("\n").forEach(function(ln){
+      ln=delist(ln);if(!ln||ln.indexOf("|")<0)return;
+      const a2=ln.split("|");n++;
+      const d=document.createElement("div");d.className="card";
+      d.innerHTML='<div class="tag">情境 '+n+'</div><div class="big" style="font-size:18px">'+esc(a2[0].trim())+'</div>'+
+        '<div class="row"><button class="btn">睇參考答案</button></div>'+
+        '<div class="coach" style="display:none">'+esc((a2[1]||"").trim())+
+        ' <button class="spk" data-t="'+esc((a2[1]||"").trim())+'">🔊</button></div>';
+      const b=d.querySelector(".btn"),c=d.querySelector(".coach");
+      b.onclick=function(){const hid=c.style.display==="none";
+        c.style.display=hid?"":"none";b.textContent=hid?"收埋":"睇參考答案";};
+      wire(d);out.appendChild(d);
+    });
+    if(!n)out.innerHTML='<div class="card">'+esc(r)+'</div>';
+  })
+  .catch(function(e){out.innerHTML='<div class="err">出錯：'+esc(e.message||e)+'</div>';})
+  .then(function(){document.getElementById("aiQs").textContent="";});
+};
+})();
+
+/* ================= REAL PRONUNCIATION TEST ================= */
+(function(){
+const PW=[
+["尾音串 final clusters","costs","shifts","texts","asked","months","sixth","strength","fields","worlds"],
+["-ed 尾音","worked","played","wanted","stopped","needed","decided","reached"],
+["-s / -es 尾音","prices","classes","answers","causes","exercises","chances","taxes"],
+["th 音","think","three","thirty","through","both","mouth","growth","clothes","weather"],
+["r / l","really","clearly","correct","reliable","world","girl","careful","parallel"],
+["v / w / f","very","view","value","wave","west","invest","safe"],
+["n / l 開頭","night","light","no","low","note","load","nine","line"],
+["字尾 n / ng","thin","thing","sin","sing","ban","bang","tongue"],
+["長短母音","ship","sheep","full","fool","bit","beat","live","leave"]
+];
+const PAIRS=[
+["think","sink","th 對 s"],["three","free","th 對 f"],["mouth","mouse","字尾 th 對 s"],
+["path","pass","字尾 th 對 s"],["both","boat","字尾 th 對 t"],["growth","grow","有冇字尾 th"],
+["light","night","l 對 n（開頭）"],["low","no","l 對 n"],["load","node","l 對 n"],
+["rice","lice","r 對 l"],["red","led","r 對 l"],["correct","collect","r 對 l（字中）"],
+["very","ferry","v 對 f"],["vest","west","v 對 w"],["save","safe","字尾 v 對 f"],
+["ship","sheep","短 i 對 長 i"],["bit","beat","短 i 對 長 i"],["live","leave","短 i 對 長 i"],
+["full","fool","短 u 對 長 u"],["bad","bed","æ 對 e"],["man","men","æ 對 e"],["sad","said","æ 對 e"],
+["thin","thing","字尾 n 對 ng"],["sin","sing","字尾 n 對 ng"],["ban","bang","字尾 n 對 ng"],
+["cost","costs","有冇字尾 -s"],["price","prices","-es 多一個音節"],["month","months","字尾 th+s"],
+["work","worked","有冇字尾 -ed"],["play","played","有冇字尾 -ed"],
+["beer","bear","ɪə 對 eə"],["hand","had","有冇字尾 -n-"]
+];
+let PS=JSON.parse(lsGet("emi-pron","{}"));
+function psSave(){lsSet("emi-pron",JSON.stringify(PS));}
+function log(w,ok){if(!PS[w])PS[w]={ok:0,no:0};PS[w][ok?"ok":"no"]++;psSave();}
+function clean1(s){return String(s).toLowerCase().replace(/[^a-z ]/g," ").replace(/\s+/g," ").trim();}
+
+function srOnce(mount,cb){
+  const why=srWhy();
+  if(why){mount.innerHTML='<div class="err">🎙 而家用唔到麥克風。去 <b>⚙️ Setup</b> 版睇即時診斷同解決方法。</div>';return;}
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+    st.getTracks().forEach(function(t){t.stop();});
+    const r=new SRc();r.lang="en-GB";r.interimResults=true;r.continuous=true;r.maxAlternatives=1;
+    let fin="",done=false;
+    const live=mount.querySelector(".pwLive"),btn=mount.querySelector(".pwStop");
+    if(live)live.textContent="🔴 講啦…";
+    if(btn){btn.textContent="講完 ✓";btn.classList.add("primary");}
+    const stop=function(){if(done)return;done=true;try{r.stop();}catch(e){}
+      cb(clean1(fin||(live?live.textContent:"")));};
+    if(btn)btn.onclick=stop;
+    r.onresult=function(e){let i2="";
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const t=e.results[i][0].transcript;
+        if(e.results[i].isFinal)fin+=" "+t;else i2+=t;}
+      if(live)live.textContent=(fin+" "+i2).trim()||"🔴 講啦…";};
+    r.onerror=function(ev){if(ev.error==="no-speech")return;if(done)return;done=true;
+      mount.innerHTML='<div class="err">語音辨識出錯：'+esc(ev.error)+'</div>';};
+    r.onend=function(){if(!done)stop();};
+    try{r.start();}catch(e){mount.innerHTML='<div class="err">'+esc(e.message||e)+'</div>';}
+  }).catch(function(e){
+    mount.innerHTML='<div class="err">攞唔到麥克風：'+esc(e.name||e)+'。去 ⚙️ Setup 睇解決方法。</div>';});
+}
+
+const area=document.getElementById("pwArea");
+function shell(title,sub,target){
+  area.innerHTML='<div class="card" style="margin-top:12px;text-align:center">'+
+    '<div class="tag">'+esc(title)+'</div>'+
+    '<div class="big" style="font-size:34px;letter-spacing:1px">'+target+'</div>'+
+    '<div class="stat">'+sub+'</div>'+
+    '<div class="pwLive" style="font-size:19px;color:var(--accent2);min-height:26px;margin:10px 0"></div>'+
+    '<div class="row" style="justify-content:center">'+
+      '<button class="btn spk2">🔊 聽正確讀音</button>'+
+      '<button class="btn pwStop">🎙 開始講</button>'+
+      '<button class="btn pwNext">下一個 →</button>'+
+    '</div><div class="pwFb"></div></div>';
+}
+function verdict(txt,cls){area.querySelector(".pwFb").innerHTML='<div class="note '+(cls||"")+'">'+txt+'</div>';}
+
+let curW=null;
+function wordRound(){
+  const g=PW[Math.floor(Math.random()*PW.length)];
+  curW=g[1+Math.floor(Math.random()*(g.length-1))];
+  shell("單字測試 · "+g[0],"大聲、清楚、單獨讀呢個字一次",esc(curW));
+  const m=area.querySelector(".card");
+  m.querySelector(".spk2").onclick=function(){speak(curW);};
+  m.querySelector(".pwNext").onclick=wordRound;
+  m.querySelector(".pwStop").onclick=function(){
+    srOnce(m,function(said){
+      const ok=(" "+said+" ").indexOf(" "+curW.toLowerCase()+" ")>=0;
+      log(curW,ok);
+      shellRestore(m,curW,wordRound);
+      verdict(ok?'<span class="good">✓ 聽到「'+esc(said)+'」—— 啱。</span>'
+        :'<span class="bad">✗ 你想講 <b>'+esc(curW)+'</b>，但系統聽到「'+esc(said||"（冇聲）")+'」。</span><br>'+
+         '再試多兩次。連續錯就係真問題，記低佢。',ok?"":"");
+    });
+  };
+}
+function shellRestore(m,word,nextFn){
+  const btn=m.querySelector(".pwStop");
+  btn.textContent="🎙 再試";btn.classList.remove("primary");
+  btn.onclick=function(){m.querySelector(".pwStop").onclick=null;
+    if(mode==="w")wordRoundRetry(word,m);else pairRetry(m);};
+}
+function wordRoundRetry(word,m){
+  srOnce(m,function(said){
+    const ok=(" "+said+" ").indexOf(" "+word.toLowerCase()+" ")>=0;
+    log(word,ok);shellRestore(m,word);
+    verdict(ok?'<span class="good">✓ 聽到「'+esc(said)+'」—— 啱。</span>'
+      :'<span class="bad">✗ 又聽成「'+esc(said||"（冇聲）")+'」。</span>');
+  });
+}
+let mode="w",curP=null,curTarget=null,curOther=null;
+function pairRound(){
+  curP=PAIRS[Math.floor(Math.random()*PAIRS.length)];
+  const which=Math.random()<0.5?0:1;
+  curTarget=curP[which];curOther=curP[1-which];
+  shell("最小對立對 · "+curP[2],
+    "兩個字好似，你淨係讀 <b>藍色</b>嗰個。系統聽到邊個，就話你知你實際講咗邊個。",
+    '<span style="color:var(--accent2)">'+esc(curTarget)+'</span>'+
+    ' <span style="color:#c9c2b6;font-size:24px">/ '+esc(curOther)+'</span>');
+  const m=area.querySelector(".card");
+  m.querySelector(".spk2").onclick=function(){speak(curTarget);};
+  m.querySelector(".pwNext").onclick=pairRound;
+  m.querySelector(".pwStop").onclick=function(){pairGo(m);};
+}
+function pairGo(m){
+  srOnce(m,function(said){
+    const s=" "+said+" ";
+    const hitT=s.indexOf(" "+curTarget.toLowerCase()+" ")>=0;
+    const hitO=s.indexOf(" "+curOther.toLowerCase()+" ")>=0;
+    const btn=m.querySelector(".pwStop");btn.textContent="🎙 再試";btn.classList.remove("primary");
+    btn.onclick=function(){pairGo(m);};
+    if(hitT&&!hitO){log(curTarget,true);
+      verdict('<span class="good">✓ 聽到「'+esc(said)+'」—— 你讀啱咗 '+esc(curTarget)+'。</span>');}
+    else if(hitO){log(curTarget,false);
+      verdict('<span class="bad">✗ 你想讀 <b>'+esc(curTarget)+'</b>，但系統聽成 <b>'+esc(curOther)+'</b>。</span><br>'+
+        '呢個係清晰證據：你嘅 <b>'+esc(curP[2])+'</b> 未分得開。撳 🔊 聽正確讀音，慢速讀三次再試。');}
+    else{verdict('系統聽到「'+esc(said||"（冇聲）")+'」，兩個都唔係。可能太細聲或者有雜音 —— 再試一次，唔計分。');}
+  });
+}
+document.getElementById("pwStart").onclick=function(){mode="w";wordRound();};
+document.getElementById("ppStart").onclick=function(){mode="p";pairRound();};
+document.getElementById("pwList").onclick=function(){
+  const rows=[];
+  for(const w in PS){const t=PS[w].ok+PS[w].no;
+    if(t>=2&&PS[w].no>0)rows.push([w,PS[w].no,t,PS[w].no/t]);}
+  rows.sort(function(a,b){return b[3]-a[3]||b[1]-a[1];});
+  if(!rows.length){area.innerHTML='<div class="card" style="margin-top:12px">'+
+    '未夠資料。每個字試最少兩次先會出現喺清單度 —— 一次錯係噪音，唔算數。</div>';return;}
+  area.innerHTML='<div class="card" style="margin-top:12px"><div class="tag">我的發音問題清單</div>'+
+    '<table><tr><th>字</th><th>錯 / 試</th><th>錯誤率</th></tr>'+
+    rows.slice(0,25).map(function(r){
+      const pct=Math.round(r[3]*100);
+      const col=pct>=60?"var(--warn)":(pct>=30?"var(--shaky)":"var(--mute)");
+      return '<tr><td><b>'+esc(r[0])+'</b> <button class="spk" data-t="'+esc(r[0])+'">🔊</button></td>'+
+             '<td>'+r[1]+' / '+r[2]+'</td><td style="color:'+col+'"><b>'+pct+'%</b></td></tr>';}).join("")+
+    '</table><div class="note">錯誤率 60% 以上嗰啲，就係你真正要練嘅音。'+
+    '每日揀<b>一個</b>，撳 🔊 聽十次、慢速跟讀十次，再返嚟測。'+
+    '<br><br><button class="btn b" id="pwWipe">清除發音紀錄</button></div></div>';
+  wire(area);
+  const wp=document.getElementById("pwWipe");
+  if(wp)wp.onclick=function(){if(confirm("清除所有發音測試紀錄？")){PS={};psSave();area.innerHTML="";}};
+};
+})();
+
+</script>
+</body>
+</html>
