@@ -312,7 +312,7 @@ td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
   font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
   background:var(--ink);color:var(--paper);border:none;padding:11px 16px;cursor:pointer;
   box-shadow:0 2px 10px #00000033}
-.totop{position:fixed;right:14px;bottom:14px;z-index:60;display:none;
+.totop{position:fixed;right:14px;bottom:62px;z-index:60;display:none;
   font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
   background:transparent;color:var(--ink-soft);border:1px solid var(--rule);padding:10px 14px;
   cursor:pointer;text-decoration:none}
@@ -332,6 +332,144 @@ td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
   .shell{grid-template-columns:1fr}
   .reveal-body{display:block!important}
   .tabpanel{display:block!important}
+}
+
+/* ===================== 教師工具層 · features ===================== */
+:root{
+  --fx-y:#ffe07a; --fx-r:#ffb3a0; --fx-b:#a8d4f2;
+  --fx-y-ink:#3a2c00; --fx-r-ink:#4a1608; --fx-b-ink:#062a45;
+}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --fx-y:#6b5a12; --fx-r:#6d2b1c; --fx-b:#12405e;
+    --fx-y-ink:#ffeaa8; --fx-r-ink:#ffd0c4; --fx-b-ink:#cfe7f8;
+  }
+}
+:root[data-theme="dark"]{
+  --fx-y:#6b5a12; --fx-r:#6d2b1c; --fx-b:#12405e;
+  --fx-y-ink:#ffeaa8; --fx-r-ink:#ffd0c4; --fx-b-ink:#cfe7f8;
+}
+
+/* ---- 顯示設定 (D3) ---- */
+.main{zoom:var(--fx-zoom,1)}
+.main .col{max-width:var(--fx-col,74ch)}
+.main p,.main li{line-height:var(--fx-lh,1.72)}
+
+/* ---- 螢光筆 (A3) ---- */
+mark.fx-hl{background:var(--fx-y);color:var(--fx-y-ink);padding:0 1px;border-radius:2px;cursor:pointer}
+mark.fx-hl-r{background:var(--fx-r);color:var(--fx-r-ink)}
+mark.fx-hl-b{background:var(--fx-b);color:var(--fx-b-ink)}
+
+/* ---- 通用小按鈕 ---- */
+.fx-ui{font-family:var(--f-mono)}
+.fx-d dd,.fx-c .nm,.fx-empty,.fx-note-mini,.fx-row .t{font-family:var(--f-body)}
+.fx-b{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;background:transparent;
+  border:1px solid var(--rule);color:var(--ink-faint);padding:3px 8px;cursor:pointer;
+  line-height:1.5;white-space:nowrap;transition:color .14s,border-color .14s,background .14s}
+.fx-b:hover{color:var(--ink);border-color:var(--ink-faint)}
+.fx-b.on{color:var(--rust);border-color:var(--rust);background:var(--rust-wash)}
+.fx-b.on-t{color:var(--teal);border-color:var(--teal);background:var(--teal-wash)}
+.fx-b.on-g{color:var(--gold);border-color:var(--gold);background:var(--gold-wash)}
+
+/* 標題／卡片工具列 */
+.fx-tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.fx-tools-h{margin:6px 0 14px}
+.card-hd .fx-tools{margin-left:auto}
+.card-hd .depth + .fx-tools{margin-left:12px}
+
+/* 筆記 (A2) */
+.fx-note{margin:10px 0 18px;border:1px solid var(--gold);background:var(--gold-wash);padding:10px 12px}
+.fx-note-l{font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.fx-note textarea{width:100%;box-sizing:border-box;min-height:74px;resize:vertical;background:var(--panel);
+  color:var(--ink);border:1px solid var(--rule);padding:9px 10px;font-family:var(--f-body);
+  font-size:15.5px;line-height:1.6}
+.fx-note textarea:focus{outline:2px solid var(--gold);outline-offset:-2px}
+.card-bd .fx-note{margin-top:0}
+
+/* 已標記狀態 */
+.fx-marked{box-shadow:inset 3px 0 0 var(--rust)}
+
+/* 命中閃爍 */
+@keyframes fxflash{0%{background:var(--gold-wash)}40%{background:var(--gold-wash)}100%{background:transparent}}
+.fx-flash{animation:fxflash 1.6s ease-out}
+@media (prefers-reduced-motion:reduce){.fx-flash{animation:none;outline:2px solid var(--gold)}}
+
+/* ---- 選字浮動工具列 ---- */
+.fx-sel{position:fixed;z-index:120;display:none;gap:5px;padding:6px;background:var(--panel);
+  border:1px solid var(--ink-faint);box-shadow:0 4px 18px #00000033;align-items:center}
+.fx-sel.show{display:flex}
+.fx-sw{width:22px;height:22px;border:1px solid var(--rule);cursor:pointer;padding:0}
+.fx-sw.y{background:var(--fx-y)} .fx-sw.r{background:var(--fx-r)} .fx-sw.b{background:var(--fx-b)}
+
+/* ---- 右側工具面板 ---- */
+.fx-open{position:fixed;right:14px;bottom:14px;z-index:80;font-family:var(--f-mono);font-size:11px;
+  letter-spacing:.12em;text-transform:uppercase;background:var(--teal);color:#fff;border:none;
+  padding:11px 16px;cursor:pointer;box-shadow:0 2px 10px #00000033}
+.fx-panel{position:fixed;top:0;right:0;bottom:0;width:min(94vw,390px);z-index:110;background:var(--panel);
+  border-left:1px solid var(--rule);box-shadow:-4px 0 26px #00000026;display:flex;flex-direction:column;
+  transform:translateX(102%);transition:transform .2s ease}
+.fx-panel.open{transform:none}
+@media (prefers-reduced-motion:reduce){.fx-panel{transition:none}}
+.fx-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;
+  border-bottom:1px solid var(--rule)}
+.fx-hd b{font-family:var(--f-display);font-size:17px;font-weight:600}
+.fx-tabs{display:flex;flex-wrap:wrap;gap:4px;padding:10px 12px;border-bottom:1px solid var(--rule)}
+.fx-body{flex:1;overflow-y:auto;padding:14px 16px 60px}
+.fx-body h6{font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--teal);margin:20px 0 8px;font-weight:500}
+.fx-body h6:first-child{margin-top:0}
+.fx-empty{color:var(--ink-faint);font-size:14px;line-height:1.6;margin:8px 0}
+.fx-row{border-top:1px solid var(--rule-soft);padding:9px 0;display:block;width:100%;text-align:left;
+  background:transparent;border-left:none;border-right:none;border-bottom:none;cursor:pointer;
+  font-family:var(--f-body);color:var(--ink)}
+.fx-row:hover{background:var(--teal-wash)}
+.fx-row .t{display:block;font-size:14.5px;line-height:1.45}
+.fx-row .m{display:block;font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;
+  color:var(--ink-faint);margin-top:3px}
+.fx-row mark{background:var(--fx-y);color:var(--fx-y-ink)}
+.fx-in{width:100%;box-sizing:border-box;background:var(--paper);color:var(--ink);border:1px solid var(--rule);
+  padding:9px 10px;font-family:var(--f-body);font-size:15px}
+.fx-in:focus{outline:2px solid var(--teal);outline-offset:-2px}
+.fx-note-mini{font-size:13.5px;color:var(--ink-soft);line-height:1.55;margin-top:4px;
+  white-space:pre-wrap;border-left:2px solid var(--gold);padding-left:9px}
+
+/* 進度 (B1) */
+.fx-bar{height:6px;background:var(--rule-soft);margin:6px 0 3px;display:flex}
+.fx-bar i{display:block;height:100%}
+.fx-bar .g{background:var(--teal)} .fx-bar .h{background:var(--gold)}
+.fx-legend{font-family:var(--f-mono);font-size:10px;color:var(--ink-faint);letter-spacing:.05em}
+.fx-c{display:flex;align-items:center;gap:8px;border-top:1px solid var(--rule-soft);padding:7px 0}
+.fx-c .n{font-family:var(--f-mono);font-size:10px;background:var(--ink-soft);color:var(--paper);
+  padding:2px 6px;flex:none}
+.fx-c.s2 .n{background:var(--gold)} .fx-c.s3 .n{background:var(--teal)}
+.fx-c .nm{flex:1;font-size:14.5px;cursor:pointer}
+.fx-c .nm:hover{color:var(--teal)}
+
+/* 爭論索引 (C2) */
+.fx-d{border-top:1px solid var(--rule-soft);padding:11px 0}
+.fx-d h5{font-family:var(--f-display);font-size:15.5px;font-weight:600;margin:0 0 5px;line-height:1.35}
+.fx-d dl{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink-soft)}
+.fx-d dt{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin-top:6px}
+.fx-d dd{margin:1px 0 0}
+.fx-d .yr{font-family:var(--f-mono);font-size:10px;color:var(--rust);letter-spacing:.06em}
+.fx-chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 4px}
+
+/* 設定 */
+.fx-set{margin:0 0 18px}
+.fx-set > span{display:block;font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
+.fx-warn{border:1px solid var(--rust);background:var(--rust-wash);color:var(--rust);padding:9px 11px;
+  font-size:13px;line-height:1.55;margin-bottom:14px}
+
+.fx-exporting .fx-ui{display:none!important}
+
+@media print{
+  .fx-panel,.fx-open,.fx-sel,.fx-tools{display:none!important}
+  .fx-note{break-inside:avoid}
+  .main{zoom:1}
 }
 
 </style>
@@ -6100,5 +6238,856 @@ td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 })();
 </script>
 
+<script>
+/* ================== 教師工具層 · A1 A2 A3 B1 C1 C2 D2 D3 + 匯出匯入 ================== */
+(function () {
+"use strict";
+
+var KEY = "hkdse-econ-toolkit-v1";
+var BLOCK_SEL = "p,li,td,th,blockquote,figcaption,h1,h2,h3,h4,h5,h6,dt,dd,.standfirst,.sec-lede,.slab-l,.def-label,.exact,.probe-q,.mp-t,.tl-year,.round-n";
+
+var S = { bm: {}, note: {}, hl: {}, prog: {}, clip: [], ui: {} };
+var storeOK = true, storeMsg = "";
+
+function load() {
+  try {
+    var raw = window.localStorage.getItem(KEY);
+    if (raw) { var o = JSON.parse(raw); for (var k in o) if (o[k] != null) S[k] = o[k]; }
+  } catch (e) { storeOK = false; storeMsg = "呢個瀏覽器唔俾本機檔案存資料（" + (e && e.name || "error") + "）。你嘅標記喺今次開住嘅時候有效，但一 close 就會冇。請用「匯出 JSON」保存。"; }
+}
+function save() {
+  if (!storeOK) return;
+  try { window.localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { storeOK = false; storeMsg = "寫入失敗（" + (e && e.name || "error") + "），可能超出容量。請用「匯出 JSON」保存，再清走部分摘錄。"; render(); }
+}
+load();
+
+var main = document.querySelector(".main");
+var arts = [].slice.call(document.querySelectorAll("article.doc"));
+var DOCTITLE = {}, DOCTHEME = {};
+arts.forEach(function (a) { DOCTITLE[a.id.replace("doc-", "")] = a.dataset.title || a.id; });
+
+/* 主題（同左側目錄一致） */
+[["index", "導言"], ["v1", "主題一 · 選擇與資源配置"], ["m01", "主題一 · 選擇與資源配置"],
+ ["m02", "主題二 · 價格機制"], ["m03", "主題三 · 需求供給彈性"], ["m04", "主題四 · 價格管制"],
+ ["v2", "主題五 · 廠商生產成本"], ["m05", "主題五 · 廠商生產成本"],
+ ["v3", "主題六 · 市場結構與失效"], ["m06", "主題六 · 市場結構與失效"],
+ ["v4", "主題七 · 宏觀"], ["m07", "主題七 · 宏觀"],
+ ["v5", "主題八 · 國際貿易"], ["m08", "主題八 · 國際貿易"]].forEach(function (p) { DOCTHEME[p[0]] = p[1]; });
+
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+function docOf(el) { var a = el.closest("article.doc"); return a ? a.id.replace("doc-", "") : ""; }
+
+/* ---------------- 區塊索引（畀螢光筆／搜尋／摘錄用） ---------------- */
+arts.forEach(function (art) {
+  var key = art.id.replace("doc-", ""), n = 0;
+  art.querySelectorAll(BLOCK_SEL).forEach(function (el) { el.dataset.b = key + "-" + (n++); });
+});
+var BLOCKS = {};
+document.querySelectorAll("[data-b]").forEach(function (el) { BLOCKS[el.dataset.b] = el; });
+
+function ownTextNodes(el) {
+  var out = [], w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), t;
+  while ((t = w.nextNode())) {
+    var p = t.parentElement;
+    if (!p || p.closest(".fx-ui")) continue;
+    if (p.closest(BLOCK_SEL) !== el) continue;
+    out.push(t);
+  }
+  return out;
+}
+function blockText(el) { return ownTextNodes(el).map(function (t) { return t.nodeValue; }).join(""); }
+
+/* ---------------- A3 螢光筆 ---------------- */
+function unwrapMarks(el) {
+  el.querySelectorAll("mark.fx-hl").forEach(function (m) {
+    var p = m.parentNode;
+    while (m.firstChild) p.insertBefore(m.firstChild, m);
+    p.removeChild(m);
+  });
+  el.normalize();
+}
+function paint(bkey) {
+  var el = BLOCKS[bkey]; if (!el) return;
+  unwrapMarks(el);
+  var list = (S.hl[bkey] || []).slice().sort(function (a, b) { return b.s - a.s; });
+  list.forEach(function (r) {
+    var nodes = ownTextNodes(el), pos = 0, todo = [];
+    nodes.forEach(function (t) {
+      var len = t.nodeValue.length, s = pos, e = pos + len; pos = e;
+      var a = Math.max(r.s, s), b = Math.min(r.e, e);
+      if (b > a) todo.push({ t: t, a: a - s, b: b - s });
+    });
+    todo.forEach(function (x) {
+      var t = x.t;
+      if (x.b < t.nodeValue.length) t.splitText(x.b);
+      var mid = x.a > 0 ? t.splitText(x.a) : t;
+      var m = document.createElement("mark");
+      m.className = "fx-hl" + (r.c === "y" ? "" : " fx-hl-" + r.c);
+      m.dataset.hb = bkey; m.dataset.hs = r.s;
+      mid.parentNode.insertBefore(m, mid); m.appendChild(mid);
+    });
+  });
+  if (!(S.hl[bkey] || []).length) delete S.hl[bkey];
+}
+function addRange(bkey, s, e, c) {
+  if (e <= s) return;
+  var list = (S.hl[bkey] || []), out = [];
+  list.forEach(function (r) {
+    if (r.e <= s || r.s >= e) { out.push(r); return; }
+    if (r.s < s) out.push({ s: r.s, e: s, c: r.c, t: "" });
+    if (r.e > e) out.push({ s: e, e: r.e, c: r.c, t: "" });
+  });
+  var el = BLOCKS[bkey], full = el ? blockText(el) : "";
+  out.push({ s: s, e: e, c: c, t: full.slice(s, e) });
+  out.sort(function (a, b) { return a.s - b.s; });
+  S.hl[bkey] = out;
+  paint(bkey); save(); render();
+}
+function removeRange(bkey, s) {
+  var list = S.hl[bkey] || [];
+  S.hl[bkey] = list.filter(function (r) { return r.s !== s; });
+  paint(bkey); save(); render();
+}
+function rangesFromSelection(rg) {
+  var scope = rg.commonAncestorContainer;
+  if (scope.nodeType === 3) scope = scope.parentNode;
+  if (!scope || !scope.closest || !scope.closest(".main")) return [];
+  var inBlock = scope.closest(BLOCK_SEL);
+  var root = inBlock && inBlock.contains(scope) ? inBlock : scope;
+  var acc = {}, w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), t;
+  while ((t = w.nextNode())) {
+    if (!rg.intersectsNode(t)) continue;
+    var p = t.parentElement; if (!p || p.closest(".fx-ui")) continue;
+    var el = p.closest(BLOCK_SEL); if (!el || !el.dataset.b) continue;
+    var nodes = ownTextNodes(el), off = 0, found = false;
+    for (var i = 0; i < nodes.length; i++) { if (nodes[i] === t) { found = true; break; } off += nodes[i].nodeValue.length; }
+    if (!found) continue;
+    var a = off + (t === rg.startContainer ? rg.startOffset : 0);
+    var b = off + (t === rg.endContainer ? rg.endOffset : t.nodeValue.length);
+    var k = el.dataset.b;
+    if (!acc[k]) acc[k] = { s: a, e: b }; else { acc[k].s = Math.min(acc[k].s, a); acc[k].e = Math.max(acc[k].e, b); }
+  }
+  return Object.keys(acc).map(function (k) { return { b: k, s: acc[k].s, e: acc[k].e }; });
+}
+
+/* 選字浮動工具列 */
+var selBar = document.createElement("div");
+selBar.className = "fx-sel fx-ui";
+selBar.innerHTML =
+  '<button class="fx-sw y" data-c="y" title="重點"></button>' +
+  '<button class="fx-sw r" data-c="r" title="學生易錯"></button>' +
+  '<button class="fx-sw b" data-c="b" title="想再查"></button>' +
+  '<button class="fx-b" data-a="clip">⊞ 入籃</button>' +
+  '<button class="fx-b" data-a="del">✕ 清除</button>';
+document.body.appendChild(selBar);
+var pending = null, pendingText = "", pendingHl = null;
+
+function hideSel() { selBar.classList.remove("show"); pending = null; pendingHl = null; }
+function showSelAt(rect) {
+  selBar.classList.add("show");
+  var w = selBar.offsetWidth, h = selBar.offsetHeight;
+  var x = Math.min(Math.max(8, rect.left + rect.width / 2 - w / 2), window.innerWidth - w - 8);
+  var y = rect.top - h - 8; if (y < 8) y = rect.bottom + 8;
+  selBar.style.left = x + "px"; selBar.style.top = y + "px";
+}
+document.addEventListener("mouseup", function (e) {
+  if (selBar.contains(e.target)) return;
+  setTimeout(function () {
+    var m = e.target.closest && e.target.closest("mark.fx-hl");
+    var sel = window.getSelection();
+    if (m && (!sel || sel.isCollapsed)) {
+      pendingHl = { b: m.dataset.hb, s: +m.dataset.hs }; pending = null;
+      showSelAt(m.getBoundingClientRect()); return;
+    }
+    if (!sel || sel.isCollapsed || !sel.rangeCount) { hideSel(); return; }
+    var rg = sel.getRangeAt(0);
+    var rs = rangesFromSelection(rg);
+    if (!rs.length) { hideSel(); return; }
+    pending = rs; pendingText = String(sel).trim(); pendingHl = null;
+    showSelAt(rg.getBoundingClientRect());
+  }, 0);
+});
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") { hideSel(); closePanel(); } });
+selBar.addEventListener("click", function (e) {
+  var sw = e.target.closest(".fx-sw"), b = e.target.closest("[data-a]");
+  if (sw) {
+    if (pendingHl) {
+      var old = (S.hl[pendingHl.b] || []).filter(function (x) { return x.s === pendingHl.s; })[0];
+      if (old) addRange(pendingHl.b, old.s, old.e, sw.dataset.c);   /* 改色 */
+    }
+    if (pending) pending.forEach(function (r) { addRange(r.b, r.s, r.e, sw.dataset.c); });
+    window.getSelection().removeAllRanges(); hideSel(); return;
+  }
+  if (!b) return;
+  if (b.dataset.a === "del") {
+    if (pendingHl) removeRange(pendingHl.b, pendingHl.s);
+    else if (pending) pending.forEach(function (r) {
+      (S.hl[r.b] || []).slice().forEach(function (x) { if (x.e > r.s && x.s < r.e) removeRange(r.b, x.s); });
+    });
+    window.getSelection().removeAllRanges(); hideSel(); return;
+  }
+  if (b.dataset.a === "clip") {
+    var txt = pendingText;
+    if (!txt && pendingHl) { var l = (S.hl[pendingHl.b] || []).filter(function (x) { return x.s === pendingHl.s; })[0]; txt = l ? l.t : ""; }
+    var bk = pending && pending[0] ? pending[0].b : (pendingHl ? pendingHl.b : "");
+    if (txt) addClip(bk ? docOf(BLOCKS[bk]) : "", "選段", txt, bk);
+    window.getSelection().removeAllRanges(); hideSel();
+  }
+});
+
+/* ---------------- 錨點：卡片 + 標題 ---------------- */
+var ANCHORS = {};   /* key -> {el, title, doc, kind} */
+arts.forEach(function (art) {
+  var key = art.id.replace("doc-", ""), hn = 0, cn = 0;
+  art.querySelectorAll("h2,h3,.card").forEach(function (el) {
+    var isCard = el.classList.contains("card");
+    if (!isCard && el.closest(".card")) return;   /* 卡入面嘅標題唔另開一行工具 */
+    var id, title;
+    if (isCard) {
+      id = key + "-c" + (cn++);
+      var h = el.querySelector(".card-hd h3"), num = el.querySelector(".card-n");
+      title = (num ? num.textContent.trim() + " " : "") + (h ? h.textContent.trim() : "概念卡");
+    } else {
+      id = key + "-h" + (hn++);
+      var cl = el.cloneNode(true); cl.querySelectorAll("small").forEach(function (s) { s.remove(); });
+      title = cl.textContent.trim().replace(/\s+/g, " ");
+    }
+    el.dataset.k = id;
+    ANCHORS[id] = { el: el, title: title, doc: key, kind: isCard ? "card" : el.tagName.toLowerCase() };
+  });
+});
+
+/* ---------------- 53 條概念表（B1） ---------------- */
+var CONCEPTS = [
+  [1, "稀缺", "v1"], [2, "機會成本", "v1"], [3, "私有產權", "v1"], [4, "經濟物品", "v1"], [5, "自由物品", "v1"],
+  [6, "價格機制", "v1"], [7, "消費者物品", "v1"], [8, "生產者物品", "v1"], [9, "利息", "v1"],
+  [10, "專業化", "v2"], [11, "分工", "v2"], [12, "固定資本", "v2"], [13, "流動資本", "v2"],
+  [14, "橫向合併", "v2"], [15, "垂直整合", "v2"], [16, "側向合併", "v2"], [17, "集團合併", "v2"],
+  [18, "邊際回報遞減定律", "v2"], [19, "規模經濟", "v2"], [20, "規模不經濟", "v2"], [21, "主張代理問題", "v2"],
+  [22, "受價者", "v3"], [23, "覓價者", "v3"], [24, "價格分歧", "v3"], [25, "產品差異化", "v3"], [26, "天然壟斷", "v3"],
+  [27, "消費者剩餘", "v3"], [28, "生產者剩餘", "v3"], [29, "配置效率", "v3"], [30, "無謂損失", "v3"],
+  [31, "稅項轉嫁", "v3"], [32, "負外部性", "v3"], [33, "正外部性", "v3"], [34, "公共物品", "v3"], [35, "公共資源", "v3"],
+  [36, "本地生產總值", "v4"], [37, "增值法", "v4"], [38, "本地居民總收入", "v4"], [39, "GDP 平減指數", "v4"],
+  [40, "實質 GDP", "v4"], [41, "自然失業率", "v4"], [42, "財富效應", "v4"], [43, "法定貨幣", "v4"],
+  [44, "貨幣基礎", "v4"], [45, "銀行乘數", "v4"], [46, "貨幣數量論", "v4"],
+  [47, "比較優勢", "v5"], [48, "貿易條件", "v5"], [49, "關稅", "v5"], [50, "進口配額", "v5"],
+  [51, "經常帳戶", "v5"], [52, "資本與金融帳戶", "v5"], [53, "聯繫匯率制度", "v5"]
+];
+var VOLNAME = { v1: "第一冊 · 選擇與資源配置", v2: "第二冊 · 廠商生產成本", v3: "第三冊 · 市場結構與失效", v4: "第四冊 · 宏觀", v5: "第五冊 · 國際貿易" };
+
+/* 概念號 -> 錨點 key（由 .card-n 標籤反推，例如「27–30」覆蓋 4 條） */
+var CMAP = {};
+Object.keys(ANCHORS).forEach(function (k) {
+  var a = ANCHORS[k]; if (a.kind !== "card") return;
+  var n = a.el.querySelector(".card-n"); if (!n) return;
+  var m = n.textContent.trim().match(/(\d+)\s*[–—-]\s*(\d+)|(\d+)/);
+  if (!m) return;
+  var lo = m[3] ? +m[3] : +m[1], hi = m[3] ? +m[3] : +m[2];
+  for (var i = lo; i <= hi; i++) if (!CMAP[i]) CMAP[i] = k;
+});
+/* 14 · 16 · 17 喺「四種合併」一節，唔係獨立卡 */
+Object.keys(ANCHORS).forEach(function (k) {
+  if (ANCHORS[k].doc === "v2" && ANCHORS[k].title.indexOf("四種合併") === 0) {
+    [14, 16, 17].forEach(function (i) { if (!CMAP[i]) CMAP[i] = k; });
+  }
+});
+
+/* ---------------- C2 爭論索引 ---------------- */
+var DEBATES = [
+  { d: "m01", h: "源頭：一場關於「經濟學係咩」嘅定義戰", t: "經濟學研究乜？財富論 vs 稀缺論", y: "1776–1932",
+    a: "Adam Smith 一脈：經濟學研究財富嘅生產同分配", b: "Lionel Robbins 1932：經濟學研究人喺目的與稀缺手段之間嘅選擇",
+    q: "學科邊界應該由「研究對象」定，定係由「一種分析方法」定？", s: "Robbins 版本成為主流，亦係 DSE 定義嘅源頭；批判學派至今唔收貨。" },
+  { d: "m01", h: "張五常：「短缺」根本唔存在", t: "「短缺」係唔係真實現象", y: "《經濟解釋》",
+    a: "張五常：Qd、Qs 係意願，睇唔到，唔可被事實推翻；競爭一定要解決，市場必定「清」", b: "標準供求分析：價格上限 → Qd > Qs → shortage",
+    q: "短缺係一個可觀察嘅事實，定係經濟學家腦入面嘅構造？", s: "DSE marking scheme 收標準版；張五常呢層令學生自然寫得出 non-price rationing，即 Level 4–5 嘅料。" },
+  { d: "m01", h: "Buchanan：成本喺揀嘅人腦入面", t: "機會成本客觀定主觀", y: "1969",
+    a: "Buchanan《Cost and Choice》：成本存在於決策者作決定嗰一刻嘅腦，第三者永遠量唔到", b: "教科書：機會成本可以計、可以入試卷、有標準答案",
+    q: "如果成本主觀，「你放棄咗 $200 兼職」呢種標準答案係咩身份？", s: "考試必須用市價代替主觀評價——爭議唔改變答題法，但改變學生知唔知自己做緊個簡化。" },
+  { d: "m01", h: "Hunt & Lautzenheiser：機會成本假設咗一張餐牌", t: "新古典選擇理論嘅前提", y: "2011",
+    a: "Hunt & Lautzenheiser：理論假設咗有一張餐牌，但冇問邊個嘅餐牌長、點解咁長", b: "新古典：選擇理論係中性嘅分析工具",
+    q: "把資源分配當成「選擇」，係咪已經預設咗現有分配唔使解釋？", s: "屬批判學派立場，唔係主流；但佢指出咗一個 DSE 從來唔會問嘅前提。" },
+  { d: "m02", h: "前史：一隻被誤讀咗二百年嘅手", t: "Smith 究竟寫咗乜", y: "1776",
+    a: "通俗版：「無形之手」係 Smith 嘅核心主張", b: "原文：屠夫、釀酒師、麵包師嗰段先係論證；「無形之手」喺《國富論》只出現過一次",
+    q: "後世係咪將一個比喻升格成理論？", s: "文本事實可查；點解讀仍有分歧。" },
+  { d: "m02", h: "社會主義計算大論戰：六個回合", t: "社會主義計算大論戰", y: "1908–1993",
+    a: "Mises 1920 / Hayek：冇市場價格就冇理性計算；知識分散、默會、不斷變", b: "Barone / Lange / Lerner：中央可以用試錯法模擬市場，甚至做得更好",
+    q: "冇價格，計劃者可唔可能知道足夠嘢去分配資源？", s: "三種答法都有人持：Lange 贏理論、Hayek 贏歷史、或者兩邊問緊唔同問題。" },
+  { d: "m02", h: "如果 Hayek 見到今日嘅平台演算法", t: "大數據會唔會解決知識問題", y: "當代",
+    a: "計算能力已經大到可以中央處理海量資訊", b: "Hayek 嘅論點係「默會知識無法傳遞」，唔係「數據唔夠多」",
+    q: "知識問題係數量問題定係性質問題？", s: "未有共識，係大論戰喺今日嘅延續。" },
+  { d: "m02", h: "雪鏟賣貴 $5，係咪不道德？", t: "災後加價（price gouging）", y: "—",
+    a: "價格上升係訊號同誘因，會引來供應同抑制囤積", b: "道德直覺：趁火打劫；公平感本身有經濟後果",
+    q: "效率同公平衝突嗰陣，價格機制應唔應該讓路？", s: "經濟學界同公眾直覺長期對立，係最好用嘅課堂 hook 之一。" },
+  { d: "m03", h: "剪刀之前：兩把刀各自嘅身世", t: "價值由成本定，抑或由效用定", y: "1817–1890",
+    a: "古典（Ricardo 一脈）：價值來自生產成本／勞動", b: "邊際革命（1871 前後）：價值來自邊際效用",
+    q: "一件物品嘅價值由邊一邊決定？", s: "Marshall 1890 用「剪刀兩把刀」調和：問邊把刀剪紙冇意義。" },
+  { d: "m03", h: "張五常嘅異議：剪刀決定唔到市價", t: "供求圖有冇決定到市價", y: "《經濟解釋》",
+    a: "張五常：需求曲線同供應曲線都係意願，交點唔係一個可觀察嘅事實", b: "Marshall 傳統：交點就係均衡價量",
+    q: "供求圖係解釋工具，定係對世界嘅描述？", s: "DSE 照用 Marshall 版；呢個異議可以令學生問「你點知交點喺邊」。" },
+  { d: "m03", h: "署名嘅人，可能從來冇講過呢句嘢", t: "Giffen 有冇講過 Giffen goods", y: "1895 起",
+    a: "Marshall 將呢個現象歸名畀 Robert Giffen", b: "Giffen 本人嘅著作入面搵唔到對應嘅原話",
+    q: "一個以人命名嘅概念，可以同嗰個人冇文本關係？", s: "歸名爭議至今未解；教嘅時候值得講明。" },
+  { d: "m03", h: "張五常：唔止係罕見，係邏輯上唔可能", t: "Giffen goods 存唔存在", y: "1890s–2008",
+    a: "張五常：需求定律唔容許向上斜嘅需求曲線，Giffen 係邏輯錯誤", b: "主流：理論上可能，只係實證上極難捉",
+    q: "需求定律係經驗定律，定係定義上必然？", s: "2008 年湖南同甘肅嘅實地實驗提供咗最強證據；張五常一方仍唔接受。" },
+  { d: "m03", h: "底層難題：ceteris paribus 究竟固定咗啲乜", t: "ceteris paribus 固定咗咩", y: "—",
+    a: "教科書：其他因素不變", b: "追問：邊啲因素？點解呢啲可以視為獨立於價格？",
+    q: "「其他不變」係一個可檢驗嘅條件，定係一個不可操作嘅口號？", s: "冇標準答案——但學生一問，供求圖就由背變成想。" },
+  { d: "m04", h: "佢對傳統分析嘅三項指控", t: "價格管制嘅後果應該點分析", y: "—",
+    a: "租值消散一脈：管制唔係「造成短缺」，而係令競爭轉用非價格準則，租值被耗散", b: "傳統：價格上限 → 短缺 → 無謂損失",
+    q: "被壓住嘅嗰個差額去咗邊？消失咗，定係轉咗形態？", s: "兩套語言都收；租值消散嗰套解釋力較強但難量度。" },
+  { d: "m04", h: "三藩市：一個 1994 年嘅自然實驗", t: "租金管制嘅實證後果", y: "1994 起",
+    a: "管制保護咗現有租客", b: "自然實驗顯示長期供應同流動性受影響",
+    q: "短期受惠同長期成本點樣同時講？", s: "屬已核實嘅個案研究；教嘅時候要講清楚佢量度緊咩。" },
+  { d: "m04", h: "最低工資：三十年未收工嘅實證戰", t: "最低工資有冇減少就業", y: "1990s 至今",
+    a: "標準競爭模型：價格下限高於均衡 → 就業下跌", b: "一系列自然實驗發現就業影響細甚至唔顯著",
+    q: "係模型錯，定係研究設計問題？", s: "未有共識。三個可能機制（買方壟斷、搜尋摩擦、效率工資）解釋點解標準理論未必適用。" },
+  { d: "m05", h: "點解會有廠商？", t: "廠商點解存在", y: "1937",
+    a: "Coase：因為用市場有交易費用，內部指揮有時平過逐次議價", b: "當時嘅價格理論：市場已經協調一切，廠商只係一個生產函數",
+    q: "如果價格機制咁好，點解仲要有公司？", s: "Coase 呢一問開創咗新制度經濟學；廠商邊界規則由此可推導。" },
+  { d: "m05", h: "如果現實中根本冇 U 型？", t: "U 型成本曲線存唔存在", y: "1931 / 1998",
+    a: "Viner 1931 嗰幅圖同教科書：SRAC 同 LRAC 呈 U 型", b: "Blinder 1998 調查：約九成美國產出來自邊際成本唔上升嘅企業",
+    q: "考試要畫嘅嗰條曲線，同真實企業成本結構有幾大距離？", s: "四個調和方式各有支持者；DSE 照教，但條件要講清楚。" },
+  { d: "m05", h: "張五常嘅延伸：唔止係「公司 vs 市場」", t: "廠商邊界定義得清唔清", y: "—",
+    a: "張五常：真正嘅選擇唔係「公司定市場」，而係揀邊種合約安排", b: "Coase 原版：兩種協調機制之間嘅取捨",
+    q: "「廠商」呢個邊界本身係咪一個清楚嘅概念？", s: "呢個延伸令外判、平台、零工經濟講得通。" },
+  { d: "m06", h: "一個被質疑咗嘅因果方向", t: "SCP：結構決定行為，定反轉？", y: "—",
+    a: "傳統 SCP：市場結構 → 廠商行為 → 表現", b: "反方：效率高嘅廠商做大咗，先造成集中，因果係反嘅",
+    q: "集中度高係壟斷嘅證據，定係競爭嘅結果？", s: "反向因果嘅可能性令「集中 = 有問題」呢個推論唔成立。" },
+  { d: "m06", h: "誤會一：標準石油從來冇做過大家以為佢做咗嘅嘢", t: "掠奪性定價存唔存在", y: "1958",
+    a: "McGee 1958 重讀案卷：掠奪性定價喺經濟上唔理性，標準石油主要靠收購", b: "通俗版／原判決敘事：割喉減價逼死對手",
+    q: "一個寫入教科書嘅案例，可唔可以同案卷唔一致？", s: "McGee 嘅重讀影響咗美國反壟斷法；至今仍有反駁。" },
+  { d: "m06", h: "誤會二：1960 年嗰一晚", t: "外部性應該點處理", y: "1920 / 1960",
+    a: "Pigou：外部性要徵稅矯正", b: "Coase 1960：產權清晰、交易費用為零時，邊個有權都達到同一有效率結果；真正嘅問題係交易費用",
+    q: "「污染者」同「受害者」係咪對稱？", s: "Coase 定理常被誤讀成「唔使政府」；佢自己講嘅係交易費用唔為零先係重點。" },
+  { d: "m06", h: "蜜蜂：一個寫入教科書、但事實上唔存在嘅市場失效", t: "蜜蜂授粉係咪市場失效", y: "1952 / 1973",
+    a: "Meade：蜜蜂同果園互相外溢，市場處理唔到", b: "Cheung 1973 實地調查：華盛頓州早有授粉合約同市場價",
+    q: "教科書嘅「明顯例子」有幾多係查過？", s: "呢個案例被推翻咗，但仍留喺好多教材入面。" },
+  { d: "m07", h: "GDP：發明者自己叫過唔好咁用", t: "GDP 可唔可以做福祉指標", y: "1934",
+    a: "Kuznets：一個國家嘅福祉，難以由國民收入呢個指標推斷", b: "戰後實踐：GDP 成為最主要嘅政策目標",
+    q: "一個為咗答「美國有幾窮」而設計嘅指標，可唔可以拎去量幸福？", s: "設計者本人嘅保留意見有原文可查；批評至今未停。" },
+  { d: "m07", h: "通脹：一句名言同佢引起嘅四十年爭論", t: "通脹係咪永遠係貨幣現象", y: "1960s 至今",
+    a: "貨幣主義：歸根究柢係貨幣", b: "反方：短期供給衝擊、預期、制度都會推高物價，呢句話喺短期冇乜用",
+    q: "「永遠同到處」呢個強度講得過去嗎？", s: "長期關係較有共識，短期爭論未停；DSE 要求嘅版本要補一句條件。" },
+  { d: "m07", h: "不可能三角：聯匯真正嘅代價", t: "聯匯嘅代價", y: "1983 至今",
+    a: "固定匯率 + 資本自由流動 → 放棄獨立貨幣政策", b: "支持者：穩定嘅匯率對細型開放經濟嘅價值大過利率自主",
+    q: "香港放棄咗嘅係咩，換返嚟嘅係咩？", s: "1983 年 10 月 17 日嘅制度性斷裂同 2005 年 5 月加設區間，都係可查證嘅節點。" },
+  { d: "m08", h: "係咪 Ricardo 首先提出？", t: "比較優勢係邊個先提出", y: "1815 / 1817",
+    a: "通行說法：Ricardo《Principles》1817 第七章", b: "Torrens 1815 已寫出近似論證",
+    q: "「首創」點界定：先寫出，抑或先講清楚？", s: "史學上有爭議，唔應該一句「Ricardo 發明」帶過。" },
+  { d: "m08", h: "2004 年，自由貿易最權威嘅辯護者之一提出咗一個例外", t: "自由貿易一定雙贏？", y: "2004",
+    a: "Samuelson 2004：當貿易夥伴喺你原本有優勢嘅行業追上，先進國可能長期受損", b: "標準結論：自由貿易令雙方得益",
+    q: "「得益」係指總體，定係指每一個人？", s: "呢個例外由最權威嘅辯護者提出，唔可以當成保護主義口號駁走。" },
+  { d: "m08", h: "Hunt：呢套理論嘅道德基礎有問題", t: "比較優勢嘅道德基礎", y: "2011",
+    a: "Hunt：理論假設咗調整成本可以忽略、分配問題可以另議", b: "主流：效率結論同分配問題應該分開處理",
+    q: "「總體得益」可唔可以獨立於「邊個承受成本」嚟講？", s: "批判學派立場；喺 DSE 屬於評價題可以引用嘅角度。" },
+  { d: "m08", h: "幼稚工業：比較優勢係咪固定嘅？", t: "幼稚工業論", y: "19 世紀至今",
+    a: "比較優勢可以被創造，暫時保護有理", b: "保護容易變成永久，尋租問題大過學習效果",
+    q: "一個國家嘅比較優勢係天生定係造出嚟？", s: "實證上成敗案例都有，未有定論。" },
+  { d: "v1", h: "私有產權：一個關於海狸嘅答案", t: "產權點解會出現", y: "1967",
+    a: "Demsetz：當資源價值上升、界定成本下降，產權就出現", b: "產權係制度／法律外生賦予",
+    q: "產權係經濟力量嘅結果，抑或前提？", s: "海狸皮毛貿易個案係最常被引用嘅證據，亦有人質疑其代表性。" },
+  { d: "v2", h: "專業化與分工：一本書入面嘅兩種語氣", t: "分工係祝福定係代價", y: "1776",
+    a: "《國富論》第一卷：針廠示範分工令產量倍增，語氣係驚嘆", b: "第五卷：分工令工人變得盡可能咁蠢同無知，語氣係哀悼",
+    q: "同一個作者、同一本書，點解兩種評價？", s: "教科書幾乎只教第一段；兩段擺埋一齊先係完整嘅 Smith。" },
+  { d: "v2", h: "垂直整合：一個被理論創始人親手拆穿嘅教科書個案", t: "Fisher Body 個案", y: "1926 起",
+    a: "標準敘事：資產專用性 + 敲竹槓 → GM 收購 Fisher Body", b: "後續研究對事實細節提出質疑",
+    q: "最常被引用嘅垂直整合證據，有幾穩陣？", s: "細節仍有爭論——本冊嘅來源標示已標明核實狀態。" },
+  { d: "v2", h: "主張代理問題：1776 年已經寫低咗", t: "代理問題幾時被發現", y: "1776",
+    a: "Smith 已寫出管人哋錢冇管自己錢咁上心", b: "通行說法：1970 年代先形成理論",
+    q: "「理論化」同「觀察到」相隔咗二百年，中間發生咗乜？", s: "原文可查；呢條線索令一個乾巴巴嘅名詞有咗年代。" },
+  { d: "v3", h: "價格分歧：一個結論唔清楚嘅概念", t: "價格分歧提升定損害福利", y: "—",
+    a: "可以令原本買唔起嘅人買到，總產量上升", b: "攫取消費者剩餘，分配上明顯不利",
+    q: "同一個行為點解可以得出相反嘅福利結論？", s: "要睇邊一級、睇產量有冇上升——冇單一答案，係評價題嘅好材料。" },
+  { d: "v3", h: "公共資源：一個 1968 年嘅悲觀故事，同一個 1990 年嘅反駁", t: "公地悲劇一定發生？", y: "1968 / 1990",
+    a: "Hardin 1968：共有資源必然被過度使用", b: "Ostrom 1990：世界各地有長期運作嘅自主治理制度",
+    q: "解決方法係咪只有私有化或國有化兩條路？", s: "Ostrom 2009 拎諾貝爾獎；DSE 只教悲劇一半。" },
+  { d: "v4", h: "自然失業率：一個一九六八年出現、然後摧毀咗當時政策共識嘅概念", t: "失業同通脹可唔可以長期取捨", y: "1968",
+    a: "Phillips curve 政策共識：可以用通脹換就業", b: "Friedman / Phelps 1968：預期會調整，長期取捨唔存在",
+    q: "1970 年代嘅滯脹判咗邊一方勝？", s: "呢個概念摧毀咗當時嘅政策共識，本身亦一直有量度爭議。" },
+  { d: "v4", h: "銀行乘數：一個中央銀行自己出文話唔啱嘅教科書故事", t: "銀行乘數係點運作", y: "—",
+    a: "教科書：先有存款，再按 reserve ratio 逐層放大", b: "央行研究：實務上係銀行先放貸創造存款，準備金後補",
+    q: "考試要答嘅版本同實際運作唔一樣，應該點教？", s: "DSE 要求教科書版本；但學生應該知道有官方文件持相反描述。" },
+  { d: "v5", h: "國際收支：一條被誤讀得最多嘅恆等式", t: "經常帳赤字係唔係壞事", y: "—",
+    a: "赤字 = 借外債 = 唔健康", b: "恆等式本身唔含價值判斷；資本流入亦可以係投資機會嘅結果",
+    q: "一條會計恆等式可唔可以拎嚟做政策結論？", s: "誤讀非常普遍，係 DSE 最常見嘅概念錯誤之一。" }
+];
+
+/* ---------------- D2 摘錄籃 ---------------- */
+function addClip(doc, kind, text, bkey) {
+  text = String(text || "").replace(/\s+\n/g, "\n").trim();
+  if (!text) return;
+  if (text.length > 4000) text = text.slice(0, 4000) + "…（已截短）";
+  S.clip.push({ id: "c" + Date.now() + Math.floor(Math.random() * 1e4), d: doc, k: kind, t: text, b: bkey || "", ts: Date.now() });
+  save(); render(); flashOpen("已入籃（" + S.clip.length + "）");
+}
+function sectionText(el) {
+  document.body.classList.add("fx-exporting");   /* 令工具按鈕唔會入摘錄 */
+  var res;
+  try {
+    if (el.classList.contains("card")) { res = el.innerText.trim(); }
+    else {
+      var lvl = +el.tagName.slice(1), out = [el.innerText.trim()], n = el.nextElementSibling;
+      while (n) {
+        if (/^H[1-6]$/.test(n.tagName) && +n.tagName.slice(1) <= lvl) break;
+        var stop = false;
+        if (n.querySelectorAll) n.querySelectorAll("h1,h2,h3").forEach(function (h) { if (+h.tagName.slice(1) <= lvl) stop = true; });
+        if (stop) break;
+        if (!n.classList.contains("fx-ui")) out.push(n.innerText.trim());
+        n = n.nextElementSibling;
+      }
+      res = out.join("\n\n").trim();
+    }
+  } finally { document.body.classList.remove("fx-exporting"); }
+  return res;
+}
+
+/* ---------------- 內文控制項（A1 A2 B1 D2） ---------------- */
+var PROGL = ["未讀", "讀過", "已掌握"];
+function toolRow(k) {
+  var a = ANCHORS[k], isCard = a.kind === "card";
+  var d = document.createElement("div");
+  d.className = "fx-tools fx-ui" + (isCard ? "" : " fx-tools-h");
+  d.innerHTML =
+    '<button class="fx-b" data-fx="bm" data-k="' + k + '">☆ 書籤</button>' +
+    '<button class="fx-b" data-fx="note" data-k="' + k + '">✎ 筆記</button>' +
+    (isCard ? '<button class="fx-b" data-fx="prog" data-k="' + k + '">○ 未讀</button>' : "") +
+    '<button class="fx-b" data-fx="clip" data-k="' + k + '">⊞ 入籃</button>';
+  return d;
+}
+Object.keys(ANCHORS).forEach(function (k) {
+  var a = ANCHORS[k], row = toolRow(k);
+  if (a.kind === "card") {
+    var hd = a.el.querySelector(".card-hd");
+    (hd || a.el).appendChild(row);
+  } else {
+    a.el.parentNode.insertBefore(row, a.el.nextSibling);
+  }
+});
+function noteBox(k) {
+  var a = ANCHORS[k];
+  var host = a.kind === "card" ? (a.el.querySelector(".card-bd") || a.el) : null;
+  var box = document.createElement("div");
+  box.className = "fx-note fx-ui"; box.dataset.nk = k;
+  box.innerHTML = '<div class="fx-note-l"><span>我嘅筆記 · ' + esc(a.title.slice(0, 30)) + '</span>' +
+    '<button class="fx-b" data-fx="noteclose" data-k="' + k + '">收起</button></div>' +
+    '<textarea placeholder="寫低你想記住嘅嘢：學生喺邊度卡住、邊條 past paper 用得著、你自己嘅講法…"></textarea>';
+  var ta = box.querySelector("textarea");
+  ta.value = S.note[k] || "";
+  var tmr = null;
+  ta.addEventListener("input", function () {
+    clearTimeout(tmr);
+    tmr = setTimeout(function () {
+      if (ta.value.trim()) S.note[k] = ta.value; else delete S.note[k];
+      save(); syncBtns(); render();
+    }, 350);
+  });
+  if (host) host.insertBefore(box, host.firstChild);
+  else a.el.parentNode.insertBefore(box, a.el.nextElementSibling ? a.el.nextElementSibling.nextSibling : null);
+  return box;
+}
+function syncBtns() {
+  document.querySelectorAll("[data-fx]").forEach(function (b) {
+    var k = b.dataset.k;
+    if (b.dataset.fx === "bm") {
+      var on = !!S.bm[k]; b.classList.toggle("on", on); b.textContent = (on ? "★" : "☆") + " 書籤";
+    } else if (b.dataset.fx === "note") {
+      var has = !!S.note[k]; b.classList.toggle("on-g", has); b.textContent = "✎ 筆記" + (has ? " ●" : "");
+    } else if (b.dataset.fx === "prog") {
+      var v = S.prog[k] || 0;
+      b.textContent = ["○ 未讀", "◐ 讀過", "● 已掌握"][v];
+      b.classList.toggle("on-g", v === 1); b.classList.toggle("on-t", v === 2);
+    }
+  });
+  Object.keys(ANCHORS).forEach(function (k) {
+    ANCHORS[k].el.classList.toggle("fx-marked", !!S.bm[k]);
+  });
+}
+document.addEventListener("click", function (e) {
+  var b = e.target.closest("[data-fx]"); if (!b) return;
+  var k = b.dataset.k, f = b.dataset.fx;
+  if (f === "bm") { if (S.bm[k]) delete S.bm[k]; else S.bm[k] = 1; save(); syncBtns(); render(); }
+  else if (f === "note") {
+    var ex = document.querySelector('.fx-note[data-nk="' + k + '"]');
+    if (ex) { ex.remove(); } else { noteBox(k).querySelector("textarea").focus(); }
+  }
+  else if (f === "noteclose") { var n = document.querySelector('.fx-note[data-nk="' + k + '"]'); if (n) n.remove(); }
+  else if (f === "prog") { S.prog[k] = ((S.prog[k] || 0) + 1) % 3; if (!S.prog[k]) delete S.prog[k]; save(); syncBtns(); render(); }
+  else if (f === "clip") { var a = ANCHORS[k]; addClip(a.doc, a.title, sectionText(a.el), ""); }
+});
+
+/* ---------------- 跳轉 ---------------- */
+function jump(el) {
+  if (!el) return;
+  closePanel();
+  el.scrollIntoView({ block: "center", behavior: "smooth" });
+  el.classList.remove("fx-flash"); void el.offsetWidth; el.classList.add("fx-flash");
+  setTimeout(function () { el.classList.remove("fx-flash"); }, 1800);
+}
+
+/* ---------------- C1 搜尋索引 ---------------- */
+var INDEX = null;
+function buildIndex() {
+  if (INDEX) return INDEX;
+  INDEX = [];
+  Object.keys(BLOCKS).forEach(function (k) {
+    var el = BLOCKS[k];
+    if (el.closest(".fx-ui")) return;
+    var t = blockText(el).replace(/\s+/g, " ").trim();
+    if (t.length < 2) return;
+    INDEX.push({ k: k, d: docOf(el), t: t, l: t.toLowerCase() });
+  });
+  return INDEX;
+}
+function search(q) {
+  var terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!terms.length) return [];
+  var idx = buildIndex(), out = [];
+  for (var i = 0; i < idx.length && out.length < 200; i++) {
+    var r = idx[i], ok = true, first = -1;
+    for (var j = 0; j < terms.length; j++) {
+      var p = r.l.indexOf(terms[j]);
+      if (p < 0) { ok = false; break; }
+      if (first < 0 || p < first) first = p;
+    }
+    if (ok) out.push({ k: r.k, d: r.d, t: r.t, p: first });
+  }
+  return out;
+}
+function snippet(t, p, terms) {
+  var s = Math.max(0, p - 34), e = Math.min(t.length, p + 90);
+  var frag = (s > 0 ? "…" : "") + t.slice(s, e) + (e < t.length ? "…" : "");
+  var h = esc(frag);
+  terms.forEach(function (tm) {
+    if (!tm) return;
+    var re = new RegExp(tm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+    h = h.replace(re, function (m) { return "<mark>" + m + "</mark>"; });
+  });
+  return h;
+}
+
+/* ---------------- 面板 ---------------- */
+var openBtn = document.createElement("button");
+openBtn.className = "fx-open fx-ui"; openBtn.textContent = "🧰 工具";
+openBtn.setAttribute("aria-expanded", "false");
+document.body.appendChild(openBtn);
+
+var panel = document.createElement("aside");
+panel.className = "fx-panel fx-ui"; panel.setAttribute("aria-label", "教師工具");
+panel.innerHTML =
+  '<div class="fx-hd"><b>教師工具</b><button class="fx-b" data-fx2="close">✕ 收起</button></div>' +
+  '<div class="fx-tabs">' +
+  ["search:搜尋", "bm:書籤", "note:筆記", "hl:螢光", "prog:進度", "deb:爭論", "clip:籃", "set:設定"]
+    .map(function (x) { var p = x.split(":"); return '<button class="fx-b" data-tab="' + p[0] + '">' + p[1] + "</button>"; }).join("") +
+  "</div><div class=\"fx-body\"></div>";
+document.body.appendChild(panel);
+var body = panel.querySelector(".fx-body");
+var TAB = S.ui.tab || "search";
+
+function openPanel(t) { if (t) TAB = t; panel.classList.add("open"); openBtn.setAttribute("aria-expanded", "true"); render(); }
+function closePanel() { panel.classList.remove("open"); openBtn.setAttribute("aria-expanded", "false"); }
+openBtn.addEventListener("click", function () { panel.classList.contains("open") ? closePanel() : openPanel(); });
+panel.addEventListener("click", function (e) {
+  var t = e.target.closest("[data-tab]");
+  if (t) { TAB = t.dataset.tab; S.ui.tab = TAB; save(); render(); return; }
+  if (e.target.closest('[data-fx2="close"]')) closePanel();
+});
+var flashTmr = null;
+function flashOpen(msg) {
+  openBtn.textContent = msg; clearTimeout(flashTmr);
+  flashTmr = setTimeout(function () { openBtn.textContent = "🧰 工具"; }, 1400);
+}
+
+/* ---- 各分頁 ---- */
+function h6(t) { return "<h6>" + esc(t) + "</h6>"; }
+function rowBtn(cls, title, meta, data) {
+  return '<button class="fx-row" ' + data + '><span class="t">' + title + '</span><span class="m">' + esc(meta) + "</span></button>";
+}
+
+function viewSearch() {
+  var q = S.ui.q || "";
+  var html = '<input class="fx-in" id="fxq" placeholder="搵概念、人名、年份、案例…（可用空格分開多個字）" value="' + esc(q) + '">';
+  if (q.trim()) {
+    var terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+    var res = search(q);
+    html += h6("命中 " + res.length + " 段" + (res.length >= 200 ? "（只顯示頭 200）" : ""));
+    if (!res.length) html += '<p class="fx-empty">冇命中。試下換一個詞，或者用英文術語（例如 elasticity、Coase）。</p>';
+    res.forEach(function (r) {
+      html += rowBtn("", snippet(r.t, r.p, terms), (DOCTHEME[r.d] || "") + " · " + (DOCTITLE[r.d] || r.d), 'data-go="' + r.k + '"');
+    });
+  } else {
+    html += '<p class="fx-empty">全書 14 篇一次過搵。搵到之後㩒一下就會跳去嗰段並閃一閃。</p>';
+  }
+  return html;
+}
+function viewBm() {
+  var keys = Object.keys(S.bm);
+  if (!keys.length) return '<p class="fx-empty">仲未有書籤。喺任何標題或者概念卡㩒「☆ 書籤」就會出現喺呢度。</p>';
+  var byDoc = {};
+  keys.forEach(function (k) { if (!ANCHORS[k]) return; (byDoc[ANCHORS[k].doc] = byDoc[ANCHORS[k].doc] || []).push(k); });
+  var html = "";
+  arts.forEach(function (a) {
+    var d = a.id.replace("doc-", ""); if (!byDoc[d]) return;
+    html += h6((DOCTHEME[d] || "") + " · " + (DOCTITLE[d] || d));
+    byDoc[d].forEach(function (k) {
+      html += rowBtn("", esc(ANCHORS[k].title), ANCHORS[k].kind === "card" ? "概念卡" : "章節", 'data-go-k="' + k + '"');
+    });
+  });
+  return html;
+}
+function viewNote() {
+  var keys = Object.keys(S.note);
+  if (!keys.length) return '<p class="fx-empty">仲未有筆記。喺任何標題或者概念卡㩒「✎ 筆記」，寫嘅嘢會即時存低。</p>';
+  var html = "";
+  arts.forEach(function (a) {
+    var d = a.id.replace("doc-", "");
+    var ks = keys.filter(function (k) { return ANCHORS[k] && ANCHORS[k].doc === d; });
+    if (!ks.length) return;
+    html += h6((DOCTHEME[d] || "") + " · " + (DOCTITLE[d] || d));
+    ks.forEach(function (k) {
+      html += rowBtn("", esc(ANCHORS[k].title) + '<span class="fx-note-mini">' + esc(S.note[k]) + "</span>", "筆記", 'data-go-k="' + k + '"');
+    });
+  });
+  return html;
+}
+function viewHl() {
+  var ks = Object.keys(S.hl).filter(function (k) { return (S.hl[k] || []).length; });
+  if (!ks.length) return '<p class="fx-empty">仲未有螢光。喺正文揀一段字，就會彈出三隻顏色：黃＝重點、紅＝學生易錯、藍＝想再查。</p>';
+  var byDoc = {};
+  ks.forEach(function (k) { var el = BLOCKS[k]; if (!el) return; (byDoc[docOf(el)] = byDoc[docOf(el)] || []).push(k); });
+  var html = "", NAME = { y: "重點", r: "學生易錯", b: "想再查" };
+  arts.forEach(function (a) {
+    var d = a.id.replace("doc-", ""); if (!byDoc[d]) return;
+    html += h6((DOCTHEME[d] || "") + " · " + (DOCTITLE[d] || d));
+    byDoc[d].forEach(function (k) {
+      S.hl[k].forEach(function (r) {
+        html += rowBtn("", esc((r.t || "").slice(0, 140)), NAME[r.c] || "重點", 'data-go="' + k + '"');
+      });
+    });
+  });
+  return html;
+}
+function viewProg() {
+  var html = "", tot = { 0: 0, 1: 0, 2: 0 };
+  ["v1", "v2", "v3", "v4", "v5"].forEach(function (v) {
+    var list = CONCEPTS.filter(function (c) { return c[2] === v; });
+    var cnt = { 0: 0, 1: 0, 2: 0 };
+    list.forEach(function (c) { var k = CMAP[c[0]], s = k ? (S.prog[k] || 0) : 0; cnt[s]++; tot[s]++; });
+    var n = list.length;
+    html += h6(VOLNAME[v] + " · " + n + " 條");
+    html += '<div class="fx-bar"><i class="g" style="width:' + (cnt[2] / n * 100) + '%"></i>' +
+      '<i class="h" style="width:' + (cnt[1] / n * 100) + '%"></i></div>' +
+      '<div class="fx-legend">已掌握 ' + cnt[2] + " · 讀過 " + cnt[1] + " · 未讀 " + cnt[0] + "</div>";
+    list.forEach(function (c) {
+      var k = CMAP[c[0]], s = k ? (S.prog[k] || 0) : 0;
+      html += '<div class="fx-c s' + (s + 1) + '"><span class="n">' + (c[0] < 10 ? "0" : "") + c[0] + "</span>" +
+        '<span class="nm" data-go-k="' + (k || "") + '">' + esc(c[1]) + "</span>" +
+        '<button class="fx-b" data-cyc="' + (k || "") + '">' + ["○", "◐", "●"][s] + " " + PROGL[s] + "</button></div>";
+    });
+  });
+  var all = CONCEPTS.length;
+  return h6("全部 53 條") + '<div class="fx-bar"><i class="g" style="width:' + (tot[2] / all * 100) + '%"></i>' +
+    '<i class="h" style="width:' + (tot[1] / all * 100) + '%"></i></div>' +
+    '<div class="fx-legend">已掌握 ' + tot[2] + " / 53 · 讀過 " + tot[1] + " · 未讀 " + tot[0] + "</div>" + html;
+}
+function viewDeb() {
+  var f = (S.ui.df || "").toLowerCase();
+  var list = DEBATES.filter(function (x) {
+    if (!f) return true;
+    return (x.t + x.a + x.b + x.q + x.s + x.y + (DOCTITLE[x.d] || "")).toLowerCase().indexOf(f) >= 0;
+  });
+  var html = '<input class="fx-in" id="fxdf" placeholder="篩爭論：打人名、年份或者關鍵詞" value="' + esc(S.ui.df || "") + '">' +
+    h6(list.length + " 場爭論");
+  list.forEach(function (x, i) {
+    html += '<div class="fx-d"><h5>' + esc(x.t) + ' <span class="yr">' + esc(x.y) + "</span></h5><dl>" +
+      "<dt>一方</dt><dd>" + esc(x.a) + "</dd>" +
+      "<dt>另一方</dt><dd>" + esc(x.b) + "</dd>" +
+      "<dt>爭乜</dt><dd>" + esc(x.q) + "</dd>" +
+      "<dt>而家點睇</dt><dd>" + esc(x.s) + "</dd></dl>" +
+      '<div class="fx-chips"><button class="fx-b" data-deb="' + i + '">跳去原文 →</button>' +
+      '<span class="fx-legend">' + esc((DOCTHEME[x.d] || "") + " · " + (DOCTITLE[x.d] || x.d)) + "</span></div></div>";
+  });
+  return html;
+}
+function viewClip() {
+  if (!S.clip.length) return '<p class="fx-empty">籃入面冇嘢。㩒任何章節／概念卡嘅「⊞ 入籃」，或者揀一段字再㩒「⊞ 入籃」，就會儲喺呢度，最後可以一次過匯出成備課草稿。</p>';
+  var html = h6(S.clip.length + " 段摘錄") +
+    '<div class="fx-chips"><button class="fx-b" data-exp="clipmd">↓ 匯出 Markdown</button>' +
+    '<button class="fx-b" data-clear="clip">清空</button></div>';
+  S.clip.slice().reverse().forEach(function (c) {
+    html += '<div class="fx-d"><h5>' + esc(c.k) + '</h5><div class="fx-legend">' +
+      esc((DOCTHEME[c.d] || "") + " · " + (DOCTITLE[c.d] || c.d)) + "</div>" +
+      '<p class="fx-note-mini">' + esc(c.t.slice(0, 260)) + (c.t.length > 260 ? "…" : "") + "</p>" +
+      '<div class="fx-chips">' + (c.b ? '<button class="fx-b" data-go="' + c.b + '">跳去原文 →</button>' : "") +
+      '<button class="fx-b" data-delclip="' + c.id + '">移除</button></div></div>';
+  });
+  return html;
+}
+function seg(name, key, opts, cur) {
+  return '<div class="fx-set"><span>' + esc(name) + "</span>" +
+    opts.map(function (o) {
+      return '<button class="fx-b' + (String(cur) === String(o[0]) ? " on-t" : "") + '" data-set="' + key + '" data-v="' + o[0] + '">' + esc(o[1]) + "</button>";
+    }).join(" ") + "</div>";
+}
+function viewSet() {
+  var u = S.ui;
+  var html = "";
+  if (!storeOK) html += '<div class="fx-warn">' + esc(storeMsg) + "</div>";
+  html += seg("字體大小", "zoom", [["0.92", "細"], ["1", "標準"], ["1.1", "大"], ["1.22", "特大"]], u.zoom || "1");
+  html += seg("行寬", "col", [["62ch", "窄"], ["74ch", "標準"], ["86ch", "闊"], ["100%", "全寬"]], u.col || "74ch");
+  html += seg("行距", "lh", [["1.6", "緊湊"], ["1.72", "標準"], ["1.95", "寬鬆"]], u.lh || "1.72");
+  html += seg("主題", "theme", [["", "跟系統"], ["light", "淺色"], ["dark", "深色"]], u.theme || "");
+  html += h6("備份 · 匯出匯入");
+  html += '<p class="fx-empty">所有標記只存喺呢部機、呢個瀏覽器。換機、換瀏覽器、清 cache 就會冇。定期匯出一次。</p>' +
+    '<div class="fx-chips">' +
+    '<button class="fx-b" data-exp="json">↓ 匯出 JSON（備份）</button>' +
+    '<button class="fx-b" data-exp="md">↓ 匯出 Markdown（貼入備課檔）</button>' +
+    '<button class="fx-b" data-imp="1">↑ 匯入 JSON</button></div>' +
+    '<input type="file" id="fximp" accept=".json,application/json" style="display:none">';
+  var n = Object.keys(S.bm).length + "／" + Object.keys(S.note).length + "／" +
+    Object.keys(S.hl).reduce(function (a, k) { return a + S.hl[k].length; }, 0) + "／" + S.clip.length;
+  html += h6("目前存住") + '<p class="fx-empty">書籤／筆記／螢光／摘錄 = ' + n + "</p>" +
+    '<div class="fx-chips"><button class="fx-b" data-clear="all">全部清除</button></div>';
+  return html;
+}
+function render() {
+  panel.querySelectorAll("[data-tab]").forEach(function (b) { b.classList.toggle("on-t", b.dataset.tab === TAB); });
+  var v = { search: viewSearch, bm: viewBm, note: viewNote, hl: viewHl, prog: viewProg, deb: viewDeb, clip: viewClip, set: viewSet }[TAB];
+  body.innerHTML = v ? v() : "";
+  var q = document.getElementById("fxq");
+  if (q) {
+    q.addEventListener("input", debounce(function () { S.ui.q = q.value; save(); var pos = q.selectionStart; render(); var n2 = document.getElementById("fxq"); if (n2) { n2.focus(); try { n2.setSelectionRange(pos, pos); } catch (e) { } } }, 260));
+  }
+  var df = document.getElementById("fxdf");
+  if (df) df.addEventListener("input", debounce(function () { S.ui.df = df.value; save(); var pos = df.selectionStart; render(); var n3 = document.getElementById("fxdf"); if (n3) { n3.focus(); try { n3.setSelectionRange(pos, pos); } catch (e) { } } }, 260));
+  syncBtns();
+}
+function debounce(fn, ms) { var t; return function () { clearTimeout(t); t = setTimeout(fn, ms); }; }
+
+/* 面板內互動 */
+body.addEventListener("click", function (e) {
+  var g = e.target.closest("[data-go]"); if (g) { jump(BLOCKS[g.dataset.go]); return; }
+  var gk = e.target.closest("[data-go-k]");
+  if (gk && gk.dataset.goK && ANCHORS[gk.dataset.goK]) { jump(ANCHORS[gk.dataset.goK].el); return; }
+  var cy = e.target.closest("[data-cyc]");
+  if (cy && cy.dataset.cyc) { var k = cy.dataset.cyc; S.prog[k] = ((S.prog[k] || 0) + 1) % 3; if (!S.prog[k]) delete S.prog[k]; save(); render(); return; }
+  var db = e.target.closest("[data-deb]");
+  if (db) {
+    var x = DEBATES[+db.dataset.deb];
+    var art = document.getElementById("doc-" + x.d), target = null;
+    if (art) art.querySelectorAll("h2,h3").forEach(function (h) {
+      if (target) return;
+      var cl = h.cloneNode(true); cl.querySelectorAll("small").forEach(function (s) { s.remove(); });
+      if (cl.textContent.trim().replace(/\s+/g, " ").indexOf(x.h) === 0) target = h;
+    });
+    jump(target || art); return;
+  }
+  var dc = e.target.closest("[data-delclip]");
+  if (dc) { S.clip = S.clip.filter(function (c) { return c.id !== dc.dataset.delclip; }); save(); render(); return; }
+  var cl2 = e.target.closest("[data-clear]");
+  if (cl2) {
+    if (cl2.dataset.clear === "clip") { if (confirm("清空摘錄籃？")) { S.clip = []; save(); render(); } }
+    else if (confirm("清除全部書籤、筆記、螢光、進度同摘錄？呢個動作冇得復原——建議先匯出 JSON。")) {
+      Object.keys(S.hl).forEach(function (k) { S.hl[k] = []; paint(k); });
+      S.bm = {}; S.note = {}; S.hl = {}; S.prog = {}; S.clip = [];
+      document.querySelectorAll(".fx-note[data-nk]").forEach(function (n) { n.remove(); });
+      save(); syncBtns(); render();
+    }
+    return;
+  }
+  var st = e.target.closest("[data-set]");
+  if (st) { S.ui[st.dataset.set] = st.dataset.v; save(); applyUI(); render(); return; }
+  var ex = e.target.closest("[data-exp]");
+  if (ex) { doExport(ex.dataset.exp); return; }
+  if (e.target.closest("[data-imp]")) { document.getElementById("fximp").click(); return; }
+});
+body.addEventListener("change", function (e) {
+  if (e.target.id !== "fximp" || !e.target.files || !e.target.files[0]) return;
+  var fr = new FileReader();
+  fr.onload = function () {
+    try {
+      var o = JSON.parse(fr.result);
+      ["bm", "note", "hl", "prog"].forEach(function (k) { if (o[k]) for (var x in o[k]) S[k][x] = o[k][x]; });
+      if (o.clip && o.clip.length) S.clip = S.clip.concat(o.clip);
+      Object.keys(S.hl).forEach(paint);
+      save(); render(); flashOpen("已匯入");
+    } catch (err) { alert("匯入失敗：唔係有效嘅 JSON 備份檔。"); }
+  };
+  fr.readAsText(e.target.files[0]);
+});
+
+/* ---------------- 匯出 ---------------- */
+function dl(name, text, mime) {
+  var b = new Blob([text], { type: mime + ";charset=utf-8" });
+  var u = URL.createObjectURL(b), a = document.createElement("a");
+  a.href = u; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(function () { URL.revokeObjectURL(u); a.remove(); }, 500);
+}
+function stamp() { var d = new Date(), p = function (n) { return (n < 10 ? "0" : "") + n; }; return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()); }
+function doExport(kind) {
+  if (kind === "json") { dl("econ-notes-" + stamp() + ".json", JSON.stringify(S, null, 1), "application/json"); return; }
+  var NAME = { y: "重點", r: "學生易錯", b: "想再查" }, out = [];
+  out.push("# HKDSE 經濟科 · 教師增益全集 — 我的標記");
+  out.push("匯出時間：" + new Date().toLocaleString("zh-HK"));
+  if (kind !== "clipmd") {
+    var bk = Object.keys(S.bm).filter(function (k) { return ANCHORS[k]; });
+    if (bk.length) {
+      out.push("\n## 書籤（" + bk.length + "）");
+      bk.forEach(function (k) { out.push("- [" + (DOCTITLE[ANCHORS[k].doc] || "") + "] " + ANCHORS[k].title); });
+    }
+    var nk = Object.keys(S.note).filter(function (k) { return ANCHORS[k]; });
+    if (nk.length) {
+      out.push("\n## 筆記（" + nk.length + "）");
+      nk.forEach(function (k) {
+        out.push("\n### " + ANCHORS[k].title + "　—　" + (DOCTITLE[ANCHORS[k].doc] || ""));
+        out.push(S.note[k]);
+      });
+    }
+    var hk = Object.keys(S.hl).filter(function (k) { return (S.hl[k] || []).length; });
+    if (hk.length) {
+      out.push("\n## 螢光");
+      hk.forEach(function (k) {
+        var d = BLOCKS[k] ? docOf(BLOCKS[k]) : "";
+        S.hl[k].forEach(function (r) { out.push("- **[" + (NAME[r.c] || "重點") + "]** " + (r.t || "").replace(/\n/g, " ") + "　（" + (DOCTITLE[d] || d) + "）"); });
+      });
+    }
+  }
+  if (S.clip.length) {
+    out.push("\n## 摘錄籃（" + S.clip.length + "）");
+    S.clip.forEach(function (c) {
+      out.push("\n### " + c.k + "　—　" + (DOCTITLE[c.d] || c.d));
+      out.push(c.t);
+    });
+  }
+  dl((kind === "clipmd" ? "econ-clips-" : "econ-notes-") + stamp() + ".md", out.join("\n"), "text/markdown");
+}
+
+/* ---------------- D3 顯示設定 ---------------- */
+function applyUI() {
+  var r = document.documentElement;
+  r.style.setProperty("--fx-zoom", S.ui.zoom || "1");
+  r.style.setProperty("--fx-col", S.ui.col || "74ch");
+  r.style.setProperty("--fx-lh", S.ui.lh || "1.72");
+  if (S.ui.theme) r.setAttribute("data-theme", S.ui.theme); else r.removeAttribute("data-theme");
+}
+
+/* ---------------- 啟動 ---------------- */
+applyUI();
+Object.keys(S.hl).forEach(paint);
+syncBtns();
+render();
+
+/* 快捷鍵：Ctrl/⌘ + K 開搜尋 */
+document.addEventListener("keydown", function (e) {
+  if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+    e.preventDefault(); openPanel("search");
+    setTimeout(function () { var q = document.getElementById("fxq"); if (q) q.focus(); }, 80);
+  }
+});
+window.FX = { S: S, ANCHORS: ANCHORS, BLOCKS: BLOCKS, DEBATES: DEBATES, CMAP: CMAP, save: save, render: render, openPanel: openPanel, search: search, addRange: addRange, addClip: addClip, buildIndex: buildIndex };
+})();
+
+</script>
 </body>
 </html>
