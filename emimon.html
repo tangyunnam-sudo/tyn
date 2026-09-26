@@ -1,0 +1,808 @@
+<title>EMI-Mon 英語獸</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@500;700;900&family=Press+Start+2P&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ground:#e6e9f2; --ink:#1d2433; --muted:#5b6479;
+  --shell:#2d4380; --shell2:#1e2f5e; --bezel:#141c30;
+  --paper:#fdfcf6; --frame:#3d4f7c; --line:#d3d8e4;
+  --red:#d9463a; --gold:#f2c230; --ok:#2f8a5a; --bad:#c0392b; --blue:#2f6fb0;
+  --pix:"Press Start 2P",ui-monospace,monospace;
+  --txt:"Noto Sans HK","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--ground);background-image:radial-gradient(#cdd3e3 1px,transparent 1px);background-size:14px 14px;color:var(--ink);font-family:var(--txt);margin:0}
+*{box-sizing:border-box}
+.wrap{max-width:620px;margin:0 auto;height:100%;display:flex;flex-direction:column;padding-inline:16px;padding-block:8px;gap:6px}
+.top{display:flex;align-items:center;gap:10px;flex:none}
+.logo{font-family:var(--pix);font-size:15px;color:var(--shell);text-shadow:2px 2px 0 var(--gold);letter-spacing:1px}
+.sub{font-size:12px;color:var(--muted);font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.console{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;background:linear-gradient(160deg,#3d58a0,var(--shell) 40%,var(--shell2));border-radius:18px 18px 36px 18px;padding:10px;box-shadow:0 6px 0 #16244a,inset 0 2px 0 rgba(255,255,255,.18)}
+.bezel{background:var(--bezel);border-radius:10px;padding:6px;flex:none;position:relative}
+.bezel canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:3px;background:#000;image-rendering:pixelated}
+.led{position:absolute;left:2px;top:50%;width:3px;height:3px;border-radius:50%;background:#ff6a6a;box-shadow:0 0 5px #ff6a6a}
+.panel{flex:1;min-height:92px;overflow-y:auto;background:var(--paper);border:3px solid var(--frame);border-radius:10px;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 4px #d8dcea;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.ptext{font-size:16px;line-height:1.6;font-weight:500;white-space:pre-wrap;word-break:break-word;cursor:pointer;min-height:1.6em}
+.ptext .place{font-weight:900;color:var(--shell)}
+.ptext .hint{color:var(--muted);font-size:13px}
+.more{display:inline-block;color:var(--red);margin-left:4px;animation:blink 1s steps(2) infinite;font-size:12px}
+@keyframes blink{50%{opacity:0}}
+.pchoices{display:grid;grid-template-columns:1fr;gap:6px}
+.pchoices.g2{grid-template-columns:1fr 1fr}
+.opt{position:relative;text-align:left;background:#fff;border:2px solid var(--line);border-radius:7px;padding:8px 10px 8px 28px;font:500 15px/1.45 var(--txt);color:var(--ink);cursor:pointer;width:100%}
+.opt:hover{border-color:#9aa7c6}
+.opt.sel{border-color:var(--red);background:#fff6f3}
+.opt.sel::before{content:"▶";position:absolute;left:9px;top:10px;color:var(--red);font-size:11px}
+.opt .n{font-family:var(--pix);font-size:9px;color:var(--muted);margin-right:6px}
+.opt.en{font-size:16px;font-weight:700}
+.opt.right{border-color:var(--ok);background:#eef8f1}
+.opt.wrong{border-color:var(--bad);background:#fdf0ee}
+.opt:disabled{cursor:default}
+.opt .why{display:block;font-weight:500;font-size:13px;color:#7a4a3a;margin-top:2px}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.qhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qtype{font:700 12px var(--txt);color:#fff;border-radius:10px;padding:2px 9px}
+.qsit{font-size:17px;font-weight:900;line-height:1.5}
+.qwritten{font-size:16px;font-weight:700;background:#eef0f5;border-left:4px solid #9aa3b8;padding:4px 10px;border-radius:4px}
+.think{font-size:14px;color:var(--muted)}
+.go{align-self:flex-start;font:700 14px var(--txt);background:var(--shell);color:#fff;border:0;border-radius:10px;padding:8px 14px;cursor:pointer}
+.fb{border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6;display:flex;flex-direction:column;gap:6px}
+.fb.ok{background:#eef8f1;border:2px solid var(--ok)}
+.fb.bad{background:#fdf0ee;border:2px solid var(--bad)}
+.fb strong{font-size:15px}
+.say{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
+.say .line{font-weight:700;font-size:16px}
+.say .lbl{font-size:11px;color:#7a6a2a;border:1px solid #d8c88a;border-radius:6px;padding:0 5px}
+.spk{font:700 12px var(--txt);background:#fff;border:1.5px solid #9aa7c6;border-radius:8px;padding:1px 7px;cursor:pointer;color:var(--ink)}
+.note{background:#fff8e1;border-left:4px solid var(--gold);padding:6px 10px;border-radius:4px;font-size:13.5px}
+/* pad */
+.pad{flex:none;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;user-select:none;-webkit-user-select:none;touch-action:none}
+.dpad{display:grid;grid-template-columns:repeat(3,38px);grid-template-rows:repeat(3,38px)}
+.dpad button{background:#101a33;border:0;color:#8ea0cc;font-size:12px;cursor:pointer}
+.dpad .u{grid-area:1/2;border-radius:6px 6px 0 0}.dpad .l{grid-area:2/1;border-radius:6px 0 0 6px}.dpad .c{grid-area:2/2;background:#101a33}.dpad .r{grid-area:2/3;border-radius:0 6px 6px 0}.dpad .d{grid-area:3/2;border-radius:0 0 6px 6px}
+.mid{display:flex;justify-content:center;gap:10px}
+.pbtn{font-family:var(--pix);font-size:8px;letter-spacing:1px;color:#d7def5;background:#1a2a55;border:0;border-radius:10px;padding:7px 12px;cursor:pointer}
+.ab{display:flex;gap:12px;transform:rotate(-18deg)}
+.ab button{width:50px;height:50px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#f8d060,#d89a10);color:#3a2600;font-family:var(--pix);font-size:13px;box-shadow:0 4px 0 #8a6000;cursor:pointer}
+.ab button.b{background:radial-gradient(circle at 35% 30%,#f07a8a,#c83a4a);color:#fff;box-shadow:0 4px 0 #8a2030}
+.ab button:active,.dpad button:active,.pbtn:active{transform:translateY(2px)}
+.keys{font-size:12px;color:var(--muted);text-align:center;flex:none;margin:0}
+.keys kbd{font-family:var(--pix);font-size:8px;background:#fff;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:2px 4px}
+@media (hover:none){.keys{display:none}}
+.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:var(--gold);color:var(--ink);font:700 13px var(--txt);padding:5px 12px;border-radius:12px;z-index:30}
+/* modal */
+.modal{position:fixed;inset:10px;max-width:760px;margin:0 auto;background:#f3f5fa;border-radius:20px 20px 40px 20px;z-index:20;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.mhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:var(--shell);color:#fff}
+.mhead h2{margin:0;font-family:var(--pix);font-size:12px;letter-spacing:1px;line-height:1.6}
+.mbtn{font:700 14px var(--txt);background:#fff;color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.mbtn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.mbody{flex:1;overflow:auto;padding:14px 16px 24px;display:flex;flex-direction:column;gap:10px;font-size:15px;line-height:1.5}
+.mnote{font-size:13px;color:var(--muted);background:#fff;border:1px dashed #c3cadc;border-radius:8px;padding:8px 10px;line-height:1.6}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{font:700 13px var(--txt);background:#fff;border:2px solid var(--line);border-radius:16px;padding:4px 12px;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--shell);border-color:var(--shell);color:#fff}
+.dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.dexc{display:grid;grid-template-columns:48px 1fr;gap:8px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:10px;padding:6px 8px;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.dexc:disabled{cursor:default;opacity:.75}
+.dexc canvas{width:48px;height:48px;image-rendering:pixelated;background:#eef1f7;border-radius:6px}
+.dexc b{display:block;font-size:13.5px;line-height:1.3}
+.dexc small{display:block;font-size:11.5px;color:var(--muted);line-height:1.3}
+.tchip{display:inline-block;font:700 10.5px var(--txt);color:#fff;border-radius:8px;padding:0 6px}
+.card{background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.card .big{width:128px;height:128px;image-rendering:pixelated;align-self:center;background:#eef1f7;border-radius:12px}
+.phr{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:3px}
+.phr .z{font-size:13px;color:var(--muted)}
+.phr .v{font-size:13.5px;color:#34405e}
+.prow{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:10px;padding:8px 10px}
+.prow.lead{border-color:var(--shell);box-shadow:0 0 0 2px rgba(45,67,128,.25)}
+.prow canvas{width:48px;height:48px;image-rendering:pixelated}
+.prow .pn{font-weight:700;font-size:14.5px;line-height:1.35}
+.prow .pm{font-size:12px;color:var(--muted)}
+.hpb{height:6px;background:#e4e8f0;border-radius:3px;overflow:hidden;margin-top:3px}.hpb i{display:block;height:100%}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{display:flex;align-items:center;gap:6px;background:#fff;border:2px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px}
+.badge.got{border-color:var(--gold);background:#fffaf0}
+.badge .ic{font-size:18px}
+.badge:not(.got) .ic{filter:grayscale(1);opacity:.35}
+.toggle{display:flex;gap:10px;align-items:center;font-size:14px;background:#fff;border:2px solid var(--line);border-radius:10px;padding:8px 10px}
+.toggle input{width:18px;height:18px;accent-color:var(--shell)}
+</style>
+
+<div class="wrap">
+  <div class="top"><div class="logo">EMI-Mon</div><div class="sub">英語獸 · 由打鐘講到放工 · Teacher Talk Trainer phrase bank</div></div>
+  <div class="console">
+    <div class="bezel"><span class="led"></span><canvas id="screen" width="1152" height="648" aria-label="遊戲畫面"></canvas></div>
+    <div class="panel" id="panel" aria-live="polite">
+      <div class="ptext" id="ptext">載入緊……</div>
+      <div class="pchoices" id="pchoices"></div>
+      <div id="qarea" hidden></div>
+    </div>
+    <div class="pad">
+      <div class="dpad"><button class="u" data-k="up" aria-label="上">▲</button><button class="l" data-k="left" aria-label="左">◀</button><span class="c"></span><button class="r" data-k="right" aria-label="右">▶</button><button class="d" data-k="down" aria-label="下">▼</button></div>
+      <div class="mid"><button class="pbtn" data-k="start" type="button">START</button></div>
+      <div class="ab"><button class="b" data-k="b" aria-label="B" type="button">B</button><button data-k="a" aria-label="A" type="button">A</button></div>
+    </div>
+  </div>
+  <p class="keys"><kbd>←↑↓→</kbd> 行 · <kbd>Z</kbd>/<kbd>Enter</kbd> A · <kbd>X</kbd> B（揸住跑） · <kbd>M</kbd> START 選單 · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 揀答案</p>
+</div>
+<div class="modal" id="modal" hidden>
+  <div class="mhead"><h2 id="mtitle"></h2><button class="mbtn ghost" id="mclose" type="button">關閉 ✕</button></div>
+  <div class="mbody" id="mbody"></div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const BANK={"P":[{"m":"glue","c":"Opening 開場","zh":"打鐘，想收拾秩序開始","en":"Right — let's make a start.","a":["OK everyone, let's get going.｜更隨和","Let's begin, please.｜更正式","In your seats, please. We're starting.｜更直接"]},{"m":"glue","c":"Opening 開場","zh":"班房仲嘈，但你想開始","en":"Settle down, please. We've got a lot to get through today.","a":["Let's settle, everyone.｜更短","Quieten down for me, please.｜更溫和"]},{"m":"glue","c":"Opening 開場","zh":"想學生回憶返上堂","en":"What did we do last lesson?","a":["Where did we get to last time?","Remind me — what were we looking at?","Cast your mind back to last lesson…｜好英式，但一堂用一次就夠"],"n":"最短嗰句用得最多。'Cast your mind back' 係真嘅 teacher idiom，但如果唔係你平時嘅語氣，講出嚟會似演戲。"},{"m":"glue","c":"Opening 開場","zh":"快速重溫先","en":"Quick recap before we go on.","a":["Let's just refresh first.","Two minutes of revision, then we move on."]},{"m":"glue","c":"Opening 開場","zh":"講今日學習目標","en":"By the end of today, you should be able to do this on your own.","a":["Here's what I want you walking out with.｜更有力","Today's aim is simple: …｜更直接"],"n":"'be able to + 動詞' 係國際通用嘅 learning objective 句式。"},{"m":"glue","c":"Opening 開場","zh":"用一條問題貫穿成堂","en":"Today's all about one question.","a":["Everything today comes back to one thing.","I want you thinking about this all lesson: …"],"n":"呢個 move 好有力 —— 即刻捉到注意力，而且畀咗成堂一個骨架。"},{"m":"glue","c":"Opening 開場","zh":"叫佢哋停低手上嘢","en":"Pens down for a moment — just listen.","a":["Nothing in your hands. Just listen to this bit.","Stop writing. This part you need to hear, not copy.｜更有理由"]},{"m":"glue","c":"Opening 開場","zh":"開始前收集問題","en":"Before we start — anything left over from last time?","a":["Any questions from the homework before we move on?","Anything still bothering you from Tuesday?｜更溫和"]},{"m":"glue","c":"Transition 過渡","zh":"由理論轉去實例","en":"That's the theory. Now let's see it in action.","a":["So much for the theory. Does it actually work?｜更挑釁","Right — theory done. Let's test it."]},{"m":"glue","c":"Transition 過渡","zh":"有人問咗離題但好嘅問題","en":"Let's park that for now and come back to it at the end.","a":["Good question — I'll come back to it, I promise.｜更溫和","Hold that one. It fits better later."],"n":"'park it' 好常用。加一句 'I promise' 令學生真係相信你會返嚟 —— 而你要真係返嚟。"},{"m":"glue","c":"Transition 過渡","zh":"學生太早問到後面內容","en":"Hold that thought — it'll make more sense in five minutes.","a":["You're one step ahead of me. Give me two minutes.｜讚埋佢","Keep that in your head. We're getting there."]},{"m":"glue","c":"Transition 過渡","zh":"講完一半，準備講另一半","en":"So that's the first half of the story. Here's the other half.","a":["That's one side of it. Now the other side.","Half done. Stay with me."]},{"m":"glue","c":"Transition 過渡","zh":"連返之前教過嘅嘢","en":"This links straight back to what we did last week.","a":["You've seen this before, in a different disguise.｜更有趣","Sound familiar? It should."]},{"m":"glue","c":"Transition 過渡","zh":"簡單過場","en":"Right — moving on.","a":["OK. Next.｜最短","Let's crack on.｜英式，同事之間用得多過對學生"]},{"m":"glue","c":"Transition 過渡","zh":"轉去完全另一個 mode","en":"Let's shift gear.","a":["Change of pace now.","Right, something completely different."]},{"m":"glue","c":"Transition 過渡","zh":"順勢帶到下一點","en":"That brings us to the next point.","a":["Which is exactly where I wanted to go next.","And that leads straight into…"]},{"m":"glue","c":"Transition 過渡","zh":"走之前仲有一樣嘢","en":"One more thing before we leave this.","a":["Last point on this, then we move.","Before I let this go —"]},{"m":"glue","c":"Instructions 指令","zh":"叫學生揭書","en":"Turn to page 47 — top of the page.","a":["Page 47, please. Halfway down.","Open your books at 47."]},{"m":"glue","c":"Instructions 指令","zh":"兩人一組討論","en":"In pairs, take two minutes.","a":["Turn to the person next to you and talk it through.","With your partner — two minutes, go."]},{"m":"glue","c":"Instructions 指令","zh":"叫佢哋唔好即刻寫，先諗","en":"Don't write anything yet — just think about it.","a":["No pens. Just thinking for now.","Think first, write second."]},{"m":"glue","c":"Instructions 指令","zh":"抄低之後再解釋","en":"Copy this down, then we'll talk it through.","a":["Get this down first — the explanation follows.","Copy it now, understand it in a minute."],"n":"'talk it through' = 逐點傾清楚，比 'explain' 更有同行感。"},{"m":"glue","c":"Instructions 指令","zh":"放佢哋開始做嘢","en":"You've got three minutes. Off you go.","a":["Three minutes. Starting now.","Right — go."]},{"m":"glue","c":"Instructions 指令","zh":"同隔籬位對答案","en":"Compare answers with the person next to you.","a":["Check yours against your neighbour's.","See if you two agree."]},{"m":"glue","c":"Instructions 指令","zh":"先自己做頭兩題","en":"Work through the first two on your own.","a":["First two by yourself, no talking.","Try the first pair solo."]},{"m":"glue","c":"Instructions 指令","zh":"做完舉手","en":"Put your hand up when you've finished.","a":["Hand up when you're done.","Let me know when you've got something."]},{"m":"glue","c":"Instructions 指令","zh":"卡住咗就跳過","en":"If you're stuck, skip it and come back to it.","a":["Don't sit on one question. Move on and return.","Leave it, keep going, come back at the end."]},{"m":"glue","c":"Timing 時間","zh":"仲有半分鐘","en":"About thirty seconds left.","a":["Thirty seconds.","Start wrapping up."]},{"m":"glue","c":"Timing 時間","zh":"時間到，收返上嚟","en":"Time's up — let's hear what you've got.","a":["That's time. What did you come up with?","Pens down. Let's share."]},{"m":"glue","c":"Timing 時間","zh":"堂快完，要加快","en":"We're running short on time, so let's pick up the pace.","a":["We're tight for time — I'll move quickly.","I'm going to speed up. Stop me if I lose you.｜更負責任"]},{"m":"glue","c":"Timing 時間","zh":"畀多一分鐘","en":"I'll give you one more minute.","a":["Another minute — you're nearly there.","Sixty more seconds."]},{"m":"glue","c":"Timing 時間","zh":"今日講唔完，要停","en":"We'll have to leave it there for today.","a":["That's where we'll stop.","We'll pick this up next time."]},{"m":"glue","c":"Checking 檢查理解","zh":"問佢哋明唔明（唔好講 Understand?）","en":"Does that make sense?","a":["Is everyone with me?","Is that clear, or should I go over it again?","Should I explain it a different way?｜最溫和"],"n":"'Understand?' 聽落似盤問。以上每一句都畀咗學生一個安全嘅出口去講「唔明」。全部都用最簡單嘅字 —— 檢查理解嘅句子本身唔可以成為理解障礙。"},{"m":"glue","c":"Checking 檢查理解","zh":"快速全班檢查","en":"Thumbs up if you're with me, thumbs down if you're lost.","a":["Show me — one to five, how confident are you?","Hands up if that landed."]},{"m":"glue","c":"Checking 檢查理解","zh":"要學生用自己嘅話講一次","en":"Who can put that in their own words for me?","a":["Explain it back to me — but don't use my words.｜更嚴格","How would you say that to someone in Form 3?｜更有趣"],"n":"呢句應該成為你嘅口頭禪 —— 佢直接分辨到「真明」定「背咗」。"},{"m":"glue","c":"Checking 檢查理解","zh":"想學生講出推理過程","en":"Talk me through it.","a":["Walk me through your thinking.","How did you get there?"]},{"m":"glue","c":"Checking 檢查理解","zh":"問自己講得太快","en":"Am I going too fast?","a":["Do you need me to slow down?","Is this pace alright?"]},{"m":"glue","c":"Checking 檢查理解","zh":"邀請佢哋隨時打斷","en":"Stop me if I lose you.","a":["Interrupt me the moment it stops making sense.","Shout if I go too fast."]},{"m":"glue","c":"Closing 收堂","zh":"總結成堂","en":"Let's pull it together. Three things to take away.","a":["So — what have we actually learnt today?｜反問式","Right, summary. Three points."]},{"m":"glue","c":"Closing 收堂","zh":"強調最重要一點","en":"If you remember nothing else from today, remember this.","a":["One thing to walk out with: …","Forget the rest if you must — but keep this."]},{"m":"glue","c":"Closing 收堂","zh":"派功課","en":"For homework, have a go at question 4.","a":["Homework is question 4 — same idea, new context.","Try question 4 tonight. It should feel familiar."],"n":"'have a go at' = 試吓做，語氣輕鬆但一樣清楚。"},{"m":"glue","c":"Closing 收堂","zh":"預告下堂","en":"Next lesson we'll pick this up and push it further.","a":["Next time we take this apart properly.","More on this Thursday."]},{"m":"glue","c":"Closing 收堂","zh":"收堂前肯定佢哋","en":"That's it for today. Well done — you worked hard.","a":["Good lesson. Thank you.","You gave me a lot today. See you Thursday."]},{"m":"glue","c":"Behaviour 秩序","zh":"班房嘈","en":"Let's have a bit of quiet, please.","a":["Quieten down, please.","Noise level, everyone.｜更短更輕"]},{"m":"glue","c":"Behaviour 秩序","zh":"唔想嗌，想用沉默施壓","en":"I'll wait.","a":["I'm happy to wait.","（唔講嘢，企定定望住。）｜最強"],"n":"兩個字，可能係全個 bank 最有效嘅一句。講完閉嘴，唔好再出聲 —— 一出聲就冇晒力。"},{"m":"glue","c":"Behaviour 秩序","zh":"幾個人同時講","en":"One voice at a time.","a":["One at a time, please.","Let him finish."]},{"m":"glue","c":"Behaviour 秩序","zh":"最後警告","en":"That's the last warning — then I'll move you.","a":["I've asked twice. There won't be a third time.","Next time you're moving seats."]},{"m":"glue","c":"Behaviour 秩序","zh":"要佢哋轉返身望前面","en":"I need you facing this way.","a":["Turn round, please.","Eyes this way."]},{"m":"glue","c":"Behaviour 秩序","zh":"要全班注意力","en":"Can I have your attention up here, please?","a":["Eyes on me.","Everyone looking this way, please."]},{"m":"glue","c":"Behaviour 秩序","zh":"收電話","en":"Phones away, please.","a":["Phone in your bag, not your pocket.｜更明確","I shouldn't be able to see a phone."]},{"m":"think","c":"Buying time 爭取時間","zh":"畀人問到，需要一兩秒諗","en":"Good question. Let me think how to explain it.","a":["Give me a moment to get the wording right.","Hmm. Let me think about that one."],"n":"呢句係「合法嘅停頓」。你唔係卡住，你係喺度揀最準嘅講法 —— 完全唔同觀感。"},{"m":"think","c":"Buying time 爭取時間","zh":"要小心措辭","en":"Let me phrase that carefully.","a":["I want to get the wording right here.","Let me be careful how I say this."]},{"m":"think","c":"Buying time 爭取時間","zh":"諗緊點講好（可以講出口）","en":"How do I want to say this…","a":["What's the clearest way to put this…","Right, how do I explain this properly…"]},{"m":"think","c":"Buying time 爭取時間","zh":"需要幾秒","en":"Give me a second.","a":["Bear with me one moment.","Hang on."]},{"m":"think","c":"Buying time 爭取時間","zh":"完全唔知講咩好","en":"（唔講嘢。停兩秒。）","a":["（望住個 whiteboard，慢慢寫個關鍵字。）｜爭取五秒","（飲一啖水。）｜爭取三秒，冇人會察覺"],"n":"最重要嘅一「句」係冇句。兩秒靜默喺學生耳中 = 你喺度諗；兩秒 'er…' = 你唔識。同樣時間，相反效果。"},{"m":"think","c":"Hedging 留有餘地","zh":"大方向係咁，但有例外","en":"Broadly speaking, that's right.","a":["In general terms, yes.","By and large, that holds."]},{"m":"think","c":"Hedging 留有餘地","zh":"一般規律","en":"As a rule of thumb…","a":["As a general rule…","Nine times out of ten…"]},{"m":"think","c":"Hedging 留有餘地","zh":"多數情況下","en":"More often than not…","a":["In most cases…","Usually, though not always…"]},{"m":"think","c":"Hedging 留有餘地","zh":"啱到某個程度","en":"That's true up to a point.","a":["Yes — but only so far.","There's something in that, but not the whole story."]},{"m":"think","c":"Hedging 留有餘地","zh":"承認自己簡化咗","en":"I'm simplifying here, and I'll come clean about that.","a":["This is the simplified version. The real thing has more moving parts.","I'm cutting corners here deliberately — I'll fill them in later."],"n":"誠實承認簡化，反而令你聽落更權威 —— 因為你知道埋複雜嗰面。"},{"m":"think","c":"Hedging 留有餘地","zh":"實情複雜啲，但暫時咁講","en":"It's more complicated than that, but for now let's keep it simple.","a":["The full picture is messier. We'll get there.","There's more to it, but this'll do for today."]},{"m":"think","c":"Signposting 講出結構","zh":"預告有幾點","en":"There are three things going on here. Let me take them one at a time.","a":["Two parts to this. First…","I want to split this into three."],"n":"講出結構 = 你唔使即場諗點組織，個框架已經幫你頂住咗。呢招對流暢度嘅幫助大過任何生字。"},{"m":"think","c":"Signposting 講出結構","zh":"叫佢哋忍一忍","en":"Bear with me — this'll make sense in a moment.","a":["Stay with me. It comes together shortly.","Trust me for thirty seconds."]},{"m":"think","c":"Signposting 講出結構","zh":"呢點遲啲會返嚟","en":"I'm going to come back to this, so just note it for now.","a":["Park this one. We need it later.","Write it down — you'll want it in ten minutes."]},{"m":"think","c":"Signposting 講出結構","zh":"要精準講定義","en":"Let me be precise about the wording here.","a":["The exact words matter here.","I'm going to be fussy about this sentence."]},{"m":"think","c":"Signposting 講出結構","zh":"由頭再嚟過","en":"Let me start again from the top.","a":["Right — from the beginning.","Let's rebuild this from scratch."]},{"m":"think","c":"Self-repair 自我修正","zh":"講錯咗，想倒返轉","en":"Sorry — let me rewind.","a":["Let me back up a step.","Rewind. I went too fast there."]},{"m":"think","c":"Self-repair 自我修正","zh":"上一句唔好，換過","en":"Scrap that. Here's a better way to put it.","a":["Forget that sentence. Try this one.","Bad explanation. Let me do it properly."]},{"m":"think","c":"Self-repair 自我修正","zh":"補充講清楚","en":"What I mean is…","a":["To put it another way…","In other words…"]},{"m":"think","c":"Self-repair 自我修正","zh":"即時修正措辭","en":"Or rather…","a":["— or more accurately…","— well, more precisely…"],"n":"兩個字，令一次口誤變成一次精準化。極好用，而且極短。"},{"m":"think","c":"Self-repair 自我修正","zh":"發現自己講錯事實","en":"Actually, ignore what I just said — that's not right.","a":["Cross that out. I got it wrong.","Hold on — that's wrong. Let me correct it."]},{"m":"think","c":"Self-repair 自我修正","zh":"自己搞亂咗自己","en":"Sorry, I've confused myself. Let me take that again.","a":["I've tied myself in knots. Starting over.｜幽默","Right, I've lost my own thread. From the top."]},{"m":"expl","c":"Defining 落定義","zh":"要畀精準嘅正式定義","en":"Formally, it's defined as follows.","a":["The technical definition is this.","Here's the exact wording you need."]},{"m":"expl","c":"Defining 落定義","zh":"學生講法差少少","en":"Strictly speaking, that's not quite right. The precise wording is…","a":["Close — but the exam wants these exact words.","Almost. Tighten it up like this."]},{"m":"expl","c":"Defining 落定義","zh":"日常意思同學術意思唔同","en":"In everyday English we'd say that, but here it means something much narrower.","a":["Careful — this word means something specific in here.","Ordinary meaning and technical meaning part company at this point."]},{"m":"expl","c":"Defining 落定義","zh":"強調定義入面嘅關鍵字","en":"The key words are 'willing' and 'able' — both have to be true.","a":["Notice the 'and'. It's doing a lot of work.｜更引導","Circle those two words. Drop either and it's wrong."],"n":"重讀 'and'。定義入面嘅連接詞往往就係得分位。"},{"m":"expl","c":"Defining 落定義","zh":"提醒唔好撈亂","en":"Don't confuse the everyday meaning with the technical one.","a":["Same word, two jobs. Keep them apart.","This is a false friend. Be careful."]},{"m":"expl","c":"Defining 落定義","zh":"介紹一個專有名詞","en":"There's a word for this, and it's worth knowing.","a":["This has a name. Here it is.","Economists call this…｜替換你科名"]},{"m":"expl","c":"Concrete 具體化","zh":"由抽象轉去具體","en":"Let me make that concrete.","a":["That's abstract. Let's ground it.","Enough theory — here's a real one."]},{"m":"expl","c":"Concrete 具體化","zh":"舉真實例子","en":"Take a real case.","a":["Here's one that actually happened.","A real example, not a made-up one."]},{"m":"expl","c":"Concrete 具體化","zh":"用故事開頭","en":"Picture this. It's 1929, and nobody has seen this coming.","a":["Let me tell you what happened in 1929.","Set the scene: it's 1929."],"n":"用現在式講歷史（historic present）—— 講故仔即刻生動咗，係好強嘅 teacher move。"},{"m":"expl","c":"Concrete 具體化","zh":"介紹反例","en":"Here's a case that breaks the rule — and that's exactly what makes it interesting.","a":["Now here's an awkward one for the theory.","This example refuses to behave. Why?｜更引導"]},{"m":"expl","c":"Concrete 具體化","zh":"承認現實比課本亂","en":"That's the textbook version. In practice it's a lot messier.","a":["Real life doesn't read the textbook.","The tidy version is what you write in the exam. The messy version is what actually happens."]},{"m":"expl","c":"Concrete 具體化","zh":"叫學生自己舉例","en":"Give me an example from your own life.","a":["Where have you seen this happen?","Find me one from this week."]},{"m":"expl","c":"Analogy 比喻","zh":"打個比喻","en":"Think of it like a tap — you can turn it up or down, but the pipe stays the same.","a":["It works a bit like a thermostat.","Here's an analogy that might help."]},{"m":"expl","c":"Analogy 比喻","zh":"相似但有一個關鍵分別","en":"It's a bit like that, but with one important difference.","a":["Same idea, one crucial twist.","Nearly the same — except for one thing."]},{"m":"expl","c":"Analogy 比喻","zh":"提醒個比喻唔可以推太遠","en":"The analogy breaks down here, so don't push it too far.","a":["Every analogy has a limit. This one ends here.","Stop the comparison at this point — beyond it, it misleads."],"n":"呢句係高手 move。承認比喻嘅極限，教學生比喻係工具唔係真理。"},{"m":"expl","c":"Distinguishing 分辨","zh":"提醒呢度最多人錯","en":"This is where people usually go wrong.","a":["This is the classic trap.","Most people get this bit wrong."]},{"m":"expl","c":"Distinguishing 分辨","zh":"同一個字兩個意思","en":"Same word, different meaning. Watch out for that.","a":["The word is doing two jobs. Don't mix them.","One word, two definitions. Context decides."]},{"m":"expl","c":"Distinguishing 分辨","zh":"想並排比較","en":"Let's put them side by side.","a":["Two columns. Left and right.","Let's compare them directly."]},{"m":"expl","c":"Distinguishing 分辨","zh":"點出關鍵分別","en":"What separates the two is the direction.","a":["The difference comes down to one thing.","Everything hinges on this distinction."]},{"m":"expl","c":"Distinguishing 分辨","zh":"表面似但本質唔同","en":"They look similar on the surface, but they behave completely differently.","a":["Same shape, opposite behaviour.","Superficially alike, fundamentally different."]},{"m":"expl","c":"Cause & effect 因果","zh":"講三步因果","en":"A leads to B, which in turn causes C.","a":["A causes B, and B then triggers C.","Follow it through: A, then B, then C."],"n":"'which in turn' 係因果鏈嘅萬用接駁位。背熟佢 —— 你講因果幾乎每次都會用到。"},{"m":"expl","c":"Cause & effect 因果","zh":"影響傳導到另一邊","en":"That feeds through to everything else.","a":["The effect spreads outward from there.","It ripples through the whole system."]},{"m":"expl","c":"Cause & effect 因果","zh":"講連鎖後果","en":"The knock-on effect is significant.","a":["There's a second-round effect too.","And then there's the consequence of the consequence."]},{"m":"expl","c":"Cause & effect 因果","zh":"其他條件不變","en":"Holding everything else constant…","a":["All else equal…","Assuming nothing else changes…"]},{"m":"expl","c":"Cause & effect 因果","zh":"帶學生逐步推","en":"Trace the chain with me. Step one… step two…","a":["Let's walk it through together.","One link at a time."]},{"m":"expl","c":"Cause & effect 因果","zh":"講因果方向","en":"The causation runs from A to B, not the other way round.","a":["Which one is doing the causing? That's the question.｜更引導","Direction matters here."]},{"m":"expl","c":"Cause & effect 因果","zh":"提醒相關唔等於因果","en":"That's correlation. Is it causation? Not necessarily.","a":["They move together — but does one cause the other?","Two things happening at once is not the same as one causing the other."]},{"m":"expl","c":"Cause & effect 因果","zh":"兩股力量相反，結果唔定","en":"Two forces pulling in opposite directions — the net effect depends on which one dominates.","a":["It cuts both ways. Which effect wins?","Two opposing pressures. The outcome is an empirical question."],"n":"呢句係高分答案嘅標準結尾。答 'it depends' 冇分，答呢句有分。"},{"m":"expl","c":"Rephrasing 換講法","zh":"學生聽唔明，換個講法","en":"Let me put that another way.","a":["Different words, same idea:","Try this version instead."]},{"m":"expl","c":"Rephrasing 換講法","zh":"換個角度切入","en":"Let's try it from a different angle.","a":["Come at it from the other side.","New approach — forget how I just said it."]},{"m":"expl","c":"Rephrasing 換講法","zh":"叫佢唔好卡喺字面","en":"Forget the wording for a second — what's actually happening?","a":["Never mind the vocabulary. What's the idea?","Drop the jargon. Say it in plain English."]},{"m":"expl","c":"Rephrasing 換講法","zh":"剝到最簡單","en":"Let's make this as simple as possible.","a":["At its simplest, it's this.","Let's strip it right back.｜英式口語"]},{"m":"expl","c":"Rephrasing 換講法","zh":"承認自己講得唔好","en":"I don't think I explained that well. Let me try again.","a":["That was my fault, not yours. Once more.","Judging by your faces, I explained that badly.｜輕鬆啲"],"n":"把責任放喺自己身上，唔係學生。呢個 move 令成班鬆晒，願意再試。"},{"m":"expl","c":"Emphasis 強調","zh":"值得抄低","en":"This one's worth writing down.","a":["Get this down.","If you're taking notes, take this one."]},{"m":"expl","c":"Emphasis 強調","zh":"今日最重要一點","en":"If you take one thing from today, take this.","a":["This is the headline.","Everything else today is detail. This is the point."]},{"m":"expl","c":"Emphasis 強調","zh":"重複一次","en":"I'll say that again, because it matters.","a":["Once more, slowly.","Let me repeat that — it's important."]},{"m":"expl","c":"Emphasis 強調","zh":"年年都考","en":"This comes up every single year.","a":["You will see this in the exam.","Examiners love this one."]},{"m":"qna","c":"Eliciting 引導","zh":"想知學生點諗","en":"What do you think?","a":["What's your first thought?","Thoughts?｜最短","What do you reckon?｜英式口語，隨和啲"],"n":"對住學生用最簡單嗰個。學生都係 L2 —— 你用 idiom，佢哋要喺腦入面譯多一次先明，思考嘅力就用喺你句嘢度，唔係用喺個概念度。"},{"m":"qna","c":"Eliciting 引導","zh":"唔要答案，要方法","en":"Don't tell me the answer — tell me how you'd start.","a":["Where would you begin?","What's your first move?"]},{"m":"qna","c":"Eliciting 引導","zh":"鼓勵亂估","en":"Give me a rough guess. You can't get it wrong at this stage.","a":["Just try. Anything will do.","Wrong answers are fine right now."]},{"m":"qna","c":"Eliciting 引導","zh":"全班投票","en":"Hands up if you think yes. Hands up if you think no.","a":["Quick vote. A or B?","Show me with your hands."]},{"m":"qna","c":"Eliciting 引導","zh":"想叫未講過嘢嘅學生","en":"Someone who hasn't spoken yet.","a":["Let's hear a new voice.","Someone from this side of the room."]},{"m":"qna","c":"Eliciting 引導","zh":"畀思考時間先答","en":"I'm going to give you ten seconds to think before anyone answers.","a":["No hands for ten seconds. Just think.","Everyone thinks first. Then we talk."],"n":"Wait time。研究上單一最有效嘅提問改善，而且完全唔使英文好。多數老師只等一秒。"},{"m":"qna","c":"Eliciting 引導","zh":"預告會點名（公平地）","en":"No hands this time — I'll pick.","a":["I'm choosing, so everyone needs an answer ready.","Cold call this round. Be ready."]},{"m":"qna","c":"Wrong answer 答錯","zh":"方向錯但概念啱","en":"You're on the right track — but check the direction.","a":["Right idea, wrong way round.","You've got the mechanism. Now flip it."]},{"m":"qna","c":"Wrong answer 答錯","zh":"答錯，但想佢講埋思路","en":"Not quite — but tell me why you thought that.","a":["That's wrong, and I want to know how you got there.｜更直接","Interesting. Walk me through your reasoning."],"n":"全個 bank 最重要嘅一句。佢將「錯」變成「資料」，學生就唔會收聲。"},{"m":"qna","c":"Wrong answer 答錯","zh":"答咗另一個概念","en":"That's the definition of the other one. Close, though.","a":["You've swapped the two. Which is which?","Right definition, wrong term."]},{"m":"qna","c":"Wrong answer 答錯","zh":"呢個係常見誤解","en":"That's what most people say first. Here's the catch.","a":["Everyone says that. And everyone's wrong — here's why.｜更戲劇性","That's the intuitive answer. It's also the trap."]},{"m":"qna","c":"Wrong answer 答錯","zh":"溫和挑戰","en":"I can see where that's coming from. Let's test it.","a":["Fair reasoning. Does it survive an example?","Let's push on that and see if it holds."]},{"m":"qna","c":"Wrong answer 答錯","zh":"差一步","en":"Nearly. You're one step away.","a":["So close. One more move.","You've done the hard bit. Finish it."]},{"m":"qna","c":"Partial 答一半","zh":"答啱一半","en":"Half of that is spot on. Push it further.","a":["Good start. Keep building.","That's the first half. Where's the second?"]},{"m":"qna","c":"Partial 答一半","zh":"有結論冇理由","en":"Good — now add the 'because'.","a":["Right answer. Now justify it.","And your reasoning?"]},{"m":"qna","c":"Partial 答一半","zh":"要佢解釋原因","en":"You've given me the what. I want the why.","a":["That's the description. Now explain it.","Why does that happen?"]},{"m":"qna","c":"Partial 答一半","zh":"想佢講多啲","en":"Say more.","a":["Go on.","Expand on that."]},{"m":"qna","c":"Partial 答一半","zh":"佢停低咗，想佢繼續","en":"Keep going — you're doing fine.","a":["Don't stop. You're onto something.","And then?"]},{"m":"qna","c":"Redirect 轉問全班","zh":"掟返畀全班","en":"Does everyone agree with that? Anyone want to challenge it?","a":["Show of hands — who agrees?","Any objections to that?"]},{"m":"qna","c":"Redirect 轉問全班","zh":"叫另一個學生接落去","en":"Someone build on that.","a":["Who can add to it?","Take it further for me."]},{"m":"qna","c":"Redirect 轉問全班","zh":"指名接力","en":"Kelvin says yes. Yan — what do you think?","a":["You've heard Kelvin. Do you buy it?","Yan, respond to that."]},{"m":"qna","c":"Redirect 轉問全班","zh":"兩個相反答案","en":"Two different answers. Let's find out which one survives.","a":["We've got a disagreement. Good.｜更鼓勵爭辯","Both can't be right. How do we decide?"]},{"m":"qna","c":"I don't know 唔識答","zh":"學生話唔識","en":"That's fine. Take a guess and I'll help you tidy it up.","a":["No problem. Guess, and we'll fix it together.","Have a go anyway — I'll catch you."]},{"m":"qna","c":"I don't know 唔識答","zh":"收窄範圍幫佢","en":"Let me narrow it down. Is it A or B? Just that.","a":["Easier question: up or down?","Forget the whole thing. Just this bit."]},{"m":"qna","c":"I don't know 唔識答","zh":"畀佢下台階，遲啲再問","en":"I'll come back to you in a minute — have a think.","a":["Hold that. I'll ask you again shortly.","Take a minute. I'll return."],"n":"保住咗個學生嘅面，同時佢知道你會返嚟，所以真係會諗。記得真係要返嚟。"},{"m":"qna","c":"Teacher stuck 你唔識","zh":"問到你唔肯定嘅嘢","en":"That's a really good question, and I don't want to give you a sloppy answer. Let me check and come back to you next lesson.","a":["I'd be guessing, and I'd rather not guess at you. Let me look it up.","Good question — one I need to check properly."],"n":"保住專業信譽，同時示範咗「唔確定就唔亂噏」—— 正正係你想學生學嘅嘢。"},{"m":"qna","c":"Teacher stuck 你唔識","zh":"有初步答案但要核實","en":"I think so, but let me check before you write it down.","a":["Off the top of my head, yes — but don't quote me yet.","Probably. I'll confirm next lesson."]},{"m":"qna","c":"Teacher stuck 你唔識","zh":"坦白唔知","en":"Honestly? I'm not sure. Let's find out together.","a":["I don't know. Shall we look?","That one's beyond me. Let's dig."]},{"m":"qna","c":"Praise 稱讚","zh":"完全答啱（唔好次次 correct）","en":"That's exactly it.","a":["Spot on.","Yes — precisely that.","That's the one."]},{"m":"qna","c":"Praise 稱讚","zh":"用字好準確","en":"Nice — that's the precise wording.","a":["Good vocabulary. That's the technical term.","You said it exactly right."]},{"m":"qna","c":"Praise 稱讚","zh":"係攞滿分嘅答法","en":"That's the kind of answer that gets full marks.","a":["Write that down — all of you.","Exam-standard answer, that."]},{"m":"qna","c":"Praise 稱讚","zh":"睇到人哋睇唔到嘅嘢","en":"You've spotted something a lot of people miss.","a":["That's a subtle point. Well seen.","Most classes never notice that."]},{"m":"qna","c":"Praise 稱讚","zh":"佢講得比你好","en":"That's a better way of saying it than mine.","a":["I'm stealing that. Better than my version.｜幽默","I'll use your wording from now on."],"n":"敢咁講嘅老師，班房會突然多好多人肯開口。"},{"m":"qna","c":"Praise 稱讚","zh":"讚佢肯質疑","en":"I like that you challenged it.","a":["Good — keep being suspicious.","That's exactly the right instinct."]},{"m":"rapp","c":"Encouragement 鼓勵","zh":"見到長期進步","en":"You've come a long way since September.","a":["Compare this to your first piece of work. Big difference.","You're not the same student you were in September."]},{"m":"rapp","c":"Encouragement 鼓勵","zh":"比上次好","en":"That's a big improvement on last time.","a":["Real progress here.","Much stronger than the last one."]},{"m":"rapp","c":"Encouragement 鼓勵","zh":"承認難，叫佢頂住","en":"I know it's hard. Stick with it.","a":["This topic defeats a lot of people. Keep going.","It's meant to be difficult. That's not a sign you're failing."]},{"m":"rapp","c":"Encouragement 鼓勵","zh":"建立安全嘅班房氣氛","en":"Don't worry about being wrong in here. That's what this room is for.","a":["Nobody gets laughed at in my classroom.","Being wrong out loud is how this works."]},{"m":"rapp","c":"Encouragement 鼓勵","zh":"佢覺得自己好差","en":"You're closer than you think.","a":["You know more than you're giving yourself credit for.","The gap is smaller than it feels."]},{"m":"rapp","c":"Individual help 個別輔導","zh":"約佢小息傾","en":"Come and see me at break and we'll go through it.","a":["Find me at lunch — we'll sort it.","Stay behind for two minutes after class."]},{"m":"rapp","c":"Individual help 個別輔導","zh":"問佢邊度唔明","en":"Which bit isn't making sense?","a":["Where exactly does it stop being clear?","Point at the line where you lost it."],"n":"比 'What don't you understand?' 好 —— 假設咗佢明咗一部分，只係有一格塞住。"},{"m":"rapp","c":"Individual help 個別輔導","zh":"叫佢指出卡住位","en":"Show me where you got stuck.","a":["Talk me through what you tried.","What was your last confident step?"]},{"m":"rapp","c":"Individual help 個別輔導","zh":"叫佢做多一次","en":"Try that one again on your own, and I'll check it in a minute.","a":["Have another go. I'll be back.","Redo it — I'll look in five minutes."]},{"m":"rapp","c":"Absence & lateness 缺席遲到","zh":"缺咗堂嘅學生","en":"You missed Tuesday — catch up with someone, and come to me if you're still stuck.","a":["Borrow someone's notes for Tuesday, then see me.","You've got a gap from Tuesday. Let's fill it."]},{"m":"rapp","c":"Absence & lateness 缺席遲到","zh":"有人遲到，唔想打斷成堂","en":"You're late. Sit down quietly — we'll talk afterwards.","a":["Sit down. See me at the end.","In you come. We'll discuss it later."],"n":"處理咗，但唔畀佢成為全班焦點 —— 遲到嘅學生最想要嘅就係注意力。"},{"m":"rapp","c":"Absence & lateness 缺席遲到","zh":"關心近排唔妥嘅學生","en":"Is everything alright? You've been quiet lately.","a":["You don't seem yourself. Anything going on?","Everything OK? You know where I am if not."]},{"m":"rapp","c":"Homework 功課","zh":"交功課限期","en":"Hand it in by Friday, please.","a":["Friday, on my desk.","Due Friday — no extensions this time."]},{"m":"rapp","c":"Homework 功課","zh":"預先講遲交規矩","en":"If you're going to be late with it, tell me beforehand, not afterwards.","a":["Talk to me before the deadline, not after.","I'm reasonable in advance and less reasonable in hindsight.｜幽默但清晰"]},{"m":"rapp","c":"Homework 功課","zh":"派返改好嘅功課","en":"I've marked these. A couple of general points before I hand them back.","a":["Before you get these back — two things I noticed across the class."]},{"m":"rapp","c":"Homework 功課","zh":"叫佢哋睇評語唔好淨係睇分","en":"Don't just look at the mark — read the comments.","a":["The mark tells you where you are. The comments tell you how to move.","Five seconds on the grade, five minutes on the feedback."]},{"m":"rapp","c":"Homework 功課","zh":"成班都做得唔好","en":"A lot of you lost marks on the same thing, so let's fix it together.","a":["Same mistake, twenty times. My fault as much as yours.｜承擔","This one error cost the class a lot of marks."]},{"m":"rapp","c":"Apologising 認錯","zh":"你自己講錯咗","en":"Good spot. I made a mistake there.","a":["You're right and I was wrong. Thank you.","Well caught. Let me correct that."],"n":"當住全班認錯，係你教「知識係可以修正」最有力嘅一次示範。"},{"m":"rapp","c":"Apologising 認錯","zh":"上堂教錯咗要更正","en":"I need to correct something I said last lesson.","a":["Amendment from Tuesday — I got one thing wrong.","Before we start: last lesson I misled you slightly."]},{"m":"rapp","c":"Apologising 認錯","zh":"答唔到學生嘅質疑","en":"That's a fair point, and I don't have a good answer to it.","a":["You've got me. I can't defend that.","Fair challenge. I'll have to think about it."]},{"m":"rapp","c":"Warmth 輕鬆氣氛","zh":"星期五下晝，全班好攰","en":"I know it's Friday afternoon. Bear with me.","a":["Last lesson of the week. Let's make it painless.","I can see the weekend in your eyes."]},{"m":"rapp","c":"Warmth 輕鬆氣氛","zh":"感覺全班快瞓著","en":"Right — before you all fall asleep on me…","a":["I'm losing you. Everyone stand up for ten seconds.｜真係有效","Energy check. Sit up."]},{"m":"rapp","c":"Warmth 輕鬆氣氛","zh":"考試前安撫","en":"You're better prepared than you feel. Trust that.","a":["Nerves are normal. They're not evidence you're unready.","You've done the work. Let it do its job."]},{"m":"rapp","c":"Warmth 輕鬆氣氛","zh":"放假前","en":"Have a good break. Rest properly — you've earned it.","a":["Enjoy the holiday. Don't think about me.｜幽默","Switch off properly. See you in September."]},{"m":"work","c":"Meetings 會議","zh":"開始個會","en":"Shall we make a start?","a":["Right, let's get going.｜更直接","I think we're all here — let's begin.｜更正式"]},{"m":"work","c":"Meetings 會議","zh":"介紹議程","en":"There are three items on the agenda today.","a":["We've got three things to cover.｜更口語","I'll keep this short — three items, then we're done.｜體貼"]},{"m":"work","c":"Meetings 會議","zh":"想插嘴發言","en":"Can I come in on that?","a":["Sorry — may I add something?｜更客氣","Just a quick point on that.｜最短"],"n":"英文會議插嘴要有「敲門聲」。直接開口講會顯得粗魯；呢三句就係敲門。"},{"m":"work","c":"Meetings 會議","zh":"以總務身份表達立場","en":"Speaking for General Affairs, the main concern is cost.","a":["From my side, the issue is manpower.","My worry is the timeline, not the budget."]},{"m":"work","c":"Meetings 會議","zh":"同意","en":"That works for me.","a":["I'm happy with that.","Agreed — no objection from me.｜更正式"]},{"m":"work","c":"Meetings 會議","zh":"部分同意","en":"I take your point, but there's a practical problem.","a":["I agree in principle — the budget just won't stretch.","Yes in theory. In practice it's harder."],"n":"'I take your point, but…' 係英文職場最有用嘅一個轉折。先承認對方，再反對，唔會傷和氣。"},{"m":"work","c":"Meetings 會議","zh":"不同意但要有禮","en":"I'm not sure that'll work, and here's why.","a":["Can I offer a different view?｜最溫和","I'd push back on that slightly.｜英式含蓄但清楚"]},{"m":"work","c":"Meetings 會議","zh":"要查資料先答得到","en":"Can I get back to you on that? I need to check the figures.","a":["Let me confirm and come back to you.","I don't want to guess — give me until tomorrow."],"n":"⚠️ 香港辦公室常講 'I will revert to you'。'revert' 喺標準英式英文意思係「回復原狀」，唔係「回覆」。用 get back to you。"},{"m":"work","c":"Meetings 會議","zh":"澄清對方意思","en":"Just so I'm clear — are we saying A or B?","a":["Can I check my understanding?","Sorry, which of the two are we going with?"]},{"m":"work","c":"Meetings 會議","zh":"討論兜圈，想收窄","en":"Are we going round in circles here?","a":["Shall we park this and come back to it?","I think we've exhausted this one."]},{"m":"work","c":"Meetings 會議","zh":"確認決定","en":"So are we agreed on that?","a":["Can I take that as a decision?","Is everyone happy to go with option two?"]},{"m":"work","c":"Meetings 會議","zh":"分派跟進工作","en":"Who's taking that forward?","a":["Let's put a name against each item.｜更有系統","I'll pick that one up.｜自己認"]},{"m":"work","c":"Meetings 會議","zh":"問限期","en":"When do you need this by?","a":["What's the deadline on that?","Can we say end of next week?"]},{"m":"work","c":"Meetings 會議","zh":"結束會議","en":"I think that covers everything.","a":["Unless anyone has anything else, let's wrap up.","Any other business? No? Good — thank you all."]},{"m":"work","c":"Meetings 會議","zh":"會後跟進","en":"I'll circulate the notes this afternoon.","a":["I'll send round a summary with the action points.","You'll have the minutes by tomorrow."]},{"m":"work","c":"Requests 請求委派","zh":"客氣請人幫手","en":"Would you mind having a look at this?","a":["Could you do me a favour?｜較熟嘅同事","When you get a chance, could you check this over?｜唔急"],"n":"英文請求嘅禮貌程度靠句式，唔靠 'please'。'Would you mind…' 比 'Please do…' 客氣好多。"},{"m":"work","c":"Requests 請求委派","zh":"急事請求","en":"I'm sorry to rush you, but I need this by three.","a":["This one's urgent, I'm afraid.","I hate to push, but the deadline's today."]},{"m":"work","c":"Requests 請求委派","zh":"委派工作","en":"Can I hand this one to you?","a":["I'd like you to take the lead on this.｜更有信任感","Would you be able to own this?"]},{"m":"work","c":"Requests 請求委派","zh":"講清楚要求","en":"What I need from you is the quotation by Friday.","a":["Two things: the headcount and the venue.","Just to be specific — A first, then B."]},{"m":"work","c":"Requests 請求委派","zh":"第一次追進度","en":"Just checking in on the quotation.","a":["Any movement on the lift repair?","Where are we with the tender?"]},{"m":"work","c":"Requests 請求委派","zh":"第二次追，要硬啲","en":"I chased this last week — can you give me a date?","a":["I'll have to escalate this if I don't hear back today.｜最硬","This is now holding up the whole project."],"n":"英文職場升溫係循序漸進嘅。第一次軟、第二次點名時間、第三次先提 escalate。跳步會嚇親人。"},{"m":"work","c":"Requests 請求委派","zh":"拒絕（唔傷和氣）","en":"I'd like to help, but I haven't got the capacity this week.","a":["I'm afraid that's not something I can approve.｜職權上拒絕","Not this term, I'm afraid.｜最短"],"n":"'I'm afraid…' 係英式拒絕嘅標準緩衝。冇咗佢，同一句會聽落好硬。"},{"m":"work","c":"Requests 請求委派","zh":"有條件答應","en":"I can do that, but something else will have to give.","a":["Happy to — provided we push the deadline.","Yes, if you can take the ordering off me."]},{"m":"work","c":"Requests 請求委派","zh":"多謝人幫手","en":"Thanks for turning that around so quickly.","a":["I appreciate you sorting this out.","That's a big help — thank you."]},{"m":"work","c":"Vendors 供應商承辦商","zh":"索取報價","en":"Could you send me a quotation for this?","a":["Can you quote for the works described?｜更正式","I'll need it in writing, please."]},{"m":"work","c":"Vendors 供應商承辦商","zh":"問大概價錢","en":"What are we looking at, roughly?","a":["Can you give me a ballpark figure?","Rough order of cost?"]},{"m":"work","c":"Vendors 供應商承辦商","zh":"議價","en":"Is there any room on the price?","a":["That's higher than we budgeted for. Can you sharpen it?｜專業講法","What can you do if we commit for two years?｜換條件"],"n":"'Is there any room?' 係英文議價最自然嘅開場，比 'Can you cheaper?' 專業好多。"},{"m":"work","c":"Vendors 供應商承辦商","zh":"問交貨／到場時間","en":"What's the lead time on that?","a":["How soon can you get someone on site?","When could the works actually start?"]},{"m":"work","c":"Vendors 供應商承辦商","zh":"安排工程時間","en":"Can the works be done during the school holidays?","a":["We can't have drilling during lesson time.","It'll have to be after four, I'm afraid."]},{"m":"work","c":"Vendors 供應商承辦商","zh":"投訴工程質素","en":"I'm not happy with the standard of work.","a":["This isn't what we agreed.","We'll need this put right before we sign off.｜最有力"]},{"m":"work","c":"Vendors 供應商承辦商","zh":"指出缺失要求返工","en":"There are a few defects I need you to come back and fix.","a":["The job isn't finished to my satisfaction.","I've listed the snagging items — see the attachment."],"n":"'snagging' = 工程完工後嘅執漏清單，係建築業標準用語。用得出即刻專業。"},{"m":"work","c":"Vendors 供應商承辦商","zh":"未執好唔會簽收","en":"I can't sign this off until the snagging is done.","a":["Payment follows completion, not the other way round.","We'll release it once I've inspected."]},{"m":"work","c":"Vendors 供應商承辦商","zh":"講合約範圍","en":"That's outside the scope of the contract.","a":["That falls under the warranty — there shouldn't be a charge.","That's a variation, so I'll need it costed separately."]},{"m":"work","c":"Vendors 供應商承辦商","zh":"好聲好氣收尾","en":"Thanks — send me the invoice and I'll process it.","a":["That's all in order. I'll get payment moving.","Good job. I'll be in touch about the next one."]},{"m":"work","c":"Facilities 設施維修","zh":"報告故障","en":"The air conditioning in Room 302 has packed up.","a":["We've got a leak in the staff room ceiling.","The lift is playing up again.｜間歇性故障"],"n":"'packed up' = 完全壞咗（英式口語）；'playing up' = 時好時壞。兩個都好地道。"},{"m":"work","c":"Facilities 設施維修","zh":"講緊急程度（唔急）","en":"It's not urgent, but it needs doing before term starts.","a":["No rush — just get it on the list.","Whenever you're next on site."]},{"m":"work","c":"Facilities 設施維修","zh":"講緊急程度（好急）","en":"This one can't wait — it's a safety issue.","a":["I need someone today, I'm afraid.","This is a hazard. It has to be dealt with now."]},{"m":"work","c":"Facilities 設施維修","zh":"要求人來睇","en":"Can you come and take a look?","a":["I'd like someone to inspect it this week.","Could you send an engineer out?"]},{"m":"work","c":"Facilities 設施維修","zh":"描述問題歷史","en":"It's been intermittent for a couple of weeks, and it's getting worse.","a":["It started after the typhoon.","It only happens when it rains heavily."]},{"m":"work","c":"Facilities 設施維修","zh":"臨時封閉","en":"We've cordoned it off for now.","a":["I've put it out of use until it's fixed.","It's taped off and signed."]},{"m":"work","c":"Facilities 設施維修","zh":"通知全校","en":"The lift will be out of service on Thursday.","a":["Apologies in advance for the noise — works are scheduled this week.","Please avoid the east staircase until further notice."]},{"m":"work","c":"Budget 財政採購","zh":"喺預算內","en":"That's within budget.","a":["We can absorb that.","No problem on the money side."]},{"m":"work","c":"Budget 財政採購","zh":"冇預算","en":"We haven't got the budget for that this year.","a":["That would take us over.","It's not in this year's allocation, I'm afraid."]},{"m":"work","c":"Budget 財政採購","zh":"申請額外撥款","en":"I'll need to put in a request for additional funding.","a":["I'll have to take this to the Principal for approval.","We'd need a supplementary allocation."]},{"m":"work","c":"Budget 財政採購","zh":"比較報價","en":"We've got three quotations — this one's the most competitive.","a":["Cheapest isn't always best value. Here's my recommendation.｜更專業","On balance I'd go with the second one."],"n":"'most competitive' 比 'cheapest' 專業；'best value' 更加係採購行內講法。"},{"m":"work","c":"Budget 財政採購","zh":"講採購程序","en":"Anything over fifty thousand has to go to tender.","a":["I'll need two more quotes before we can proceed.","Procurement rules mean I can't just award it."]},{"m":"work","c":"Budget 財政採購","zh":"催發票","en":"Could you send the invoice through so I can process the payment?","a":["I need the invoice before I can release funds.","Once I've got the paperwork, payment takes about a fortnight."]},{"m":"work","c":"Principal 上司同事","zh":"簡短匯報","en":"Quick update on the roof works.","a":["Two minutes on the canteen contract, if you've got them.","Nothing urgent — just keeping you in the loop."]},{"m":"work","c":"Principal 上司同事","zh":"預警問題","en":"I wanted to flag something before it becomes a problem.","a":["There's an issue I need to raise with you.","Heads up — this could get awkward."],"n":"'flag something' 同 'heads up' 係職場預警嘅標準講法。早講永遠好過遲講。"},{"m":"work","c":"Principal 上司同事","zh":"提出建議","en":"My suggestion would be to hold off until August.","a":["If it were up to me, I'd go with option two.","Can I recommend a different approach?"]},{"m":"work","c":"Principal 上司同事","zh":"表達保留","en":"I've got some reservations about the timing.","a":["My concern is that we're leaving it too late.","I'm not comfortable with the risk here."]},{"m":"work","c":"Principal 上司同事","zh":"請示授權","en":"Are you happy for me to go ahead?","a":["I'd rather check with you before I commit us.","Do I have your approval to sign?"]},{"m":"work","c":"Principal 上司同事","zh":"有禮咁頂返上司","en":"I hear you, but I don't think that's realistic in the time we've got.","a":["Can I be honest about the practicalities?","I'll do it if you want — but I should tell you the risk first.｜最安全嘅頂法"],"n":"最後嗰句係黃金句：唔係拒絕，係「我服從，但我盡咗告知責任」。上司多數會自己改變主意。"},{"m":"work","c":"Principal 上司同事","zh":"承擔責任","en":"That one's on me. I'll sort it.","a":["My mistake — I'll put it right.","I should have caught that. Leave it with me."]},{"m":"work","c":"Principal 上司同事","zh":"應承同事","en":"Leave it with me.","a":["I'll take care of it.","Consider it done.｜最有信心"]},{"m":"work","c":"Bad news 壞消息道歉","zh":"預告壞消息","en":"I'm afraid I've got some bad news about the hall booking.","a":["This isn't what you want to hear, but…","There's been a setback — let me explain."]},{"m":"work","c":"Bad news 壞消息道歉","zh":"道歉","en":"I'm sorry — that was my oversight.","a":["Apologies, that slipped through.","That shouldn't have happened, and it was my fault."]},{"m":"work","c":"Bad news 壞消息道歉","zh":"提出補救","en":"Here's what I propose we do about it.","a":["I can't undo it, but I can do this.","Give me a day and I'll have an alternative."],"n":"英文職場文化：道歉之後一定要即刻跟一個方案。只道歉唔提方案會被視為冇擔當。"},{"m":"work","c":"Bad news 壞消息道歉","zh":"通知延誤","en":"It's going to be later than I said. Here's why.","a":["We've slipped by about a week.","I need to revise the timeline — let me talk you through it."]},{"m":"work","c":"Events 活動統籌","zh":"問人數","en":"How many are we expecting?","a":["Can you give me a headcount by Wednesday?","Rough numbers will do for now."]},{"m":"work","c":"Events 活動統籌","zh":"分工","en":"I'll sort the venue and the catering.","a":["I'll handle logistics — you take the programme.","Leave the room booking and AV to me."]},{"m":"work","c":"Events 活動統籌","zh":"問後備方案（香港必問）","en":"What's the wet weather plan?","a":["What happens if there's a typhoon signal?","Do we have a fallback if it's cancelled?"]},{"m":"work","c":"Events 活動統籌","zh":"綵排","en":"I'll do a run-through with the team on Friday.","a":["Let's walk the site together beforehand.","Full rehearsal Thursday afternoon."]},{"m":"work","c":"Safety 安全事故","zh":"報告事故","en":"Nobody was hurt, but I've filed a report.","a":["Minor incident this morning — everyone's fine.","No injuries, but it was close."]},{"m":"work","c":"Safety 安全事故","zh":"已採取措施","en":"I've made the area safe.","a":["It's isolated and signed off.","Access is restricted until it's inspected."]},{"m":"work","c":"Safety 安全事故","zh":"要正式記錄","en":"We need to log this as an incident.","a":["This goes in the accident book.","I'll write it up formally."]},{"m":"work","c":"Safety 安全事故","zh":"要求風險評估","en":"Can we do a risk assessment before we commit?","a":["I'd want that checked by a professional first.","Not until someone qualified has signed it off."]},{"m":"chat","c":"Openers 開場","zh":"早上見到同事","en":"Morning! How's things?","a":["Morning — how are you doing?｜最中性","Alright?｜英式，好隨和，唔係真係問你點"],"n":"⚠️ 'How are you?' / 'Alright?' 唔係真問題。標準答法係 'Good, thanks — you?' 然後就完。答足三分鐘身體狀況係典型嘅文化誤會。"},{"m":"chat","c":"Openers 開場","zh":"覺得對方好忙","en":"Busy week?","a":["You look like you've got a lot on.","Rushed off your feet?｜英式生動"]},{"m":"chat","c":"Openers 開場","zh":"星期一","en":"How was your weekend?","a":["Good weekend?","Did you get up to anything?"]},{"m":"chat","c":"Openers 開場","zh":"對方放完假返嚟","en":"Have you been away?","a":["Welcome back — good break?","How was the holiday?"]},{"m":"chat","c":"Openers 開場","zh":"見到對方好早返","en":"You're in early.","a":["Beat me in today!","Early start?"]},{"m":"chat","c":"Openers 開場","zh":"下午見到，對方好攰","en":"Long day?","a":["Nearly there.","Not long to go now."]},{"m":"chat","c":"Weather 天氣（香港）","zh":"好熱","en":"It's absolutely boiling out there.","a":["Have you seen the humidity today?","You step outside and you're wet through."],"n":"英國人真係成日講天氣，而香港天氣夠戲劇性 —— 呢個係同外籍同事最安全嘅開場話題。"},{"m":"chat","c":"Weather 天氣（香港）","zh":"打風","en":"Looks like the typhoon's coming in on Thursday.","a":["T8 tomorrow, by the looks of it.","Are they going to hoist the signal, do you think?"]},{"m":"chat","c":"Weather 天氣（香港）","zh":"轉涼","en":"First proper cool day, isn't it?","a":["Finally, some fresh air.","You can almost wear a jacket."]},{"m":"chat","c":"Weather 天氣（香港）","zh":"落大雨淋濕","en":"I got absolutely soaked coming in.","a":["The umbrella was useless.","It came down out of nowhere."]},{"m":"chat","c":"Commute 交通","zh":"問返工路程","en":"Was the MTR bad this morning?","a":["How long does it take you to get in?","Where do you come in from?"]},{"m":"chat","c":"Commute 交通","zh":"塞車","en":"The traffic was a nightmare.","a":["Took me twice as long as usual.","Something must have happened on the tunnel."]},{"m":"chat","c":"Food 食","zh":"問人食咩午餐","en":"Where are you going for lunch?","a":["Any good places round here?","Shall we grab something?"],"n":"⚠️ 「食咗飯未？」直譯 'Have you eaten?' 喺英文係真問題，對方會以為你想約佢食飯。想打招呼就用 'How's things?'。"},{"m":"chat","c":"Food 食","zh":"推介餐廳","en":"I can recommend the place on the corner.","a":["There's a decent noodle shop two streets down.","Worth trying if you haven't."]},{"m":"chat","c":"Food 食","zh":"約食飯","en":"Shall we grab lunch sometime this week?","a":["Fancy joining us?","We usually go down at half twelve — you're welcome to come."]},{"m":"chat","c":"Weekend 假期","zh":"問週末計劃","en":"Any plans for the weekend?","a":["Doing anything nice?","Got much on?"]},{"m":"chat","c":"Weekend 假期","zh":"問長假","en":"Doing anything over Easter?","a":["Did you get away at all in the summer?","Going anywhere for Chinese New Year?"]},{"m":"chat","c":"Weekend 假期","zh":"對方去完旅行","en":"How was Japan?","a":["Was it as good as everyone says?","Would you go back?"]},{"m":"chat","c":"Keeping it going 接話","zh":"想對方講多啲（最重要）","en":"Oh really? How come?","a":["That sounds like hard work.","And how did that go?"],"n":"閒聊嘅重點唔係你識講幾多，係你識唔識<b>接<\/b>。呢三句可以令對方講多兩分鐘，而你唔使諗新話題。"},{"m":"chat","c":"Keeping it going 接話","zh":"表示同感","en":"Same here, actually.","a":["I know exactly what you mean.","You and me both."]},{"m":"chat","c":"Keeping it going 接話","zh":"想追問細節","en":"Tell me more.","a":["Go on…","What happened in the end?"]},{"m":"chat","c":"Keeping it going 接話","zh":"承認對方講得好","en":"That's a good point, actually.","a":["I hadn't thought of it like that.","Fair enough."]},{"m":"chat","c":"Reacting 反應","zh":"驚訝","en":"No way!","a":["You're joking.","Seriously?"]},{"m":"chat","c":"Reacting 反應","zh":"為對方開心","en":"That's brilliant.","a":["Good for you!","That's great news."]},{"m":"chat","c":"Reacting 反應","zh":"同情","en":"Oh dear. That's a shame.","a":["That's rotten luck.","What a pain."]},{"m":"chat","c":"Reacting 反應","zh":"開玩笑話唔想同對方換位","en":"Rather you than me!","a":["Better you than me.","I don't envy you."],"n":"英式幽默，帶親切感。用喺同事講佢要做啲麻煩嘢嘅時候。"},{"m":"chat","c":"Compliments 讚賞","zh":"讚同事表現","en":"That was a great assembly.","a":["You handled that really well.","I don't know how you kept them that quiet."]},{"m":"chat","c":"Compliments 讚賞","zh":"讚外表（安全版）","en":"That's a lovely jacket — where's it from?","a":["You look well.","New glasses? They suit you."],"n":"職場讚外表要小心。安全嘅係讚<b>物件<\/b>（衫、袋、眼鏡）唔係讚<b>身體<\/b>。"},{"m":"chat","c":"Sympathy 關心","zh":"聽到壞消息","en":"I'm sorry to hear that.","a":["That must be tough.","I hope things settle down soon."]},{"m":"chat","c":"Sympathy 關心","zh":"對方病咗","en":"Hope you feel better soon.","a":["Get some rest.","Don't rush back."]},{"m":"chat","c":"Sympathy 關心","zh":"想幫手","en":"Is there anything I can do?","a":["Shout if you need cover.","Let me know if you want anything taken off your plate."]},{"m":"chat","c":"Exiting 收尾（好重要）","zh":"想結束對話但唔失禮","en":"Anyway, I'd better let you get on.","a":["Right, I'll leave you to it.","I'd better crack on.｜英式，講自己要做嘢"],"n":"好多人識開場唔識收尾，結果對話拖到尷尬。呢三句係英文閒聊嘅標準出口，用完就可以自然行開。"},{"m":"chat","c":"Exiting 收尾（好重要）","zh":"友善道別","en":"Good to see you — catch you later.","a":["See you around.","Have a good one."]},{"m":"chat","c":"Exiting 收尾（好重要）","zh":"想真係約下次","en":"Let's grab a coffee properly sometime.","a":["We should catch up properly.","Come and find me when you're free."]},{"m":"chat","c":"Foreign colleagues 外籍同事","zh":"問佢住得慣唔慣","en":"How are you finding Hong Kong?","a":["Have you settled in alright?","Is it what you expected?"]},{"m":"chat","c":"Foreign colleagues 外籍同事","zh":"問來咗幾耐","en":"How long have you been out here?","a":["Is this your first year at the school?","What brought you over?"]},{"m":"chat","c":"Foreign colleagues 外籍同事","zh":"問返唔返鄉下","en":"Do you get back home much?","a":["Will you be going back over the summer?","Is your family out here with you?"]},{"m":"chat","c":"Foreign colleagues 外籍同事","zh":"介紹本地嘢","en":"If you ever want to try proper local food, let me know.","a":["There's a hike near me you'd probably like.","Have you been out to the islands yet?"]},{"m":"chat","c":"Parents 家長","zh":"歡迎家長","en":"Thanks for coming in.","a":["It's good to put a face to the name.","I appreciate you making the time."]},{"m":"chat","c":"Parents 家長","zh":"先安撫（唔係壞消息）","en":"Nothing to worry about — I just wanted a quick word.","a":["This is a positive conversation, I promise.","No problems at all. Quite the opposite."]},{"m":"chat","c":"Parents 家長","zh":"讚學生","en":"He's a pleasure to teach.","a":["She contributes a lot in class.","He's well liked, and he works hard."]},{"m":"chat","c":"Parents 家長","zh":"結束會面","en":"Do get in touch if anything comes up.","a":["My door's open — just email me.","Thanks again for coming."]}],"FIX":[{"b":"Because the price is high, so people buy less.","g":"Because the price is high, people buy less.","w":"because 同 so 只可以用一個。中文「因為…所以…」係雙的，英文唔係。"},{"b":"Although it is expensive, but people still buy it.","g":"Although it is expensive, people still buy it.","w":"although 同 but 二揀一。呢個係香港學生 script 上最常見嘅扣分位。"},{"b":"We will discuss about this topic.","g":"We'll discuss this topic.","w":"discuss 後面唔跟 about。"},{"b":"I want to emphasise on this point.","g":"I want to emphasise this point.","w":"emphasise 後面唔跟 on。"},{"b":"There have many reasons.","g":"There are many reasons.","w":"中文「有」直譯成 have。英文存在句一律 there is / there are。"},{"b":"Do you have any question?","g":"Any questions?","w":"questions 要複數。而且簡短版更自然。"},{"b":"This one is more better.","g":"This one is much better.","w":"better 已經係比較級，唔可以再加 more。要加強用 much / far。"},{"b":"Open the light. / Open the projector.","g":"Turn on the lights. / Switch on the projector.","w":"電器用 turn on / switch on，唔用 open。"},{"b":"He is lack of confidence.","g":"He lacks confidence. / He has a lack of confidence.","w":"lack 做動詞唔使 be + of；做名詞先用 a lack of。"},{"b":"In nowadays, students are different.","g":"These days, students are different.","w":"nowadays 本身已經係副詞，前面唔加 in。"},{"b":"This is depend on the situation.","g":"This depends on the situation.","w":"depend 係動詞，唔使 is。"},{"b":"We can divide into two parts.","g":"We can divide it into two parts.","w":"divide 需要受詞。"},{"b":"Understand?","g":"Does that make sense?","w":"Understand? 聽落似查問。Does that make sense? 把責任放喺解釋上，唔係放喺學生身上。"},{"b":"Today I will teach you chapter five.","g":"Today we're going to look at chapter five.","w":"'I will teach you' 語氣單向。'we're going to look at' 把學生放埋一齊，係國際課堂嘅預設講法。"},{"b":"Very much people made this mistake.","g":"A lot of people made this mistake.","w":"people 可數，用 many / a lot of，唔用 very much。"},{"b":"It affects to the result.","g":"It affects the result.","w":"affect 係及物動詞，後面唔加 to。"},{"b":"This will effect your grade.","g":"This will affect your grade.","w":"affect = 動詞（影響）；effect = 名詞（效果）。"},{"b":"The price will raise.","g":"The price will rise. / They will raise the price.","w":"rise 不及物（自己升）；raise 及物（有人抬高佢）。"},{"b":"According to the graph, we can see that it increase.","g":"The graph shows that it increases.","w":"'According to… we can see' 三重累贅，加漏第三人稱單數 -s。"},{"b":"I very like this example.","g":"I really like this example.","w":"very 唔可以直接修飾動詞。用 really，或 very much 放句尾。"},{"b":"He didn't came yesterday.","g":"He didn't come yesterday.","w":"did 已經標示咗過去式，後面用原形。"},{"b":"I have finished it yesterday.","g":"I finished it yesterday.","w":"有明確過去時間（yesterday）就唔可以用 present perfect。"},{"b":"Someone can answer?","g":"Can anyone answer? / Anyone?","w":"疑問句要倒裝，而且 someone 應改 anyone。"},{"b":"You all understand or not?","g":"Is everyone with me?","w":"'…or not?' 係直譯「…定唔係？」，英文聽落好對抗性。"},{"b":"That's mean the answer is B.","g":"That means the answer is B.","w":"That's = that is，後面唔可以再接動詞原形。"},{"b":"Please explain me this question.","g":"Please explain this question to me.","w":"explain 唔可以直接跟人：explain something TO somebody。"},{"b":"Let me to explain.","g":"Let me explain.","w":"let + 人 + 原形動詞，中間唔加 to。"},{"b":"The reason is because he was absent.","g":"The reason is that he was absent.","w":"reason 同 because 意思重複。"},{"b":"I am agree with you.","g":"I agree with you.","w":"agree 本身係動詞，唔使 am。"},{"b":"He is very hardworking student.","g":"He is a very hardworking student.","w":"單數可數名詞前面一定要有冠詞。香港最高頻嘅語法漏洞。"},{"b":"Two years ago I have taught this.","g":"Two years ago I taught this.","w":"明確過去時間 + present perfect 唔夾。"},{"b":"Can you repeat again?","g":"Could you say that again?","w":"repeat 已經包含「再」，加 again 累贅。"},{"b":"Sit down please, don't make noise.","g":"Sit down, please — and keep the noise down.","w":"'make noise' 唔自然。用 keep the noise down / quieten down。"},{"b":"I hope everyone can pay attention.","g":"I need everyone's attention, please.","w":"'I hope you can…' 語氣太弱，學生唔會當係指令。指令要直接但有禮。"},{"b":"Until now, we have learned three chapters.","g":"So far, we've covered three chapters.","w":"'until now' 暗示「而家開始唔同」。「到目前為止」要用 so far。"},{"b":"I will revert to you tomorrow.","g":"I'll get back to you tomorrow.","w":"⚠️ 香港辦公室常見。'revert' 標準英文意思係「回復原狀」，唔係「回覆」。Native 聽落會一頭霧水。"},{"b":"Please be informed that the lift is out of service.","g":"Just to let you know, the lift is out of service.","w":"'Please be informed' 過度官腔，係中式公文直譯。除非係正式通告，否則用自然語氣。"},{"b":"Kindly advise the status of the quotation.","g":"Could you let me know where the quotation stands?","w":"'Kindly + 動詞' 係東南亞商業英語特色，native 用得極少，而且聽落有命令感。"},{"b":"Please do the needful.","g":"Could you take care of it?","w":"'do the needful' 係印度／東南亞英語，英式美式都唔用。"},{"b":"Attached herewith please find the invoice.","g":"I've attached the invoice.","w":"herewith 除法律文件外唔用。整句改成主動、簡短。"},{"b":"How to say this in English?","g":"How do you say this in English? / What's the word for this?","w":"疑問句需要主語同助動詞。"},{"b":"I will do it later.","g":"I'll do it this afternoon. / I'll have it to you by four.","w":"'later' 喺英文可以指一個鐘後，都可以指永遠。職場上要講具體時間，否則對方會焦慮。"}],"NAT":[{"g":"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿","b":"I will send it to you.","n2":"I'll send it over."},{"g":"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿","b":"That is not what we agreed.","n2":"That's not what we agreed."},{"g":"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿","b":"I am not sure.","n2":"I'm not sure."},{"g":"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿","b":"We are going to look at chapter five.","n2":"We're going to look at chapter five."},{"g":"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿","b":"Let us begin.","n2":"Let's start."},{"g":"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿","b":"It is going to be late.","n2":"It's going to be late."},{"g":"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿","b":"I would like you to try question four.","n2":"I'd like you to try question four."},{"g":"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿","b":"Do not worry about that.","n2":"Don't worry about that."},{"g":"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿","b":"There is a problem with the booking.","n2":"There's a problem with the booking."},{"g":"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿","b":"I have not marked them yet.","n2":"I haven't marked them yet."},{"g":"1. 縮略式 Contractions — 唔縮 = 即刻似讀稿","b":"What is the answer?","n2":"What's the answer?","n":"⚠️ 講嘢唔縮寫，聽落就似讀稿。呢個係「似背書」最單一嘅原因。但注意：gonna / wanna / gotta 只可以講，唔可以寫。"},{"g":"2. 講短句 Fragments — 完整句係書面感","b":"Are there any questions?","n2":"Any questions?"},{"g":"2. 講短句 Fragments — 完整句係書面感","b":"That is a good question.","n2":"Good question."},{"g":"2. 講短句 Fragments — 完整句係書面感","b":"Is that clear to everybody?","n2":"Clear so far? / With me?"},{"g":"2. 講短句 Fragments — 完整句係書面感","b":"I will do it.","n2":"Will do."},{"g":"2. 講短句 Fragments — 完整句係書面感","b":"It does not matter.","n2":"Doesn't matter."},{"g":"2. 講短句 Fragments — 完整句係書面感","b":"Do you have a moment?","n2":"Got a minute?"},{"g":"2. 講短句 Fragments — 完整句係書面感","b":"What do you think about it?","n2":"Thoughts?"},{"g":"2. 講短句 Fragments — 完整句係書面感","b":"That sounds good to me.","n2":"Sounds good."},{"g":"2. 講短句 Fragments — 完整句係書面感","b":"Are you ready to start?","n2":"Ready?"},{"g":"2. 講短句 Fragments — 完整句係書面感","b":"I would like everyone to be quiet.","n2":"Quiet, please."},{"g":"2. 講短句 Fragments — 完整句係書面感","b":"Everybody please sit down now.","n2":"Sit down, everyone.","n":"真人講嘢好多時唔講完整句。你講足主語動詞受詞，反而聽落似朗讀課文。而且短句學生更易聽得明。"},{"g":"3. 起手詞 Discourse markers — 呢啲要留返","b":"er… um… 呢個…","n2":"（靜音兩秒）","n":"⚠️ 更正我之前講過嘅嘢：我叫你剷走 filler 嗰陣講得太籠統。要剷嘅係 <b>hesitation filler<\/b>（er, um），唔係 <b>discourse marker<\/b>（right, OK, so, now）。Native 老師成日用後者做段落分界 —— 完全冇咗，聽落會硬同突兀。"},{"g":"3. 起手詞 Discourse markers — 呢啲要留返","b":"（開始新一段）","n2":"Right, … / OK, so… / Now, …"},{"g":"3. 起手詞 Discourse markers — 呢啲要留返","b":"（轉話題）","n2":"Anyway, … / Moving on, …"},{"g":"3. 起手詞 Discourse markers — 呢啲要留返","b":"（要人認真聽）","n2":"Look, … / Listen, …"},{"g":"3. 起手詞 Discourse markers — 呢啲要留返","b":"（帶出重點）","n2":"The thing is, …"},{"g":"3. 起手詞 Discourse markers — 呢啲要留返","b":"（坦白講）","n2":"To be honest, …"},{"g":"3. 起手詞 Discourse markers — 呢啲要留返","b":"（解釋自己頭先講咩）","n2":"I mean, …"},{"g":"3. 起手詞 Discourse markers — 呢啲要留返","b":"（引起注意）","n2":"You know what? …","n":"用得啱嘅 marker 令人覺得你有組織；hesitation filler 令人覺得你冇準備。分別唔係聲量，係<b>有冇意思<\/b>。"},{"g":"4. 緩和詞 Softeners — 唔好句句講到絕","b":"It is difficult.","n2":"It's a bit tricky."},{"g":"4. 緩和詞 Softeners — 唔好句句講到絕","b":"You are wrong.","n2":"That's not quite right."},{"g":"4. 緩和詞 Softeners — 唔好句句講到絕","b":"This is the opposite.","n2":"It's sort of the opposite."},{"g":"4. 緩和詞 Softeners — 唔好句句講到絕","b":"Look at this.","n2":"Just have a look at this."},{"g":"4. 緩和詞 Softeners — 唔好句句講到絕","b":"It will rain.","n2":"It'll probably rain."},{"g":"4. 緩和詞 Softeners — 唔好句句講到絕","b":"The answer is B.","n2":"I'd say the answer is B."},{"g":"4. 緩和詞 Softeners — 唔好句句講到絕","b":"It is good.","n2":"It's pretty good."},{"g":"4. 緩和詞 Softeners — 唔好句句講到絕","b":"Come here.","n2":"Could you come here a sec?"},{"g":"4. 緩和詞 Softeners — 唔好句句講到絕","b":"You must finish it today.","n2":"I'd like it finished today if you can.","n":"香港人講英文容易「講到絕」，聽落好硬。加一個 a bit / just / probably / I'd say / pretty，即刻軟返，而且更似真人。呢啲字冇實際意思 —— 佢哋嘅作用就係令你唔似機械人。"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"utilise","n2":"use"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"commence","n2":"start"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"endeavour","n2":"try"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"assist","n2":"help"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"obtain","n2":"get"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"require","n2":"need"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"sufficient","n2":"enough"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"purchase","n2":"buy"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"inform","n2":"tell / let you know"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"approximately","n2":"about / around"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"currently","n2":"at the moment"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"regarding","n2":"about"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"in order to","n2":"to"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"prior to","n2":"before"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"subsequently","n2":"then / after that"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"furthermore","n2":"also / and"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"due to the fact that","n2":"because"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"at this point in time","n2":"now"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"in the event that","n2":"if"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"demonstrate","n2":"show"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"comprehend","n2":"understand"},{"g":"5. 大字換細字 — 講嘢唔好用寫作嘅字","b":"numerous","n2":"a lot of","n":"香港教育訓練出嚟嘅英文偏向拉丁詞源嘅「大字」。寫作可以，講嘢用就即刻似讀稿 —— 而且<b>學生更加聽唔明<\/b>，因為大字全部係佢哋未學過嘅。教學英語嘅第一原則係簡單，唔係漂亮。"}]};
+(()=>{
+"use strict";
+/* ============ basics ============ */
+const cv=document.getElementById('screen'),ctx=cv.getContext('2d');
+const VW=384,VH=216,SC=3,T=16;ctx.setTransform(SC,0,0,SC,0,0);ctx.imageSmoothingEnabled=false;
+const $t=document.getElementById('ptext'),$c=document.getElementById('pchoices'),$q=document.getElementById('qarea'),$panel=document.getElementById('panel');
+const $modal=document.getElementById('modal'),$mb=document.getElementById('mbody'),$mt=document.getElementById('mtitle');
+const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function mk(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.imageSmoothingEnabled=false;return [c,x];}
+function R(x,a,b,w,h,col){x.fillStyle=col;x.fillRect(a,b,w,h);}
+let seed=11;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function el(tag,attrs,...kids){const e=document.createElement(tag);if(attrs)for(const k in attrs){if(k==='class')e.className=attrs[k];else if(k==='text')e.textContent=attrs[k];else if(k==='style')e.setAttribute('style',attrs[k]);else if(k.startsWith('on'))e.addEventListener(k.slice(2),attrs[k]);else e.setAttribute(k,attrs[k]);}kids.flat().forEach(k=>{if(k==null)return;e.appendChild(typeof k==='string'?document.createTextNode(k):k);});return e;}
+function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;r=clamp(Math.round(r*f),0,255);g=clamp(Math.round(g*f),0,255);b=clamp(Math.round(b*f),0,255);return '#'+((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1);}
+function mix(a,b,t){const A=parseInt(a.slice(1),16),B=parseInt(b.slice(1),16);const c=[16,8,0].map(s=>Math.round(((A>>s)&255)*(1-t)+((B>>s)&255)*t));return '#'+((1<<24)|(c[0]<<16)|(c[1]<<8)|c[2]).toString(16).slice(1);}
+function outline(c,x,col){const w=c.width,h=c.height;const im=x.getImageData(0,0,w,h),d=im.data;for(let i=3;i<d.length;i+=4)d[i]=d[i]>110?255:0;const A=(X,Y)=>X<0||Y<0||X>=w||Y>=h?0:d[(Y*w+X)*4+3];const out=[];for(let y=0;y<h;y++)for(let X=0;X<w;X++)if(!A(X,y)&&(A(X-1,y)||A(X+1,y)||A(X,y-1)||A(X,y+1)))out.push((y*w+X)*4);const [r,g,b]=col;for(const o of out){d[o]=r;d[o+1]=g;d[o+2]=b;d[o+3]=255;}x.putImageData(im,0,0);}
+function draw(x){return{E:(a,b,rx,ry,col)=>{x.fillStyle=col;x.beginPath();x.ellipse(a,b,Math.max(.5,rx),Math.max(.5,ry),0,0,Math.PI*2);x.fill();},P:(pts,col)=>{x.fillStyle=col;x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.closePath();x.fill();},Ln:(pts,w,col)=>{x.strokeStyle=col;x.lineWidth=w;x.lineCap='round';x.lineJoin='round';x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.stroke();},Rc:(a,b,w,h,col)=>R(x,a,b,w,h,col)};}
+function rrect(x0,y0,w,h,r){ctx.beginPath();ctx.moveTo(x0+r,y0);ctx.lineTo(x0+w-r,y0);ctx.quadraticCurveTo(x0+w,y0,x0+w,y0+r);ctx.lineTo(x0+w,y0+h-r);ctx.quadraticCurveTo(x0+w,y0+h,x0+w-r,y0+h);ctx.lineTo(x0+r,y0+h);ctx.quadraticCurveTo(x0,y0+h,x0,y0+h-r);ctx.lineTo(x0,y0+r);ctx.quadraticCurveTo(x0,y0,x0+r,y0);ctx.closePath();}
+const clean=s=>String(s).split('｜')[0].trim();
+const labOf=s=>String(s).split('｜')[1]||'';
+const hasEn=s=>/[a-zA-Z]/.test(s);
+let toastT=0;function toast(m){const e=document.getElementById('toast');e.textContent=m;e.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>e.hidden=true,1600);}
+
+/* ============ types & species ============ */
+const TYPES={
+ glue:{en:'Bell',zh:'鐘聲',col:'#e0a020'}, think:{en:'Mind',zh:'思考',col:'#8a6ad0'},
+ expl:{en:'Chalk',zh:'粉筆',col:'#3aa0c0'}, qna:{en:'Quiz',zh:'提問',col:'#e0603c'},
+ rapp:{en:'Heart',zh:'心意',col:'#e0708a'}, work:{en:'Office',zh:'辦公',col:'#6a7a96'},
+ chat:{en:'Chat',zh:'閒聊',col:'#58b048'}, nat:{en:'Paper',zh:'書面',col:'#b8a070'}, fix:{en:'Glitch',zh:'錯字',col:'#c03a3a'}};
+// [id, EN, 中文, module, category-EN (prefix of the trainer's category), sprite kind]
+const SPL=[
+ ['bellbird','Bellbird','打鐘雀','glue','Opening','bird'],['bridgling','Bridgling','過橋仔','glue','Transition','blob'],['commandog','Commandog','指令犬','glue','Instructions','dog'],['tickat','Tickat','計時貓','glue','Timing','cat'],['checkoala','Checkoala','檢查熊','glue','Checking','bear'],['wrapotter','Wrapotter','收堂獺','glue','Closing','cat'],['hushark','Hushark','噓噓鯊','glue','Behaviour','fish'],
+ ['ummoth','Ummoth','嗯嗯蛾','think','Buying time','bug'],['hedgehop','Hedgehop','留餘蝟','think','Hedging','bear'],['signostrich','Signostrich','路牌鴕','think','Signposting','bird'],['oopsrot','Oopsrot','改口鸚','think','Self-repair','bird'],
+ ['definch','Definch','定義雀','expl','Defining','bird'],['brickrab','Brickrab','實例蟹','expl','Concrete','turtle'],['analogfox','Analogfox','比喻狐','expl','Analogy','cat'],['splitail','Splitail','分辨蜥','expl','Distinguishing','lizard'],['dominewt','Dominewt','因果蠑','expl','Cause & effect','lizard'],['rephrog','Rephrog','換講蛙','expl','Rephrasing','blob'],['boldox','Boldox','強調牛','expl','Emphasis','bear'],
+ ['hintowl','Hintowl','引導鴞','qna','Eliciting','bird'],['almostbun','Almostbun','差啲兔','qna','Wrong answer','cat'],['halfin','Halfin','半條魚','qna','Partial','fish'],['passeal','Passeal','轉波海豹','qna','Redirect','fish'],['dunnomole','Dunnomole','唔識鼴','qna',"I don't know",'bear'],['stumpanda','Stumpanda','卡住熊貓','qna','Teacher stuck','bear'],['clapuffin','Clapuffin','拍手海雀','qna','Praise','bird'],
+ ['cheerub','Cheerub','打氣豚','rapp','Encouragement','blob'],['tutorbat','Tutorbat','輔導蝠','rapp','Individual help','bug'],['latemeleon','Latemeleon','遲到變色龍','rapp','Absence & lateness','lizard'],['homebeetle','Homebeetle','功課甲蟲','rapp','Homework','bug'],['apolopossum','Apolopossum','道歉負鼠','rapp','Apologising','cat'],['warmochi','Warmochi','暖糯團','rapp','Warmth','blob'],
+ ['agendaboa','Agendaboa','議程蟒','work','Meetings','lizard'],['favourfly','Favourfly','拜託螢','work','Requests','bug'],['quotoad','Quotoad','報價蟾','work','Vendors','blob'],['aircondor','Aircondor','冷氣鷹','work','Facilities','bird'],['pennygoat','Pennygoat','預算羊','work','Budget','dog'],['principhant','Principhant','上司象','work','Principal','bear'],['oopsopus','Oopsopus','壞消息章魚','work','Bad news','ghost'],['partyrex','Partyrex','活動龍','work','Events','lizard'],['hazardillo','Hazardillo','安全犰狳','work','Safety','turtle'],
+ ['heyena','Heyena','打招呼鬣','chat','Openers','dog'],['humidolphin','Humidolphin','濕熱海豚','chat','Weather','fish'],['commutapillar','Commutapillar','通勤毛蟲','chat','Commute','bug'],['siumaimon','Siumaimon','燒賣獸','chat','Food','blob'],['slothurday','Slothurday','週末樹懶','chat','Weekend','bear'],['yakkity','Yakkity','接話犛','chat','Keeping it going','dog'],['ohmygoose','Ohmygoose','反應鵝','chat','Reacting','bird'],['flatterfly','Flatterfly','讚美蝶','chat','Compliments','bug'],['tendertoise','Tendertoise','關心龜','chat','Sympathy','turtle'],['exitweasel','Exitweasel','收尾鼬','chat','Exiting','cat'],['kiwiwi','Kiwiwi','外籍奇異鳥','chat','Foreign colleagues','bird'],['guardeer','Guardeer','家長鹿','chat','Parents','dog'],
+ ['uncontracto','Uncontracto','唔縮鬼','nat','1.','ghost'],['longwinder','Longwinder','長句鬼','nat','2.','ghost'],['startless','Startless','冇起手鬼','nat','3.','ghost'],['absolutor','Absolutor','講死鬼','nat','4.','ghost'],['bigworder','Bigworder','大字鬼','nat','5.','ghost'],
+ ['glitchost','Glitchost','錯字鬼','fix','*','ghost']];
+const SP={},SPLIST=[];
+const P=BANK.P.map((p,i)=>Object.assign({key:'p'+i,t:'P'},p)).filter(p=>hasEn(p.en));
+const FIX=BANK.FIX.map((f,i)=>Object.assign({key:'f'+i,t:'F'},f));
+const NAT=BANK.NAT.map((n,i)=>Object.assign({key:'n'+i,t:'N'},n));
+SPL.forEach((a,i)=>{const s={id:a[0],en:a[1],zh:a[2],type:a[3],cat:a[4],kind:a[5],no:i+1};
+ if(s.type==='nat')s.items=NAT.filter(n=>n.g.startsWith(s.cat));
+ else if(s.type==='fix')s.items=FIX;
+ else s.items=P.filter(p=>p.m===s.type&&p.c.startsWith(s.cat+' '));
+ s.catName=s.items[0]?(s.type==='nat'?s.items[0].g:s.type==='fix'?'Grammar traps 香港人常犯錯':s.items[0].c):s.cat;
+ SP[s.id]=s;SPLIST.push(s);});
+const nm=id=>`${SP[id].en} ${SP[id].zh}`;
+
+/* ============ questions ============ */
+function vars(p){const out=[{t:clean(p.en),l:'Default 最簡單'}];(p.a||[]).forEach(v=>out.push({t:clean(v),l:labOf(v)}));const e=out.filter(v=>hasEn(v.t));return e.length?e:out;}
+function build(item){
+ if(item.t==='P'){const correct=vars(item);const cset=new Set(correct.map(v=>v.t.toLowerCase()));
+  const others=shuffle(P.filter(x=>x.m===item.m&&x.c!==item.c&&!cset.has(clean(x.en).toLowerCase())));const ds=[],used=new Set();
+  for(const o of others){const t=clean(o.en);if(used.has(t))continue;used.add(t);ds.push({t,ok:false,why:'呢句其實係用喺：「'+o.zh+'」'});if(ds.length===2)break;}
+  return {item,sit:item.zh,ask:'呢個情況，你會點講？',opts:shuffle([{t:correct[0].t,ok:true}].concat(ds)),lines:correct,note:item.n};}
+ if(item.t==='N')return {item,sit:'你心入面嗰句太書面。講出口應該係？',written:item.b,ask:'揀最似真人講嘢嗰句：',opts:shuffle([{t:item.n2,ok:true},{t:item.b,ok:false,why:'文法冇錯，但係寫出嚟嘅英文，講出口似讀稿。'}]),lines:[{t:item.n2,l:'Spoken'}],note:item.g};
+ return {item,sit:'兩句都好似啱，邊句先係正確英文？',ask:'揀啱嗰句：',opts:shuffle([{t:item.g,ok:true},{t:item.b,ok:false,why:'典型 L1 干擾錯誤。'}]),lines:[{t:item.g,l:'Correct'}],note:item.w};}
+function pickItem(sid,asked){const all=SP[sid].items.filter(x=>!asked.has(x.key));const pool=all.length?all:SP[sid].items;
+ const w=pool.map(x=>(S.miss[x.key]?5:0)+(S.seen[x.key]?1:3));let r=Math.random()*w.reduce((a,b)=>a+b,0);for(let i=0;i<pool.length;i++){r-=w[i];if(r<=0)return pool[i];}return pool[pool.length-1];}
+
+/* ============ speech ============ */
+let VOICES=[];function loadV(){try{VOICES=speechSynthesis.getVoices();}catch(e){}}
+try{loadV();speechSynthesis.onvoiceschanged=loadV;}catch(e){}
+function speak(t){if(!S.tts)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=.95;const f=r=>VOICES.find(v=>r.test(v.lang));const v=VOICES.find(v=>v.lang==='en-GB')||f(/en[-_]GB/i)||f(/en[-_](AU|NZ)/i)||f(/^en/i);if(v)u.voice=v;speechSynthesis.speak(u);}catch(e){}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b){const o=S.tts;S.tts=true;speak(b.getAttribute('data-say'));S.tts=o;}});
+
+/* ============ save ============ */
+const KEY='emimon-v1';
+function fresh(){return {v:1,started:false,map:'hub',pos:{x:15,y:12,dir:'up'},party:[],box:[],hp:{},xp:{},seen:{},caught:{},badges:{},beat:{},miss:{},seenQ:{},coins:40,items:{tea:3,bun:0,hint:1},speakFirst:true,tts:true,stats:{right:0,wrong:0,best:0},champ:false};}
+let S=fresh();
+try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.v===1)S=Object.assign(fresh(),o);}}catch(e){}
+S.seen=S.seen||{};
+function save(quiet){try{localStorage.setItem(KEY,JSON.stringify(S));if(!quiet)toast('已存檔 Saved');}catch(e){if(!quiet)toast('呢個瀏覽器唔俾存檔');}}
+const LVXP=[0,10,25,45,70,100,140,190,250,320];
+function lvOf(id){const x=S.xp[id]||0;let l=1;for(let i=1;i<LVXP.length;i++)if(x>=LVXP[i])l=i+1;return l;}
+const isPrime=id=>lvOf(id)>=5;
+const maxHP=id=>40+lvOf(id)*10;
+function curHP(id){if(S.hp[id]==null)S.hp[id]=maxHP(id);return Math.min(S.hp[id],maxHP(id));}
+function setHP(id,v){S.hp[id]=clamp(Math.round(v),0,maxHP(id));}
+const lead=()=>S.party[0];
+function healAll(){S.party.concat(S.box).forEach(id=>S.hp[id]=maxHP(id));}
+const nmP=id=>isPrime(id)?`${SP[id].en} Prime ${SP[id].zh}・極`:nm(id);
+S.seenQ=S.seenQ||{};
+
+/* ============ people sprites (EconMon style) ============ */
+const LOOKS={
+ me:{hair:'#2a2a3a',skin:'#f4c8a0',shirt:'#f4f6fb',pants:'#2d4380',acc:'#d9463a'},
+ vp:{hair:'#8a8a90',skin:'#f0c49c',shirt:'#3d4f7c',pants:'#2a2a38',acc:'#f2c230'},
+ stuA:{hair:'#2a2a2a',skin:'#f0c49c',shirt:'#ffffff',pants:'#6a6f7c',acc:'#2d4380'},
+ stuB:{hair:'#3a2a1a',skin:'#f6cca8',shirt:'#8ab0e0',pants:'#8ab0e0',acc:'#ffffff'},
+ stuC:{hair:'#1a1a1a',skin:'#e8b890',shirt:'#ffffff',pants:'#2a2a38',acc:'#e0a020',hat:'#2d4380'},
+ prefect:{hair:'#2a2a2a',skin:'#f0c49c',shirt:'#ffffff',pants:'#6a6f7c',acc:'#d9463a',scarf:'#d9463a'},
+ janitor:{hair:'#d8d8d0',skin:'#d8a878',shirt:'#6a8a5a',pants:'#3a3a48',acc:'#f2c230'},
+ nurse:{hair:'#2a1a1a',skin:'#f0c098',shirt:'#f8f8f8',pants:'#8ab0c8',acc:'#e0503c',hat:'#ffffff'},
+ aunty:{hair:'#3a2a2a',skin:'#e8b890',shirt:'#e07a3a',pants:'#3a3a48',acc:'#ffffff'},
+ ken:{hair:'#1a1a22',skin:'#f0c49c',shirt:'#ffffff',pants:'#6a6f7c',acc:'#e0a020',scarf:'#e0a020'},
+ lau:{hair:'#2a1a1a',skin:'#f0c098',shirt:'#e0708a',pants:'#2a2a38',acc:'#ffffff'},
+ chloe:{hair:'#2a2020',skin:'#f6cca8',shirt:'#8ab0e0',pants:'#8ab0e0',acc:'#3aa0c0',scarf:'#3aa0c0'},
+ wong:{hair:'#bfbfc4',skin:'#e8b890',shirt:'#d8d0c0',pants:'#3a3a48',acc:'#c03a3a'},
+ hughes:{hair:'#e8c860',skin:'#f8d8c0',shirt:'#58b048',pants:'#3a4a5a',acc:'#ffffff'},
+ chan:{hair:'#2a2a30',skin:'#d8a878',shirt:'#f08a1c',pants:'#2a3a58',acc:'#f2f230',hat:'#f4f4f0'},
+ principal:{hair:'#e0e0e0',skin:'#f0c49c',shirt:'#1e2f5e',pants:'#1e2f5e',acc:'#f2c230'},
+ teacher:{hair:'#2a2a3a',skin:'#f0c49c',shirt:'#ffffff',pants:'#4a5a78',acc:'#2f6fb0'},
+ clerk:{hair:'#2a2a3a',skin:'#f0c49c',shirt:'#c8d0e0',pants:'#3a3a48',acc:'#8a2a24'}};
+const PCACHE={};
+function personSprite(lk,dir,fr){const k=lk+dir+fr;if(PCACHE[k])return PCACHE[k];const L=LOOKS[lk];const [c,x]=mk(18,19);
+ const dr=(dd)=>{const r=(a,b,w,h,col)=>R(x,1+a,1+b,w,h,col);const l1=fr===1?1:0,l2=fr===2?1:0;
+  if(dd==='left'){r(6,12,2,3-l1,L.pants);r(8,12,2,3-l2,L.pants);r(6,14-l1,2,1,'#2a2a34');r(8,14-l2,2,1,'#2a2a34');}else{r(5,12,2,3-l1,L.pants);r(9,12,2,3-l2,L.pants);r(5,14-l1,2,1,'#2a2a34');r(9,14-l2,2,1,'#2a2a34');}
+  const o=fr?-1:0;r(4,8+o,8,5,L.shirt);
+  if(dd==='left'){r(7,9+o,2,4,shade(L.shirt,.85));r(7,12+o,2,1,L.skin);}else{r(3,8+o,1,4,L.shirt);r(12,8+o,1,4,L.shirt);r(3,12+o,1,1,L.skin);r(12,12+o,1,1,L.skin);}
+  if(dd==='down'){r(10,8+o,1,5,L.acc);r(4,2+o,8,6,L.skin);r(3,0+o,10,3,L.hair);r(3,3+o,1,3,L.hair);r(12,3+o,1,3,L.hair);r(4,3+o,8,1,L.hair);r(6,5+o,1,2,'#2a2440');r(9,5+o,1,2,'#2a2440');}
+  if(dd==='up'){r(5,8+o,1,5,L.acc);r(4,2+o,8,6,L.hair);r(3,0+o,10,3,L.hair);r(3,3+o,1,4,L.hair);r(12,3+o,1,4,L.hair);}
+  if(dd==='left'){r(4,2+o,7,6,L.skin);r(4,0+o,9,3,L.hair);r(9,2+o,4,5,L.hair);r(4,3+o,3,1,L.hair);r(5,5+o,1,2,'#2a2440');r(10,9+o,2,4,L.acc);}
+  if(L.hat){r(1,0+o,14,2,L.hat);r(4,-1+o,8,2,shade(L.hat,.85));}
+  if(L.scarf){r(4,8+o,8,1,L.scarf);}};
+ if(dir==='right'){x.save();x.translate(18,0);x.scale(-1,1);dr('left');x.restore();}else dr(dir);
+ outline(c,x,[40,36,60]);PCACHE[k]=c;return c;}
+
+/* ============ monster sprites (procedural, per-species seed) ============ */
+const MCACHE={};
+function hash(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0)%2147483646+1;}
+function monSprite(id,prime,sil){const k=id+(prime?'P':'')+(sil?'S':'');if(MCACHE[k])return MCACHE[k];
+ const s=SP[id];const [c,x]=mk(64,64);const d=draw(x);seed=hash(id);
+ const base=mix(TYPES[s.type].col,pick2(['#ffffff','#f6d0a0','#a0d0f6','#c8f0a0','#f0a0c8']),.18+rnd()*.25);
+ const dark=shade(base,.72),light=mix(base,'#ffffff',.55),acc=pick2(['#f2c230','#ffffff','#e0503c','#3a4a8a','#58b048']);
+ const eye=(ex,ey,r)=>{d.E(ex,ey,r,r+.5,'#ffffff');d.E(ex+.4,ey+.6,r*.6,r*.7,'#1d2433');R(x,Math.round(ex-r*.4),Math.round(ey-r*.5),1,1,'#ffffff');};
+ const blush=(bx,by)=>d.E(bx,by,2.2,1.2,'rgba(240,110,120,.55)');
+ const K=s.kind;
+ if(K==='blob'){d.E(32,40,20,17,base);d.E(32,45,12,9,light);d.E(22,56,5,3,dark);d.E(42,56,5,3,dark);if(rnd()<.6){d.Ln([[32,23],[30,14]],2,dark);d.E(30,13,3,3,acc);}eye(25,36,3.5);eye(39,36,3.5);d.Ln([[29,44],[32,46],[35,44]],1.5,'#1d2433');blush(20,42);blush(44,42);}
+ else if(K==='cat'){d.P([[20,22],[18,8],[29,17]],base);d.P([[44,22],[46,8],[35,17]],base);d.P([[21,19],[20,12],[26,17]],light);d.P([[43,19],[44,12],[38,17]],light);d.Ln([[46,50],[56,44],[58,34]],4,dark);d.E(32,47,14,11,base);d.E(32,49,8,7,light);d.E(32,28,15,12,base);d.E(32,32,6,4,light);eye(26,27,3);eye(38,27,3);R(x,31,31,2,1,'#d05060');d.Ln([[20,31],[14,30]],1,dark);d.Ln([[44,31],[50,30]],1,dark);d.E(26,57,4,2.5,dark);d.E(38,57,4,2.5,dark);}
+ else if(K==='dog'){d.E(32,47,14,11,base);d.E(32,49,8,7,light);d.E(32,29,15,13,base);d.E(18,30,4,9,dark);d.E(46,30,4,9,dark);d.E(32,35,7,5,light);d.E(32,32,2.5,2,'#1d2433');eye(26,27,3);eye(38,27,3);d.Ln([[29,38],[32,39],[35,38]],1,'#1d2433');d.Ln([[45,48],[54,42]],4,dark);d.E(26,57,4,2.5,dark);d.E(38,57,4,2.5,dark);if(rnd()<.5)R(x,24,40,16,3,acc);}
+ else if(K==='bird'){d.E(32,40,15,17,base);d.E(32,45,9,10,light);d.E(19,40,6,11,dark);d.E(45,40,6,11,dark);d.P([[29,32],[35,32],[32,37]],'#f2a020');eye(27,29,3);eye(37,29,3);d.P([[30,23],[27,14],[33,21],[36,13],[35,23]],acc);R(x,27,56,2,4,'#f2a020');R(x,35,56,2,4,'#f2a020');}
+ else if(K==='fish'){d.P([[10,34],[2,24],[2,44]],dark);d.E(32,34,22,14,base);d.E(34,39,14,7,light);d.P([[30,20],[40,14],[40,24]],dark);for(let i=0;i<3;i++)d.Ln([[20+i*5,28],[22+i*5,40]],1,dark);eye(44,31,3.5);d.Ln([[49,38],[52,37]],1.5,'#1d2433');d.E(52,20,2,2,'rgba(160,220,255,.9)');d.E(56,13,1.4,1.4,'rgba(160,220,255,.9)');}
+ else if(K==='bug'){d.E(20,28,10,14,'rgba(255,255,255,.75)');d.E(44,28,10,14,'rgba(255,255,255,.75)');d.E(20,28,7,10,mix(acc,'#ffffff',.5));d.E(44,28,7,10,mix(acc,'#ffffff',.5));d.E(32,46,9,11,dark);d.E(32,38,10,9,base);d.E(32,27,10,9,base);d.Ln([[28,19],[22,9]],1.5,'#1d2433');d.Ln([[36,19],[42,9]],1.5,'#1d2433');d.E(22,9,2,2,acc);d.E(42,9,2,2,acc);eye(28,27,2.8);eye(36,27,2.8);for(let i=0;i<3;i++)R(x,24,44+i*4,16,1,base);}
+ else if(K==='ghost'){d.P([[14,34],[16,18],[32,8],[48,18],[50,34],[50,56],[44,50],[38,56],[32,50],[26,56],[20,50],[14,56]],base);d.E(32,30,13,12,light);d.E(12,38,4,6,base);d.E(52,38,4,6,base);eye(27,28,3.5);eye(38,28,3.5);d.E(32,38,3,3.5,'#1d2433');if(s.type==='fix'){d.Ln([[20,14],[26,20]],2,'#1d2433');d.Ln([[26,14],[20,20]],2,'#1d2433');}else{R(x,24,44,16,1,dark);R(x,24,47,12,1,dark);}}
+ else if(K==='lizard'){d.Ln([[16,48],[6,40],[4,30]],5,dark);d.E(30,44,16,10,base);d.E(30,47,10,6,light);d.E(44,30,11,10,base);d.E(48,33,6,4,light);for(let i=0;i<4;i++)d.P([[18+i*6,35],[21+i*6,29],[24+i*6,35]],acc);eye(44,26,3.2);d.Ln([[46,36],[53,35]],1.2,'#1d2433');d.E(22,54,4,2.5,dark);d.E(38,54,4,2.5,dark);}
+ else if(K==='bear'){d.E(19,17,6,6,dark);d.E(45,17,6,6,dark);d.E(19,17,3,3,light);d.E(45,17,3,3,light);d.E(32,48,16,12,base);d.E(32,50,9,8,light);d.E(32,28,16,14,base);d.E(32,34,7,5,light);d.E(32,32,2.5,1.8,'#1d2433');eye(25,26,3);eye(39,26,3);blush(21,32);blush(43,32);d.E(22,58,5,3,dark);d.E(42,58,5,3,dark);}
+ else if(K==='turtle'){d.E(20,52,5,4,base);d.E(44,52,5,4,base);d.E(50,36,8,8,base);eye(51,34,2.6);d.E(30,40,19,15,dark);d.E(30,38,16,12,mix(dark,acc,.35));for(let i=0;i<3;i++)d.E(22+i*8,38,3,3,shade(dark,.8));R(x,12,48,38,3,light);}
+ if(prime){d.P([[24,6],[27,1],[30,5],[32,0],[34,5],[37,1],[40,6],[40,9],[24,9]],'#f2c230');R(x,26,7,12,1,'#fff3a0');}
+ outline(c,x,[40,36,60]);
+ if(sil){const im=x.getImageData(0,0,64,64);for(let i=0;i<im.data.length;i+=4){if(im.data[i+3]){im.data[i]=60;im.data[i+1]=66;im.data[i+2]=86;}}x.putImageData(im,0,0);}
+ MCACHE[k]=c;return c;}
+function pick2(a){return a[Math.floor(rnd()*a.length)];}
+function miniMon(id){const k='m'+id+isPrime(id);if(MCACHE[k])return MCACHE[k];const [c,x]=mk(24,24);x.drawImage(monSprite(id,isPrime(id)),0,0,64,64,0,0,24,24);MCACHE[k]=c;return c;}
+
+/* ============ maps ============ */
+const MAPS={
+ hub:{name:'學校操場',theme:'hub',pool:['heyena','humidolphin','commutapillar','siumaimon','slothurday'],rows:[
+ 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
+ 'T==============================T',
+ 'T==============================T',
+ 'T==1===2===3===4===5===6===7===T',
+ 'T::::::::::::::::::::::::::::::T',
+ 'T::::::::::::::::::::::::::::::T',
+ 'T:,,,,,,,,,,::::::::,,,,,,,,,,:T',
+ 'T:,""""""",,::::::::,,""""""",:T',
+ 'T:,""""""",,::::::::,,""""""",:T',
+ 'T:,""""""",,::::::::,,""""""",:T',
+ 'T:,,,,,,,,,,::::::::,,,,,,,,,,:T',
+ 'T::::::::::::::::::::::::::::::T',
+ 'T:TT::::::::::::::::::::::::TT:T',
+ 'T::::::::::::::::::::::::::::::T',
+ 'T::====::::::::::::::::::====::T',
+ 'T::=8==::::::::::::::::::=9==::T',
+ 'T::::::::::::::::::::::::::::::T',
+ 'T::::::::::::::::::::::::::::::T',
+ 'TTTTTTTTTTTTT::::::TTTTTTTTTTTTT',
+ 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT']},
+ '4a':{name:'4A 課室',theme:'class',pool:['bellbird','bridgling','commandog','tickat','checkoala','wrapotter','hushark'],rows:[
+ '##################',
+ '#BBBBBBBBBBBBBBBB#',
+ '#................#',
+ '#.DD.DD.**.DD.DD.#',
+ '#.**.**....**.**.#',
+ '#.DD.DD.**.DD.DD.#',
+ '#..*.....*....*..#',
+ '#.DD.DD.**.DD.DD.#',
+ '#.**..........**.#',
+ '#LLLL........LLLL#',
+ '#................#',
+ '########0#########']},
+ cor:{name:'二樓走廊',theme:'corr',pool:['ummoth','hedgehop','signostrich','oopsrot','cheerub','tutorbat','latemeleon','homebeetle','apolopossum','warmochi'],rows:[
+ '##############################',
+ '#LLLLLLLLL#KKKK#LLLLLLLLLLLLL#',
+ '#............................#',
+ '#.***.......****........***..#',
+ '#..................P.........#',
+ '#.***.......****........***..#',
+ '#............................#',
+ '#LLLLLLLLLLLLL..LLLLLLLLLLLLL#',
+ '##############0###############']},
+ '6c':{name:'6C 課室',theme:'class2',pool:['definch','brickrab','analogfox','splitail','dominewt','rephrog','boldox','hintowl','almostbun','halfin','passeal','dunnomole','stumpanda','clapuffin'],rows:[
+ '##################',
+ '#BBBBBBBBBBBBBBBB#',
+ '#................#',
+ '#.D.D.D.**.D.D.D.#',
+ '#.*.*......*.*...#',
+ '#.D.D.D.**.D.D.D.#',
+ '#......****......#',
+ '#.D.D.D.**.D.D.D.#',
+ '#.*..*......*..*.#',
+ '#KKK..........KKK#',
+ '#................#',
+ '########0#########']},
+ hall:{name:'禮堂試場',theme:'hall',pool:['glitchost'],rows:[
+ '######################',
+ '#SSSSSSSSSSSSSSSSSSSS#',
+ '#SSSSSSSSSSSSSSSSSSSS#',
+ '#....................#',
+ '#.D.D.D.D.D.D.D.D.D..#',
+ '#.*.*.*.....*.*.*.*..#',
+ '#.D.D.D.D.D.D.D.D.D..#',
+ '#....................#',
+ '#.D.D.D.D.D.D.D.D.D..#',
+ '#.*.*.*.....*.*.*.*..#',
+ '#.D.D.D.D.D.D.D.D.D..#',
+ '#....................#',
+ '#....................#',
+ '##########0###########']},
+ staff:{name:'教員室',theme:'staff',pool:['yakkity','ohmygoose','flatterfly','tendertoise','exitweasel','kiwiwi','guardeer','uncontracto','longwinder','startless','absolutor','bigworder'],rows:[
+ '####################',
+ '#KKKKKKKK##KKKKKKKK#',
+ '#..................#',
+ '#.CCCC..****..CCCC.#',
+ '#.....*......*.....#',
+ '#.CCCC..****..CCCC.#',
+ '#..................#',
+ '#.P..***....***..P.#',
+ '#..................#',
+ '#CCC...........CCC.#',
+ '#..................#',
+ '#########0##########']},
+ ga:{name:'總務處',theme:'ga',pool:['agendaboa','favourfly','quotoad','aircondor','pennygoat','principhant','oopsopus','partyrex','hazardillo'],rows:[
+ '####################',
+ '#KKKKKKKKKKKKKKKKKK#',
+ '#..................#',
+ '#.CCC.****..****...#',
+ '#..................#',
+ '#.CCC..........CCC.#',
+ '#.....****..****...#',
+ '#..................#',
+ '#LLLL.....P....LLLL#',
+ '#..................#',
+ '#..................#',
+ '#########0##########']},
+ pr:{name:'校長室',theme:'pr',pool:[],rows:[
+ '##############',
+ '#KKKKKKKKKKKK#',
+ '#............#',
+ '#....CCCC....#',
+ '#............#',
+ '#P..........P#',
+ '#............#',
+ '#............#',
+ '######0#######']},
+ med:{name:'醫療室',theme:'med',pool:[],rows:[
+ '############',
+ '#KK..bb..bb#',
+ '#..........#',
+ '#..........#',
+ '#..........#',
+ '#..........#',
+ '#..........#',
+ '#####0######']},
+ shop:{name:'小賣部',theme:'shop',pool:[],rows:[
+ '############',
+ '#KKKKKKKKKK#',
+ '#..........#',
+ '#.CCCCCCCC.#',
+ '#..........#',
+ '#..........#',
+ '#..........#',
+ '#####0######']}};
+const HUBDOOR={'1':'4a','2':'cor','3':'6c','4':'hall','5':'staff','6':'ga','7':'pr','8':'med','9':'shop'};
+const DOORXY={};Object.keys(HUBDOOR).forEach(k=>{MAPS.hub.rows.forEach((r,y)=>{const x=r.indexOf(k);if(x>=0)DOORXY[HUBDOOR[k]]={x,y};});});
+const DOORLBL={'4a':'4A','cor':'走廊','6c':'6C','hall':'禮堂','staff':'教員室','ga':'總務處','pr':'校長室','med':'醫療室','shop':'小賣部'};
+const BADGES=[
+ {id:'bell',ic:'🔔',zh:'鐘聲徽章',en:'Bell Badge',where:'4A 班長 Ken'},
+ {id:'heart',ic:'💛',zh:'心意徽章',en:'Heart Badge',where:'走廊 訓導 Miss Lau'},
+ {id:'chalk',ic:'📐',zh:'粉筆徽章',en:'Chalk Badge',where:'6C 學霸 Chloe'},
+ {id:'pen',ic:'✎',zh:'改卷徽章',en:'Marking Badge',where:'禮堂 主考 Mr Wong'},
+ {id:'cup',ic:'☕',zh:'奶茶徽章',en:'Milk-tea Badge',where:'教員室 Mr Hughes'},
+ {id:'wrench',ic:'🔧',zh:'扳手徽章',en:'Wrench Badge',where:'總務處 陳生'}];
+const DOORREQ={cor:'bell','6c':'heart',hall:'chalk',staff:'pen',ga:'cup',pr:'wrench'};
+const bName=id=>{const b=BADGES.find(x=>x.id===id);return b.ic+' '+b.zh;};
+/* NPCs: kind talk | trainer | boss | nurse | shop | vp | champ */
+const NPCS={
+ hub:[
+  {x:15,y:6,look:'vp',dir:'down',kind:'vp',name:'副校長'},
+  {x:6,y:12,look:'janitor',dir:'right',kind:'talk',name:'校工叔叔',lines:['操場兩邊啲長草，成日有野生英語獸跳出嚟。','打唔低？揀錯咗會扣你隻夥伴 HP，去醫療室搵姑娘就得。']},
+  {x:25,y:11,look:'stuA',dir:'left',kind:'trainer',id:'t_h1',name:'4A 阿朗',pool:['heyena','humidolphin'],lines:['Sir！我哋同你講吓英文吖！'],after:'我去溫書先……'},
+  {x:10,y:16,look:'stuB',dir:'up',kind:'trainer',id:'t_h2',name:'5B 芷晴',pool:['commutapillar','siumaimon','slothurday'],lines:['老師，你識唔識用英文講週末做咗咩？'],after:'原來 small talk 都有得練。'},
+  {x:20,y:16,look:'prefect',dir:'left',kind:'talk',name:'風紀',lines:['每道門都要有徽章先入得。','次序係：4A → 走廊 → 6C → 禮堂 → 教員室 → 總務處 → 校長室。']}],
+ '4a':[
+  {x:9,y:2,look:'ken',dir:'down',kind:'boss',id:'bell',name:'4A 班長 Ken',team:['hushark','commandog','checkoala'],scen:'S4 學生完全聽唔明，開始收聲',lines:['第八堂喇 Sir，全班都 hea 緊。','你用英文收得住我哋，我就俾你鐘聲徽章！'],win:'OK OK，我哋坐好。呢個鐘聲徽章係你嘅。'},
+  {x:4,y:6,look:'stuA',dir:'right',kind:'trainer',id:'t_4a1',name:'4A 阿傑',pool:['bellbird','tickat'],lines:['Sir，打咗鐘啦，你點開始？'],after:'OK 開始就開始囉。'},
+  {x:12,y:8,look:'stuC',dir:'left',kind:'trainer',id:'t_4a2',name:'4A 家豪',pool:['bridgling','wrapotter'],lines:['下一 part 係咩嚟㗎？'],after:'清楚晒，唔該 Sir。'}],
+ cor:[
+  {x:15,y:2,look:'lau',dir:'down',kind:'boss',id:'heart',name:'訓導 Miss Lau',team:['latemeleon','homebeetle','ummoth'],scen:'學生第三次遲到，你唔想嗌',lines:['又有學生第三次遲到。','唔好嗌，用英文講得堅定又暖，我先俾你心意徽章。'],win:'好，堅定得嚟有溫度。心意徽章，收好。'},
+  {x:5,y:4,look:'stuB',dir:'right',kind:'trainer',id:'t_c1',name:'4C 慧儀',pool:['cheerub','warmochi'],lines:['Miss，我覺得自己好差……'],after:'多謝你鼓勵我。'},
+  {x:24,y:6,look:'stuA',dir:'up',kind:'trainer',id:'t_c2',name:'5A 俊言',pool:['hedgehop','oopsrot'],lines:['老師，你肯定咩？你頭先講錯咗喎！'],after:'原來講錯可以咁執返。'}],
+ '6c':[
+  {x:9,y:2,look:'chloe',dir:'down',kind:'boss',id:'chalk',name:'6C 學霸 Chloe',team:['dominewt','stumpanda','hintowl'],scen:'S6 學生問一條你未必識答嘅難題',lines:['Sir，我有條好難嘅問題。','你唔識都唔緊要，睇你點用英文處理。'],win:'Fair enough。粉筆徽章，你值得擁有。'},
+  {x:5,y:6,look:'stuC',dir:'down',kind:'trainer',id:'t_6c1',name:'6C 子軒',pool:['definch','analogfox'],lines:['Sir，呢個 concept 即係咩？'],after:'清楚晒。'},
+  {x:14,y:10,look:'stuB',dir:'left',kind:'trainer',id:'t_6c2',name:'6C 家欣',pool:['almostbun','halfin'],lines:['我答錯咗……係咪好蠢？'],after:'原來答一半都有分。'}],
+ hall:[
+  {x:10,y:3,look:'wong',dir:'down',kind:'boss',id:'pen',name:'主考 Mr Wong',team:['glitchost','glitchost','glitchost'],scen:'Because…so… 大魔王',lines:['試場規矩：一句錯文法都唔得。','Because 同 so、although 同 but……你分唔分得清？'],win:'文法零失誤。改卷徽章，拎去。'},
+  {x:3,y:7,look:'teacher',dir:'right',kind:'trainer',id:'t_ha1',name:'監考 Miss Ho',pool:['glitchost'],lines:['收卷前，我考你一題文法。'],after:'Pens down.'},
+  {x:17,y:11,look:'clerk',dir:'up',kind:'trainer',id:'t_ha2',name:'考試組 Mr Lee',pool:['glitchost','glitchost'],lines:['我改卷最憎見到呢啲錯。'],after:'好，無錯。'}],
+ staff:[
+  {x:10,y:2,look:'hughes',dir:'down',kind:'boss',id:'cup',name:'外籍同事 Mr Hughes',team:['kiwiwi','yakkity','uncontracto'],scen:'教員室閒聊 — 新嚟嘅外籍同事',lines:['Hi! I\'m new here. Fancy a chat?','（講得自然、唔似讀稿，佢就會請你飲奶茶。）'],win:'Lovely chatting! Here — a milk-tea badge.'},
+  {x:5,y:4,look:'teacher',dir:'right',kind:'trainer',id:'t_s1',name:'中文科 陳老師',pool:['longwinder','startless'],lines:['你講英文好似讀稿咁喎。'],after:'順耳好多。'},
+  {x:16,y:8,look:'clerk',dir:'left',kind:'trainer',id:'t_s2',name:'家長 陳太',pool:['guardeer','tendertoise'],lines:['老師，我個仔成績跌咗好多……'],after:'唔該晒老師。'}],
+ ga:[
+  {x:10,y:2,look:'chan',dir:'down',kind:'boss',id:'wrench',name:'承辦商 陳生',team:['aircondor','quotoad','oopsopus'],scen:'承辦商拖延冷氣維修，你要追',lines:['冷氣呀？下個禮拜啦，零件未到。','（要禮貌但係追得緊，佢先會交出扳手徽章。）'],win:'得得得，聽日一定搞掂。扳手徽章俾你。'},
+  {x:8,y:4,look:'clerk',dir:'down',kind:'trainer',id:'t_g1',name:'文員 May',pool:['agendaboa','favourfly'],lines:['個會幾點開？議程係咩？'],after:'記低咗。'},
+  {x:12,y:9,look:'janitor',dir:'up',kind:'trainer',id:'t_g2',name:'校工 華哥',pool:['hazardillo','pennygoat'],lines:['實驗室嗰個水喉漏水呀！'],after:'即刻去整。'}],
+ pr:[{x:7,y:2,look:'principal',dir:'down',kind:'champ',name:'校長',scen:'校長要你三星期內搞掂翻新'}],
+ med:[{x:3,y:3,look:'nurse',dir:'down',kind:'nurse',name:'醫療室姑娘'}],
+ shop:[{x:5,y:2,look:'aunty',dir:'down',kind:'shop',name:'小賣部姨姨'}]};
+let CUR='hub',map=MAPS.hub.rows,MW=map[0].length,MH=map.length;
+function setMap(id){CUR=id;map=MAPS[id].rows;MW=map[0].length;MH=map.length;}
+const npcs=()=>NPCS[CUR]||[];
+const npcAt=(x,y)=>npcs().find(n=>n.x===x&&n.y===y);
+function blocked(x,y){if(x<0||y<0||x>=MW||y>=MH)return true;if('#=TBDLKCSPb'.includes(map[y][x]))return true;return !!npcAt(x,y);}
+
+/* ============ tiles ============ */
+const TL={};
+function tile(fn){const [c,x]=mk(16,16);fn(x,draw(x));return c;}
+const THEME={
+ hub:{floor:'#cfcac0',spk:'#bdb7ab'},class:{floor:'#e6d6b4',spk:'#d6c49e',wall:'#eef0e4',base:'#9ab6a0'},class2:{floor:'#dcd2c2',spk:'#cabfaa',wall:'#eaeaf0',base:'#8aa0c8'},
+ corr:{floor:'#d8d8d4',spk:'#b8b8b2',wall:'#f0ead8',base:'#c8a870'},hall:{floor:'#c89a62',spk:'#b08450',wall:'#efe6d2',base:'#8a5a3a'},
+ staff:{floor:'#9aa8c0',spk:'#8a98b2',wall:'#eeeef2',base:'#5a6a8a'},ga:{floor:'#8fb49a',spk:'#7fa48a',wall:'#eef0ea',base:'#4a6a58'},
+ pr:{floor:'#a8484a',spk:'#983a3c',wall:'#f2ead8',base:'#6a3a2a'},med:{floor:'#e8f0f2',spk:'#d0dce0',wall:'#f8fafa',base:'#8ac0c8'},shop:{floor:'#f0d890',spk:'#e0c470',wall:'#f8f0da',base:'#e07a3a'}};
+function floorT(th,enc){return tile(x=>{R(x,0,0,16,16,th.floor);seed=7;for(let i=0;i<10;i++)R(x,(rnd()*15)|0,(rnd()*15)|0,1,1,th.spk);R(x,0,15,16,1,shade(th.floor,.94));R(x,15,0,1,16,shade(th.floor,.94));
+ if(enc){R(x,2,3,5,4,'#ffffff');R(x,3,4,3,1,'#9aa3b8');R(x,3,6,2,1,'#9aa3b8');R(x,10,9,4,5,'#fff6c0');R(x,10,10,3,1,'#c0a860');R(x,9,2,1,5,'#e0503c');R(x,4,11,1,1,shade(th.floor,.7));R(x,6,12,1,1,shade(th.floor,.7));}});}
+function makeTiles(){
+ Object.keys(THEME).forEach(k=>{TL['f_'+k]=floorT(THEME[k],false);TL['e_'+k]=floorT(THEME[k],true);});
+ TL.grass=tile(x=>{R(x,0,0,16,16,'#8fd67a');seed=5;for(let i=0;i<8;i++)R(x,(rnd()*15)|0,(rnd()*15)|0,1,1,'#78c266');});
+ TL.tall=[0,1].map(f=>tile(x=>{R(x,0,0,16,16,'#6cbc5a');for(let i=0;i<4;i++)for(let j=0;j<2;j++){const a=i*4+(j?2:0),b=j*8+2;x.fillStyle='#3f8a36';x.fillRect(a+(f&&j?1:0),b,1,6);x.fillStyle='#58a84a';x.fillRect(a+1,b+1,1,5);x.fillStyle='#9ee08a';x.fillRect(a+1,b,1,1);}}));
+ TL.court=tile(x=>{R(x,0,0,16,16,'#cfcac0');seed=3;for(let i=0;i<8;i++)R(x,(rnd()*15)|0,(rnd()*15)|0,1,1,'#bdb7ab');R(x,0,0,16,1,'#dcd8ce');});
+ TL.tree=tile((x,d)=>{R(x,0,0,16,16,'#8fd67a');R(x,7,11,3,5,'#7a5230');d.E(8,7,7,6,'#3f8a4a');d.E(6,5,4,3,'#58a860');d.E(10,8,3,2,'#2f6a38');});
+ TL.bwall=tile(x=>{R(x,0,0,16,16,'#e8d8b8');R(x,0,15,16,1,'#b8a888');for(let y=3;y<16;y+=5)R(x,0,y,16,1,'#d8c8a4');R(x,3,4,10,7,'#7aa0c8');R(x,3,4,10,1,'#4a6a90');R(x,8,4,1,7,'#4a6a90');R(x,4,5,3,2,'#b8d8f0');});
+ TL.roof=tile(x=>{R(x,0,0,16,16,'#b85a3a');R(x,0,12,16,4,'#8a3a28');for(let i=0;i<16;i+=4)R(x,i,0,1,12,'#a04a30');});
+ TL.door=tile(x=>{R(x,0,0,16,16,'#e8d8b8');R(x,2,1,12,15,'#5a3a24');R(x,3,2,10,14,'#8a5a34');R(x,8,2,1,14,'#5a3a24');R(x,6,9,1,2,'#f2c230');R(x,9,9,1,2,'#f2c230');});
+ TL.mat=tile(x=>{R(x,0,0,16,16,'#5a3a24');R(x,1,1,14,14,'#a86a3a');for(let i=2;i<14;i+=3)R(x,2,i,12,1,'#8a5430');});
+ TL.board=tile(x=>{R(x,0,0,16,16,'#eef0e4');R(x,0,2,16,11,'#2f5a44');R(x,0,2,16,1,'#8a6a40');R(x,0,12,16,2,'#8a6a40');seed=17;if(rnd()<.8)R(x,3,5,(rnd()*9|0)+2,1,'#dfe8dc');R(x,4,8,6,1,'#c8d8c8');});
+ TL.desk=tile(x=>{R(x,1,2,14,8,'#c89a5a');R(x,1,2,14,1,'#e0b878');R(x,1,9,14,1,'#8a6030');R(x,2,10,1,4,'#6a6a70');R(x,13,10,1,4,'#6a6a70');R(x,5,11,6,4,'#5a7a9a');R(x,5,11,6,1,'#7a9aba');R(x,4,4,4,3,'#ffffff');});
+ TL.odesk=tile(x=>{R(x,0,1,16,10,'#b8bcc8');R(x,0,1,16,1,'#d8dce6');R(x,0,10,16,1,'#8a8ea0');R(x,2,3,5,4,'#2a3040');R(x,3,4,3,2,'#6ac0e0');R(x,9,4,4,3,'#ffffff');R(x,10,5,2,1,'#9aa3b8');R(x,1,11,1,5,'#6a6e7c');R(x,14,11,1,5,'#6a6e7c');});
+ TL.locker=tile(x=>{R(x,0,0,16,16,'#4a78b0');R(x,0,0,16,1,'#6a98d0');R(x,7,0,2,16,'#2f5a8a');R(x,3,4,2,1,'#c8d8e8');R(x,11,4,2,1,'#c8d8e8');R(x,3,7,2,1,'#2a4a78');R(x,11,7,2,1,'#2a4a78');R(x,0,15,16,1,'#2a4a78');});
+ TL.shelf=tile(x=>{R(x,0,0,16,16,'#8a5a34');R(x,1,1,14,14,'#6a4024');for(let r=0;r<3;r++){const y=2+r*5;const cs=['#e0503c','#2f6fb0','#f2c230','#58b048','#e8e0d0'];let a=2;seed=9+r;while(a<14){const w=1+(rnd()*2|0);R(x,a,y,w,4,cs[(rnd()*5)|0]);a+=w+1;}R(x,1,y+4,14,1,'#8a5a34');}});
+ TL.plant=tile((x,d)=>{R(x,5,10,6,6,'#b8683a');R(x,5,10,6,1,'#d8884a');d.E(8,7,5,5,'#3f8a4a');d.E(6,5,3,3,'#58a860');d.E(11,6,2,3,'#2f6a38');});
+ TL.stage=tile(x=>{R(x,0,0,16,16,'#8a5a34');R(x,0,0,16,4,'#8a2030');for(let i=0;i<16;i+=3)R(x,i,0,1,4,'#6a1020');R(x,0,14,16,2,'#5a3a20');R(x,0,6,16,1,'#a06a40');});
+ TL.bed=tile(x=>{R(x,1,1,14,14,'#d8dce0');R(x,2,2,12,12,'#ffffff');R(x,3,3,10,3,'#c8e0f0');R(x,2,8,12,6,'#8ac0d8');});
+ TL.fence=tile(x=>{R(x,0,6,16,2,'#8a8e9a');R(x,2,2,2,12,'#8a8e9a');R(x,12,2,2,12,'#8a8e9a');});}
+function wallT(th){return tile(x=>{R(x,0,0,16,16,th.wall);R(x,0,12,16,4,th.base);R(x,0,12,16,1,shade(th.base,1.15));R(x,0,15,16,1,shade(th.base,.7));});}
+function tileImg(ch,tx,ty){const th=MAPS[CUR].theme;
+ if(th==='hub'){if(ch===':')return TL.court;if(ch===',')return TL.grass;if(ch==='"')return TL.tall[((G.tick>>5)+tx+ty)&1];if(ch==='T')return TL.tree;if(ch==='=')return (ty===1||ty===14)?TL.roof:TL.bwall;if(/[0-9]/.test(ch))return TL.door;return TL.court;}
+ if(ch==='#'){if(!TL['w_'+th])TL['w_'+th]=wallT(THEME[th]);return TL['w_'+th];}
+ if(ch==='*')return TL['e_'+th];if(ch==='0')return TL.mat;if(ch==='B')return TL.board;if(ch==='D')return TL.desk;if(ch==='C')return TL.odesk;if(ch==='L')return TL.locker;if(ch==='K')return TL.shelf;if(ch==='P')return TL.plant;if(ch==='S')return TL.stage;if(ch==='b')return TL.bed;
+ return TL['f_'+th];}
+const isEnc=(x,y)=>{const c=map[y]&&map[y][x];return c==='*'||c==='"';};
+
+/* ============ input ============ */
+const keys={up:0,down:0,left:0,right:0,a:0,b:0,start:0};let pressed={};
+const press=k=>{pressed[k]=true;keys[k]=1;};const release=k=>{keys[k]=0;};
+const consume=k=>{if(pressed[k]){pressed[k]=false;return true;}return false;};
+const KM={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right',z:'a',Z:'a',Enter:'a',' ':'a',x:'b',X:'b',Escape:'b',Backspace:'b',m:'start',M:'start'};
+addEventListener('keydown',e=>{const tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='SELECT'))return;
+ if(G.modal){if(e.key==='Escape'||KM[e.key]==='b'){closeModal();e.preventDefault();}return;}
+ if(UI.kind==='q'&&Q&&Q.stage==='opts'&&/^[1-3]$/.test(e.key)){const i=+e.key-1;if(Q.btns[i]){e.preventDefault();answer(i);}return;}
+ const k=KM[e.key];if(!k)return;e.preventDefault();if(e.repeat&&(k==='a'||k==='b'||k==='start'))return;press(k);});
+addEventListener('keyup',e=>{const k=KM[e.key];if(k)release(k);});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=0;});
+document.querySelectorAll('[data-k]').forEach(btn=>{const k=btn.dataset.k;btn.addEventListener('pointerdown',e=>{e.preventDefault();if(G.modal){if(k==='b')closeModal();return;}press(k);if(btn.setPointerCapture)btn.setPointerCapture(e.pointerId);});const up=()=>release(k);btn.addEventListener('pointerup',up);btn.addEventListener('pointercancel',up);btn.addEventListener('pointerleave',up);});
+$t.addEventListener('click',()=>{if(UI.kind==='say')press('a');});
+cv.addEventListener('click',()=>{if(UI.kind==='say')press('a');});
+
+/* ============ state ============ */
+const G={mode:'title',busy:false,modal:false,flash:0,fade:0,timers:[],B:null,tick:0,banner:0,p:{x:15,y:12,dir:'up',moving:false,tx:0,ty:0,prog:0,stepN:0},floats:[],showStarters:false,starterSel:0,bang:null};
+const wait=n=>new Promise(r=>G.timers.push({t:n,r}));
+const DIRS={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};const OPP={up:'down',down:'up',left:'right',right:'left'};
+
+/* ============ UI engine ============ */
+const UI={kind:null,chars:[],shown:0,resolve:null,sel:0,n:0,cancel:false,onSel:null};
+function clearQ(){$q.hidden=true;$q.innerHTML='';}
+function renderSay(){$t.textContent=UI.chars.slice(0,Math.floor(UI.shown)).join('');if(UI.shown>=UI.chars.length)$t.appendChild(el('span',{class:'more',text:'▼'}));}
+function say(text){return new Promise(res=>{clearQ();$t.hidden=false;UI.kind='say';UI.chars=[...text];UI.shown=RM?UI.chars.length:0;UI.resolve=res;$c.innerHTML='';renderSay();});}
+function finishUI(v){const r=UI.resolve;UI.kind=null;UI.resolve=null;UI.onSel=null;$c.innerHTML='';if(r)r(v);}
+function choose(prompt,opts,o={}){return new Promise(res=>{clearQ();$t.hidden=false;UI.kind='choose';UI.resolve=res;UI.sel=0;UI.n=opts.length;UI.cancel=!!o.cancel;UI.onSel=o.onSel||null;$t.textContent=prompt;$c.className='pchoices'+(o.cols===2?' g2':'');$c.innerHTML='';
+ opts.forEach((t,i)=>{const b=el('button',{class:'opt',type:'button',text:t});b.addEventListener('click',()=>{if(UI.kind==='choose')finishUI(i);});b.addEventListener('mouseenter',()=>{UI.sel=i;hl();});$c.appendChild(b);});hl();});}
+function hl(){[...$c.children].forEach((b,i)=>b.classList.toggle('sel',i===UI.sel));if(UI.onSel)UI.onSel(UI.sel);}
+function updateUI(){
+ if(UI.kind==='say'){if(UI.shown<UI.chars.length){UI.shown=Math.min(UI.chars.length,UI.shown+1.4);renderSay();}
+  if(consume('a')||consume('b')){if(UI.shown<UI.chars.length){UI.shown=UI.chars.length;renderSay();}else finishUI();}}
+ else if(UI.kind==='choose'){if(consume('up')){UI.sel=(UI.sel+UI.n-1)%UI.n;hl();}if(consume('down')){UI.sel=(UI.sel+1)%UI.n;hl();}if(consume('a'))finishUI(UI.sel);if(UI.cancel&&consume('b'))finishUI(-1);}
+ else if(UI.kind==='q'&&Q){if(Q.stage==='think'&&consume('a'))revealOpts();
+  else if(Q.stage==='opts'){if(consume('up')){Q.sel=(Q.sel+Q.btns.length-1)%Q.btns.length;qhl();}if(consume('down')){Q.sel=(Q.sel+1)%Q.btns.length;qhl();}if(consume('a'))answer(Q.sel);}
+  else if(Q.stage==='fb'&&consume('a'))endQ();}}
+function idlePanel(){UI.kind=null;$c.innerHTML='';clearQ();$t.hidden=false;$t.innerHTML='';
+ if(G.mode==='world'){$t.appendChild(el('span',{class:'place',text:MAPS[CUR].name}));const h=MAPS[CUR].pool.length?'　行入有紙碎嘅地板或者長草，會有野生英語獸出現。':'　';$t.appendChild(el('span',{class:'hint',text:h+'\nA 對話 · B 跑 · START 選單'}));}}
+function runScript(fn){if(G.busy)return;G.busy=true;(async()=>{try{await fn();}catch(e){console.error(e);}G.busy=false;idlePanel();for(const k in keys)keys[k]=0;pressed={};})();}
+
+/* ============ question UI ============ */
+let Q=null;
+function askQ(q,meta){return new Promise(res=>{UI.kind='q';$t.hidden=true;$c.innerHTML='';$q.hidden=false;$q.innerHTML='';
+ Q={q,res,stage:'think',sel:0,btns:[],meta};const box=el('div',{style:'display:flex;flex-direction:column;gap:8px'});
+ const s=SP[meta.sid],ty=TYPES[s.type];
+ box.appendChild(el('div',{class:'qhead'},el('span',{class:'qtype',style:'background:'+ty.col,text:ty.en+' '+ty.zh}),el('span',{style:'font-size:13px;color:var(--muted);font-weight:700',text:s.catName})));
+ box.appendChild(el('div',{class:'qsit',text:q.sit}));
+ if(q.written)box.appendChild(el('div',{class:'qwritten',text:q.written}));
+ Q.area=el('div',{style:'display:flex;flex-direction:column;gap:8px'});box.appendChild(Q.area);$q.appendChild(box);
+ if(S.speakFirst&&q.item.t==='P'){Q.area.appendChild(el('div',{class:'think',text:'你覺得呢？先大聲講一次你會點講，再睇選項。'}));Q.area.appendChild(el('button',{class:'go',type:'button',text:'講咗出口 → 睇選項（A）',onclick:()=>revealOpts()}));}
+ else revealOpts();$panel.scrollTop=0;});}
+function revealOpts(){if(!Q||Q.stage!=='think')return;Q.stage='opts';Q.area.innerHTML='';Q.area.appendChild(el('div',{class:'think',text:Q.q.ask}));
+ let opts=Q.q.opts;if(G.B&&G.B.hint&&opts.length>2){const wrong=opts.filter(o=>!o.ok);const keep=new Set([opts.find(o=>o.ok),wrong[0]]);opts=opts.filter(o=>keep.has(o));Q.q.opts=opts;G.B.hint=false;Q.area.appendChild(el('div',{class:'note',text:'📇 提示卡：刪走咗一個錯嘅選項。'}));}
+ const wrap=el('div',{class:'pchoices'});Q.btns=opts.map((o,i)=>{const b=el('button',{class:'opt en',type:'button'},el('span',{class:'n',text:String(i+1)}),o.t);b.addEventListener('click',()=>answer(i));b.addEventListener('mouseenter',()=>{Q.sel=i;qhl();});wrap.appendChild(b);return b;});
+ Q.area.appendChild(wrap);qhl();}
+function qhl(){Q.btns.forEach((b,i)=>b.classList.toggle('sel',i===Q.sel));}
+function answer(i){if(!Q||Q.stage!=='opts')return;Q.stage='fb';const q=Q.q,o=q.opts[i],ok=!!o.ok,key=q.item.key;
+ S.seenQ[key]=(S.seenQ[key]||0)+1;
+ if(ok){S.stats.right++;G.streak=(G.streak||0)+1;S.stats.best=Math.max(S.stats.best,G.streak);if(S.miss[key]){S.miss[key]--;if(S.miss[key]<=0)delete S.miss[key];}}
+ else{S.stats.wrong++;G.streak=0;S.miss[key]=(S.miss[key]||0)+2;}
+ Q.btns.forEach((b,j)=>{b.disabled=true;b.classList.remove('sel');if(q.opts[j].ok)b.classList.add('right');else if(j===i){b.classList.add('wrong');if(o.why)b.appendChild(el('span',{class:'why',text:o.why}));}});
+ const fb=el('div',{class:'fb '+(ok?'ok':'bad')});fb.appendChild(el('strong',{text:ok?(Q.meta.win||'講得啱！'):'唔係最啱嘅講法。'}));
+ fb.appendChild(el('div',{text:q.item.t==='P'?'同一個情況，可以咁講：':'記住呢句：'}));
+ q.lines.forEach(v=>{fb.appendChild(el('div',{class:'say'},el('span',{class:'line',text:v.t}),v.l?el('span',{class:'lbl',text:v.l}):null,el('button',{class:'spk',type:'button','data-say':v.t,text:'🔊 聽'})));});
+ if(q.note)fb.appendChild(el('div',{class:'note',text:q.note}));
+ fb.appendChild(el('button',{class:'go',type:'button',text:'繼續 ▶（A）',onclick:()=>endQ()}));
+ Q.area.appendChild(fb);Q.ok=ok;speak(q.opts.find(x=>x.ok).t);
+ setTimeout(()=>{fb.scrollIntoView({block:'nearest'});},30);}
+function endQ(){if(!Q||Q.stage!=='fb')return;const r=Q.res,ok=Q.ok;Q=null;UI.kind=null;clearQ();$t.hidden=false;try{speechSynthesis.cancel();}catch(e){}r(ok);}
+
+/* ============ world ============ */
+function drawWorld(){const Pl=G.p;const [dx,dy]=Pl.moving?DIRS[Pl.dir]:[0,0];const px=Pl.x*T+dx*Pl.prog,py=Pl.y*T+dy*Pl.prog;
+ const ox=MW*T<=VW?-Math.round((VW-MW*T)/2):Math.round(clamp(px+8-VW/2,0,MW*T-VW)),oy=MH*T<=VH?-Math.round((VH-MH*T)/2):Math.round(clamp(py+8-VH/2,0,MH*T-VH));
+ R(ctx,0,0,VW,VH,'#141c30');
+ const tx0=Math.max(0,Math.floor(ox/T)),ty0=Math.max(0,Math.floor(oy/T));
+ for(let ty=ty0;ty<=ty0+14&&ty<MH;ty++)for(let tx=tx0;tx<=tx0+25&&tx<MW;tx++){const ch=map[ty][tx];const sx=tx*T-ox,sy=ty*T-oy;
+  if(MAPS[CUR].theme!=='hub'&&'DCLKPSb'.includes(ch))ctx.drawImage(TL['f_'+MAPS[CUR].theme],sx,sy);ctx.drawImage(tileImg(ch,tx,ty),sx,sy);}
+ if(CUR==='hub'){Object.entries(DOORXY).forEach(([rid,d])=>{const t=DOORLBL[rid];const lock=DOORREQ[rid]&&!S.badges[DOORREQ[rid]];ctx.font='900 8px "Noto Sans HK",sans-serif';const w=Math.ceil(ctx.measureText(t).width)+(lock?14:8);const sx=d.x*T-ox+8-w/2,sy=d.y*T-oy-12;ctx.fillStyle=lock?'#5b6479':'#2d4380';rrect(sx,sy,w,11,3);ctx.fill();ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.fillText((lock?'🔒':'')+t,sx+4,sy+6);ctx.textBaseline='alphabetic';});}
+ const ents=npcs().map(n=>({y:n.y*T,draw:()=>{const sx=n.x*T-ox,sy=n.y*T-oy;R(ctx,sx+3,sy+14,10,2,'rgba(0,0,0,.18)');ctx.drawImage(personSprite(n.look,n.dir,0),sx-1,sy-4);
+  const bb=Math.round(Math.sin(G.tick/9)*1.5);ctx.font='5px "Press Start 2P",monospace';ctx.textBaseline='top';
+  if(n.kind==='trainer'){const got=S.beat[n.id];R(ctx,sx+2,sy-15+bb,12,8,got?'#2f8a5a':'#2f6fb0');ctx.fillStyle='#fff';ctx.fillText(got?'OK':'VS',sx+3,sy-13+bb);}
+  if(n.kind==='boss'||n.kind==='champ'){const got=n.kind==='boss'?S.badges[n.id]:S.champ;R(ctx,sx+1,sy-17+bb,14,9,got?'#2f8a5a':'#d9463a');ctx.fillStyle='#fff';ctx.font='6px "Press Start 2P",monospace';ctx.fillText(got?'★':'!!',sx+(got?5:3),sy-15+bb);}
+  if(n.kind==='shop'){R(ctx,sx+4,sy-13,8,7,'#f2c230');ctx.fillStyle='#1d2433';ctx.fillText('$',sx+6,sy-12);}
+  if(n.kind==='nurse'){R(ctx,sx+4,sy-13,8,8,'#ffffff');R(ctx,sx+7,sy-12,2,6,'#e0503c');R(ctx,sx+5,sy-10,6,2,'#e0503c');}
+  ctx.textBaseline='alphabetic';}}));
+ const fr=Pl.moving?(Pl.prog<8?(Pl.stepN%2?1:2):0):0;
+ const L=lead();if(L){const back=DIRS[Pl.dir];const fx=px-back[0]*14,fy=py-back[1]*14;ents.push({y:fy-1,draw:()=>{const hop=Pl.moving?Math.round(Math.abs(Math.sin(Pl.prog/16*Math.PI))*-2):Math.round(Math.sin(G.tick/15));R(ctx,fx-ox+3,fy-oy+14,10,2,'rgba(0,0,0,.2)');ctx.drawImage(miniMon(L),Math.round(fx-ox-4),Math.round(fy-oy-8+hop));}});}
+ ents.push({y:py,draw:()=>{const sx=Math.round(px-ox),sy=Math.round(py-oy);R(ctx,sx+3,sy+14,10,2,'rgba(0,0,0,.18)');ctx.drawImage(personSprite('me',Pl.dir,fr),sx-1,sy-4);const c=map[Pl.moving?Pl.ty:Pl.y][Pl.moving?Pl.tx:Pl.x];if(c==='"'){ctx.drawImage(TL.tall[(G.tick>>5)&1],0,9,16,7,sx,sy+9,16,7);}}});
+ ents.sort((a,b)=>a.y-b.y).forEach(e=>e.draw());
+ const nmTxt=MAPS[CUR].name;ctx.font='900 11px "Noto Sans HK",sans-serif';ctx.textBaseline='middle';const w=Math.ceil(ctx.measureText(nmTxt).width)+14;ctx.fillStyle='rgba(16,24,44,.78)';rrect(VW-w-4,4,w,17,8.5);ctx.fill();ctx.fillStyle='#fff';ctx.fillText(nmTxt,VW-w+3,13);
+ const bn=BADGES.filter(b=>S.badges[b.id]).length;ctx.font='7px "Press Start 2P",monospace';const t2='★'+bn+'/6  $'+S.coins;const w2=Math.ceil(ctx.measureText(t2).width)+12;ctx.fillStyle='rgba(16,24,44,.78)';rrect(4,4,w2,15,7.5);ctx.fill();ctx.fillStyle='#f2c230';ctx.fillText(t2,10,12);ctx.textBaseline='alphabetic';
+ if(G.banner>0){G.banner--;const t3=MAPS[CUR].name;ctx.font='900 14px "Noto Sans HK",sans-serif';const w3=Math.ceil(ctx.measureText(t3).width)+26;ctx.globalAlpha=Math.min(1,G.banner/20);ctx.fillStyle='rgba(16,24,44,.85)';rrect((VW-w3)/2,28,w3,22,11);ctx.fill();ctx.strokeStyle='#f2c230';ctx.lineWidth=1;rrect((VW-w3)/2+.5,28.5,w3-1,21,10.5);ctx.stroke();ctx.fillStyle='#f2c230';ctx.textBaseline='middle';ctx.fillText(t3,(VW-w3)/2+13,39.5);ctx.textBaseline='alphabetic';ctx.globalAlpha=1;}
+ if(G.bang){const n=G.bang,sx=n.x*T-ox,sy=n.y*T-oy-18;R(ctx,sx+2,sy,12,12,'#fff');R(ctx,sx+7,sy+2,2,5,'#e0503c');R(ctx,sx+7,sy+8,2,2,'#e0503c');}}
+function worldUpdate(){const Pl=G.p;
+ if(Pl.moving){Pl.prog+=keys.b?4:2;if(Pl.prog>=16){Pl.x=Pl.tx;Pl.y=Pl.ty;Pl.moving=false;Pl.prog=0;onStep();}return;}
+ if(G.busy||G.modal||UI.kind)return;
+ if(consume('start')){runScript(startMenu);return;}
+ if(consume('a')){interact();return;}
+ for(const d of ['up','down','left','right'])if(keys[d]){Pl.dir=d;const [dx,dy]=DIRS[d];const nx=Pl.x+dx,ny=Pl.y+dy;
+  if(!blocked(nx,ny)){Pl.moving=true;Pl.tx=nx;Pl.ty=ny;Pl.prog=0;Pl.stepN++;}break;}}
+let stepSave=0;
+function onStep(){const Pl=G.p;S.map=CUR;S.pos={x:Pl.x,y:Pl.y,dir:Pl.dir};if(++stepSave%12===0)save(true);
+ const ch=map[Pl.y][Pl.x];
+ if(CUR==='hub'&&HUBDOOR[ch]){runScript(()=>enterRoom(HUBDOOR[ch]));return;}
+ if(CUR!=='hub'&&ch==='0'){runScript(()=>exitRoom());return;}
+ if(isEnc(Pl.x,Pl.y)&&lead()&&Math.random()<.14){const pool=MAPS[CUR].pool;if(pool.length)runScript(()=>wildFlow(pick(pool)));}}
+function interact(){const Pl=G.p;const [dx,dy]=DIRS[Pl.dir];let x=Pl.x+dx,y=Pl.y+dy;let n=npcAt(x,y);if(!n&&map[y]&&map[y][x]==='C')n=npcAt(x+dx,y+dy);
+ if(n){n.dir=OPP[Pl.dir];runScript(()=>talk(n));}}
+async function fadeTo(fn){for(let i=0;i<8;i++){G.fade=i/8;await wait(2);}fn();for(let i=8;i>=0;i--){G.fade=i/8;await wait(2);}G.fade=0;}
+async function enterRoom(rid){const req=DOORREQ[rid];
+ if(req&&!S.badges[req]){await say(`🔒 ${DOORLBL[rid]}入唔到。風紀話：要先攞到 ${bName(req)}。`);G.p.y+=1;G.p.dir='down';return;}
+ if(!lead()){await say('你未有夥伴！先去搵操場中間嘅副校長。');G.p.y+=1;G.p.dir='down';return;}
+ await fadeTo(()=>{setMap(rid);const d=map.findIndex(r=>r.includes('0'));const dx=map[d].indexOf('0');G.p.x=dx;G.p.y=d-1;G.p.dir='up';G.banner=90;});save(true);}
+async function exitRoom(){const d=DOORXY[CUR];await fadeTo(()=>{setMap('hub');G.p.x=d.x;G.p.y=d.y+1;G.p.dir='down';G.banner=60;});save(true);}
+
+/* ============ talk ============ */
+async function talk(n){
+ if(n.kind==='talk'){for(const l of n.lines)await say(`${n.name}：「${l}」`);return;}
+ if(n.kind==='vp'){if(!S.started){await intro();return;}await say(`副校長：「${pick(['記住：揀錯唔緊要，最緊要睇清楚嗰句其實係用喺邊個情況。','答錯過嘅句子會多啲出現，直到你答啱為止。','同類型夥伴打同類型獸（例如 Bell 打 Bell），一講就中兩下。','START 選單入面有「英語獸圖鑑」，捉到嘅每隻獸都有齊佢嗰類句子，可以逐句聽。'])}」`);return;}
+ if(n.kind==='nurse'){await say('醫療室姑娘：「講到攰喇？飲啖水，抖一抖。」');healAll();save(true);await say('♪ 你所有夥伴嘅 HP 回復晒！（已存檔）');return;}
+ if(n.kind==='shop'){await shopFlow();return;}
+ if(n.kind==='trainer'){if(S.beat[n.id]){await say(`${n.name}：「${n.after}」`);return;}G.bang=n;await wait(30);G.bang=null;for(const l of n.lines)await say(`${n.name}：「${l}」`);const won=await battle({kind:'trainer',name:n.name,look:n.look,team:n.pool,hits:2});if(won){S.beat[n.id]=1;const c=20+Math.floor(Math.random()*10);S.coins+=c;await say(`${n.name}：「${n.after}」\n你贏咗 $${c}。`);save(true);}return;}
+ if(n.kind==='boss'){if(S.badges[n.id]){await say(`${n.name}：「${n.win}」`);return;}
+  for(const l of n.lines)await say(`${n.name}：「${l}」`);await say(`BOSS 情境：${n.scen}`);
+  const c=await choose(`挑戰 ${n.name}？（3 隻，每隻要答啱 2 次）`,['⚔ 挑戰','🚶 準備好先'],{cancel:true});if(c!==0)return;
+  const won=await battle({kind:'boss',name:n.name,look:n.look,team:n.team,hits:2});
+  if(won){S.badges[n.id]=Date.now();S.coins+=80;await say(`${n.name}：「${n.win}」`);const b=BADGES.find(x=>x.id===n.id);await say(`🏅 你攞到 ${b.ic} ${b.zh} ${b.en}！仲有 $80。`);const nx=Object.entries(DOORREQ).find(([r,q])=>q===n.id);if(nx)await say(`而家可以入 ${DOORLBL[nx[0]]} 喇。`);save(true);}return;}
+ if(n.kind==='champ'){if(S.champ){await say('校長：「學校嘅 EMI，就靠你喇。」');return;}
+  await say('校長：「你六個徽章都攞齊，唔錯。」');await say(`校長：「最後一關：${n.scen}。我會由每個部門派一隻獸出嚟。」`);
+  const c=await choose('準備好挑戰校長？（6 隻，每隻 2 下）',['⚔ 挑戰','🚶 等陣先'],{cancel:true});if(c!==0)return;
+  const team=['hushark','latemeleon','dominewt','glitchost','bigworder','aircondor'];
+  const won=await battle({kind:'boss',name:'校長',look:'principal',team,hits:2});
+  if(won){S.champ=true;S.coins+=300;save(true);await say('校長：「好。由聽日開始，你就係全校 EMI 嘅示範老師。」');await say('🏆 你成為「Classroom English 大師」！\n繼續捉齊 58 隻英語獸，圖鑑就係你嘅 phrase bank。');}return;}}
+async function intro(){
+ await say('副校長：「早晨！你就係新嚟嘅 EMI 老師？」');
+ await say('副校長：「喺呢間學校，講英文唔係背句子，而係喺啱嘅時候講啱嘅嘢。」');
+ await say('副校長：「課室、走廊、教員室……每個地方都有「英語獸」。每隻代表一種情境：開場、學生答錯、追承辦商……」');
+ await say('副校長：「牠跳出嚟，你就要揀啱嗰句英文。答啱就打中佢，答啱兩次就收服佢。」');
+ await say('副校長：「先揀一隻夥伴。」');
+ const st=['bellbird','ummoth','cheerub'];G.showStarters=true;
+ let c=-1;while(c<0){c=await choose('揀你嘅第一隻夥伴：',st.map(id=>`${nm(id)}（${TYPES[SP[id].type].en} ${TYPES[SP[id].type].zh}：${SP[id].catName}）`),{onSel:i=>G.starterSel=i});}
+ G.showStarters=false;const id=st[c];S.party=[id];S.caught[id]=Date.now();S.seen[id]=1;S.hp[id]=maxHP(id);S.started=true;save(true);
+ await say(`你收咗 ${nm(id)} 做夥伴！`);
+ await say('副校長：「第一站：4A 課室（最左邊嗰道門）。班長 Ken 會考你點樣收拾第八堂。」');
+ await say('副校長：「路上啲長草同有紙碎嘅地板，會有野生英語獸。去收服佢哋啦！」');}
+
+/* ============ shop / items ============ */
+const ITEMS={tea:{ic:'🥤',zh:'凍奶茶',en:'Iced milk tea',d:'主將回復 40 HP',price:20},bun:{ic:'🍞',zh:'菠蘿油',en:'Pineapple bun',d:'主將 HP 全回復',price:50},hint:{ic:'📇',zh:'提示卡',en:'Hint card',d:'戰鬥用：下一題刪走一個錯嘅選項',price:30}};
+async function shopFlow(){while(true){const ks=Object.keys(ITEMS);const c=await choose(`小賣部姨姨：「要啲咩？」你有 $${S.coins}`,ks.map(k=>`${ITEMS[k].ic} ${ITEMS[k].zh} $${ITEMS[k].price}（${ITEMS[k].d}）· 有 ${S.items[k]||0}`).concat(['唔使喇']),{cancel:true});
+ if(c<0||c>=ks.length){await say('小賣部姨姨：「慢慢行。」');return;}const k=ks[c];if(S.coins<ITEMS[k].price){await say('唔夠錢喎。打贏學生同 boss 會有錢。');continue;}S.coins-=ITEMS[k].price;S.items[k]=(S.items[k]||0)+1;save(true);await say(`買咗 ${ITEMS[k].ic} ${ITEMS[k].zh}。`);}}
+
+/* ============ battle ============ */
+function giveXP(id,n){const b=lvOf(id),wasP=isPrime(id);S.xp[id]=(S.xp[id]||0)+n;const a=lvOf(id);const msgs=[];if(a>b){S.hp[id]=curHP(id)+(maxHP(id)-(40+b*10));msgs.push(`${nm(id)} 升到 Lv.${a}！`);}if(!wasP&&isPrime(id)){msgs.push(`✨ ${nm(id)} 進化成 ${SP[id].en} Prime！`);}return msgs;}
+async function battle(o){
+ const isWild=o.kind==='wild';const team=o.team.slice();let ti=0;
+ G.flash=24;await wait(24);G.mode='battle';
+ const B=G.B={o,sid:team[0],eHits:0,hits:o.hits,eShake:0,mShake:0,asked:new Set(),hint:false,enter:30};
+ S.seen[B.sid]=1;
+ if(isWild)await say(`${MAPS[CUR].name}入面跳咗隻野生 ${nm(B.sid)} 出嚟！\n情境類型：${SP[B.sid].catName}`);
+ else await say(`${o.name} 派出 ${nm(B.sid)}！\n情境類型：${SP[B.sid].catName}`);
+ while(true){
+  if(!lead()||curHP(lead())<=0){const alive=S.party.filter(i=>curHP(i)>0);if(!alive.length){await blackout();return false;}
+   S.party=[alive[0]].concat(S.party.filter(i=>i!==alive[0]));await say(`換 ${nmP(lead())} 上場！`);}
+  const m=await choose(`${nmP(lead())} 要點做？`,['💬 講嘢 Speak','🎒 道具 Bag','🔄 換夥伴 Switch',isWild?'🏃 走 Run':'🏳 認輸 Give up'],{cols:2});
+  if(m===3){if(isWild){await say('你靜靜雞行開咗。');await endBattle();return false;}const s=await choose('真係認輸？',['唔認輸','認輸'],{cancel:true});if(s===1){await say('你認輸咗。休息吓再嚟。');await endBattle();return false;}continue;}
+  if(m===1){await bagInBattle();continue;}
+  if(m===2){if(S.party.length<2){await say('你得一隻夥伴。');continue;}const c=await choose('換邊隻上場？',S.party.map(i=>`${nmP(i)}　HP ${curHP(i)}/${maxHP(i)}`),{cancel:true});if(c>0&&curHP(S.party[c])>0){const id=S.party[c];S.party.splice(c,1);S.party.unshift(id);await say(`${nmP(id)}，上！`);}continue;}
+  const item=pickItem(B.sid,B.asked);B.asked.add(item.key);const q=build(item);
+  const same=SP[lead()].type===SP[B.sid].type;
+  const ok=await askQ(q,{sid:B.sid,win:same?'同類型！效果超群！':'講得啱！'});
+  if(ok){const dmg=same?2:1;B.eHits=Math.min(B.hits,B.eHits+dmg);B.eShake=14;G.floats.push({t:same?'-2 ★':'-1',x:280,y:20,c:'#f2c230',life:48});
+   giveXP(lead(),5).forEach(x=>G.msgs.push(x));
+   if(B.eHits>=B.hits){
+    if(isWild){await catchAnim();S.seen[B.sid]=1;const had=S.caught[B.sid];S.caught[B.sid]=S.caught[B.sid]||Date.now();
+     if(!had){if(S.party.length<6)S.party.push(B.sid);else S.box.push(B.sid);S.hp[B.sid]=maxHP(B.sid);await say(`🎉 收服咗 ${nm(B.sid)}！\n圖鑑 +1（${Object.keys(S.caught).length}/${SPLIST.length}）。牠嗰類句子而家喺圖鑑入面可以溫。`);giveXP(lead(),10).forEach(x=>G.msgs.push(x));}
+     else{const c=5;S.coins+=c;await say(`${nm(B.sid)} 心服口服咁走咗。（已經收服過）+$${c}`);}
+     await flush();save(true);await endBattle();return true;}
+    await say(`${o.name} 嘅 ${nm(B.sid)} 冇晒氣！`);giveXP(lead(),o.kind==='boss'?12:8).forEach(x=>G.msgs.push(x));await flush();
+    ti++;if(ti>=team.length){await say(`你打贏咗 ${o.name}！`);save(true);await endBattle();return true;}
+    B.sid=team[ti];B.eHits=0;B.asked=new Set();B.enter=30;S.seen[B.sid]=1;await say(`${o.name} 派出 ${nm(B.sid)}！\n情境類型：${SP[B.sid].catName}`);}
+   else await flush();}
+  else{const base=isWild?16:o.kind==='boss'?24:20;const dmg=Math.max(6,base-lvOf(lead()));setHP(lead(),curHP(lead())-dmg);B.mShake=18;G.floats.push({t:'-'+dmg,x:92,y:120,c:'#ff6a50',life:48});
+   await say(`${nm(B.sid)} 反擊！${nmP(lead())} 扣 ${dmg} HP。`);if(curHP(lead())<=0)await say(`${nmP(lead())} 攰到講唔出嘢……`);}
+  save(true);}}
+async function wildFlow(id){await battle({kind:'wild',name:'野生',team:[id],hits:2});}
+G.msgs=[];async function flush(){while(G.msgs.length)await say(G.msgs.shift());}
+async function catchAnim(){const B=G.B;B.catchT=1;for(let i=0;i<40;i++){B.catchT=i/40;await wait(1);}B.caughtShow=true;}
+async function endBattle(){for(let i=0;i<10;i++){G.fade=i/10;await wait(2);}G.mode='world';G.B=null;G.floats=[];clearQ();for(let i=10;i>=0;i--){G.fade=i/10;await wait(2);}G.fade=0;}
+async function blackout(){await say('你所有夥伴都攰到講唔出嘢……\n你眼前一黑。');const lost=Math.floor(S.coins/5);S.coins-=lost;await endBattle();await fadeTo(()=>{setMap('med');G.p.x=5;G.p.y=5;G.p.dir='up';});healAll();save(true);await say(`醫療室姑娘：「醒喇？抖夠就再出去啦。」（跌咗 $${lost}）`);}
+async function bagInBattle(){const ks=Object.keys(ITEMS).filter(k=>S.items[k]);if(!ks.length){await say('背包入面冇嘢。小賣部有得買。');return;}
+ const c=await choose('用咩？',ks.map(k=>`${ITEMS[k].ic} ${ITEMS[k].zh} ×${S.items[k]}（${ITEMS[k].d}）`),{cancel:true});if(c<0)return;const k=ks[c];
+ if(k==='hint'){if(G.B.hint){await say('提示卡已經用緊。');return;}G.B.hint=true;S.items.hint--;await say('📇 下一題會刪走一個錯嘅選項。');return;}
+ const id=lead();if(curHP(id)>=maxHP(id)){await say('HP 已經滿咗。');return;}S.items[k]--;setHP(id,k==='bun'?maxHP(id):curHP(id)+40);await say(`${ITEMS[k].ic} ${nmP(id)} 回復到 ${curHP(id)} HP。`);}
+const SKY={hub:['#9ad0f0','#d8f0d0'],class:['#f4ecd6','#d8c8a0'],class2:['#eae6f2','#c8c0d8'],corr:['#f4ecdc','#d0c8b4'],hall:['#f0dcc0','#c8a070'],staff:['#e6eaf4','#a8b4cc'],ga:['#e6f0ea','#a0c0a8'],pr:['#f4e6d8','#c89088'],med:['#eef6f8','#c8e0e6'],shop:['#fbf0d0','#e8c870']};
+function hpCol(p){return p>50?'#58d070':p>20?'#f0c040':'#e05040';}
+function card(x0,y0,w,h){ctx.fillStyle='rgba(20,28,44,.28)';rrect(x0+2,y0+3,w,h,6);ctx.fill();ctx.fillStyle='#fbfaf4';rrect(x0,y0,w,h,6);ctx.fill();ctx.strokeStyle='#3d4f7c';ctx.lineWidth=1.5;rrect(x0+.75,y0+.75,w-1.5,h-1.5,5.5);ctx.stroke();}
+function bar(x,y,w,p,col){R(ctx,x-1,y-1,w+2,6,'#33415f');R(ctx,x,y,w,4,'#dfe4ec');R(ctx,x,y,Math.round(w*clamp(p,0,1)),4,col||hpCol(p*100));}
+function drawBattle(){const B=G.B;const sky=SKY[MAPS[CUR].theme]||SKY.hub;const g=ctx.createLinearGradient(0,0,0,VH);g.addColorStop(0,sky[0]);g.addColorStop(1,sky[1]);ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
+ ctx.fillStyle='rgba(255,255,255,.35)';for(let i=0;i<6;i++)ctx.fillRect(0,40+i*28,VW,1);
+ const pe=d=>{ctx.fillStyle=d[0];ctx.beginPath();ctx.ellipse(d[1],d[2],d[3],d[4],0,0,7);ctx.fill();};
+ pe([shade(sky[1],.85),290,98,62,14]);pe([shade(sky[1],1.05),290,95,56,11]);pe([shade(sky[1],.85),96,190,70,16]);pe([shade(sky[1],1.05),96,187,64,12]);
+ const s=SP[B.sid];const ent=B.enter>0?B.enter--:0;
+ if(!B.caughtShow){const sh=B.eShake>0?(B.eShake--%4<2?-3:3):0;const ct=B.catchT||0;const sc=1.35*(1-ct);ctx.save();ctx.globalAlpha=1-ct*.6;const img=monSprite(B.sid,false);const w=64*sc;ctx.drawImage(img,290-w/2+sh+ent*4,98-w+8+ct*20,w,w);ctx.restore();
+  if(ct>0){for(let i=0;i<6;i++){const a=i/6*Math.PI*2+G.tick/6;R(ctx,290+Math.cos(a)*20*(1-ct)-1,80+Math.sin(a)*12-1,3,3,'#f2c230');}}}
+ else{R(ctx,280,82,20,12,'#2d4380');R(ctx,280,82,20,3,'#f2c230');R(ctx,286,78,8,4,'#ffffff');}
+ card(10,10,160,44);ctx.fillStyle='#1d2433';ctx.font='900 10px "Noto Sans HK",sans-serif';ctx.textBaseline='top';ctx.fillText(`${s.en} ${s.zh}`,18,15);
+ ctx.font='6px "Press Start 2P",monospace';ctx.fillStyle=TYPES[s.type].col;ctx.fillText(TYPES[s.type].en.toUpperCase(),18,30);ctx.fillStyle='#5b6479';ctx.fillText(B.o.kind==='wild'?(S.caught[B.sid]?'● 已收服':'○ 未收服'):B.o.name,70,30);
+ bar(18,40,144,1-B.eHits/B.hits);
+ if(B.o.kind!=='wild'){const tl=B.o.team.length;for(let i=0;i<tl;i++){const idx=B.o.team.indexOf(B.sid);ctx.fillStyle=i<idx||(i===idx&&B.eHits>=B.hits)?'#9aa3b8':'#d9463a';ctx.beginPath();ctx.arc(150-i*8,20,2.5,0,7);ctx.fill();}}
+ const L=lead();if(L){const sh=B.mShake>0?(B.mShake--%4<2?-3:3):0;ctx.save();ctx.translate(96+sh+48,188-86);ctx.scale(-1,1);ctx.drawImage(monSprite(L,isPrime(L)),0,0,96,96);ctx.restore();
+  card(210,140,164,54);ctx.fillStyle='#1d2433';ctx.font='900 10px "Noto Sans HK",sans-serif';ctx.fillText(`${SP[L].en}${isPrime(L)?' Prime':''} ${SP[L].zh}`,218,145);ctx.font='6px "Press Start 2P",monospace';ctx.fillStyle='#5b6479';ctx.fillText('Lv'+lvOf(L),338,147);
+  bar(218,162,148,curHP(L)/maxHP(L));ctx.fillStyle='#1d2433';ctx.fillText(`${curHP(L)}/${maxHP(L)}`,300,172);const lv=lvOf(L),a=LVXP[lv-1],b=LVXP[lv];R(ctx,218,184,148,2,'#dfe4ec');R(ctx,218,184,Math.round(148*(b?((S.xp[L]||0)-a)/(b-a):1)),2,'#2f6fb0');}
+ ctx.textBaseline='alphabetic';
+ G.floats=G.floats.filter(f=>f.life-->0);G.floats.forEach(f=>{ctx.globalAlpha=Math.min(1,f.life/20);ctx.font='900 12px "Noto Sans HK",sans-serif';ctx.fillStyle='#1d2433';ctx.fillText(f.t,f.x+1,f.y+1+(48-f.life)*-.4);ctx.fillStyle=f.c;ctx.fillText(f.t,f.x,f.y+(48-f.life)*-.4);ctx.globalAlpha=1;});}
+
+/* ============ title ============ */
+function drawTitle(){const g=ctx.createLinearGradient(0,0,0,VH);g.addColorStop(0,'#2d4380');g.addColorStop(1,'#141c30');ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);
+ ctx.fillStyle='rgba(255,255,255,.06)';for(let i=0;i<12;i++)ctx.fillRect(0,i*18+((G.tick>>2)%18),VW,1);
+ R(ctx,40,40,304,70,'#2f5a44');R(ctx,40,40,304,3,'#8a6a40');R(ctx,40,108,304,5,'#8a6a40');
+ ctx.textBaseline='top';ctx.font='20px "Press Start 2P",monospace';ctx.fillStyle='#f2c230';ctx.fillText('EMI-Mon',96,52);
+ ctx.font='900 16px "Noto Sans HK",sans-serif';ctx.fillStyle='#eef0e4';ctx.fillText('英語獸 · 由打鐘講到放工',102,82);
+ const ids=G.showStarters?['bellbird','ummoth','cheerub']:['hushark','kiwiwi','aircondor','glitchost','dominewt'];
+ ids.forEach((id,i)=>{const n=ids.length;const cx=VW/2+(i-(n-1)/2)*(G.showStarters?100:70);const bob=Math.round(Math.sin(G.tick/12+i)*2);const big=G.showStarters&&i===G.starterSel;const sz=big?64:48;
+  if(G.showStarters){ctx.fillStyle=big?'rgba(242,194,48,.35)':'rgba(255,255,255,.08)';ctx.beginPath();ctx.ellipse(cx,196,30,6,0,0,7);ctx.fill();}
+  ctx.drawImage(monSprite(id,false),cx-sz/2,192-sz+bob,sz,sz);});
+ if(!G.showStarters&&(G.tick>>5)%2===0){ctx.font='7px "Press Start 2P",monospace';ctx.fillStyle='#fff';ctx.fillText('PRESS A',165,122);}
+ ctx.textBaseline='alphabetic';}
+
+/* ============ menus ============ */
+function openModal(title,render){G.modal=true;for(const k in keys)keys[k]=0;pressed={};$mt.textContent=title;$modal.hidden=false;$mb.innerHTML='';render($mb);$mb.scrollTop=0;}
+function closeModal(){$modal.hidden=true;G.modal=false;if(G.onClose){const f=G.onClose;G.onClose=null;f();}}
+document.getElementById('mclose').addEventListener('click',closeModal);
+const modalP=(t,r)=>new Promise(res=>{G.onClose=res;openModal(t,r);});
+function thumb(id,sil){const [c,x]=mk(64,64);x.drawImage(monSprite(id,!sil&&isPrime(id)&&S.caught[id],sil),0,0);return c;}
+async function startMenu(){const c=await choose('選單 MENU',['🐾 夥伴 Party','📖 英語獸圖鑑 Dex','📕 錯題簿 Review','🏅 徽章 Badges','🎒 背包 Bag','⚙ 設定 Settings','💾 存檔 Save'],{cancel:true,cols:2});
+ if(c===0)await modalP('夥伴 Party',partyView);
+ else if(c===1)await modalP('英語獸圖鑑 EMI-DEX',dexView);
+ else if(c===2)await modalP('錯題簿 Review',reviewView);
+ else if(c===3)await modalP('徽章 Badges',badgeView);
+ else if(c===4)await modalP('背包 Bag',bagView);
+ else if(c===5)await modalP('設定 Settings',setView);
+ else if(c===6)save();}
+function partyView(b){b.appendChild(el('div',{class:'mnote',text:'第一隻係主將。同類型夥伴打同類型野生獸，一答啱就中兩下。Lv.5 會進化成 Prime。'}));
+ const draw_=()=>{b.querySelectorAll('.prow').forEach(n=>n.remove());S.party.concat(S.box).forEach((id,i)=>{const inParty=i<S.party.length;const hp=curHP(id),mh=maxHP(id);const lv=lvOf(id);
+  const row=el('div',{class:'prow'+(i===0?' lead':'')});row.appendChild(thumb(id));
+  const info=el('div',null,el('div',{class:'pn',text:nmP(id)}),el('div',{class:'pm',text:`${TYPES[SP[id].type].en} ${TYPES[SP[id].type].zh} · Lv.${lv} · HP ${hp}/${mh}${inParty?'':' · 後備'}`}),el('div',{class:'hpb'},el('i',{style:`width:${hp/mh*100}%;background:${hpCol(hp/mh*100)}`})));row.appendChild(info);
+  const acts=el('div',{style:'display:flex;flex-direction:column;gap:4px'});
+  if(i!==0)acts.appendChild(el('button',{class:'mbtn',type:'button',text:'做主將',onclick:()=>{S.party=S.party.filter(x=>x!==id);S.box=S.box.filter(x=>x!==id);S.party.unshift(id);if(S.party.length>6)S.box.push(S.party.pop());save(true);draw_();}}));
+  row.appendChild(acts);b.appendChild(row);});};draw_();}
+function dexView(b){const got=Object.keys(S.caught).length;b.appendChild(el('div',{class:'mnote',text:`收服 ${got}/${SPLIST.length}。每隻獸 = 你 Teacher Talk Trainer 入面一類情境。撳收服咗嘅獸，可以睇晒嗰類所有句子、變體同埋 note，逐句 🔊 聽。`}));
+ const tabs=el('div',{class:'tabs'});const grid=el('div',{class:'dex'});let cur='all';
+ const types=['all'].concat(Object.keys(TYPES));types.forEach(t=>{const bt=el('button',{class:'tab'+(t===cur?' on':''),type:'button',text:t==='all'?'全部':TYPES[t].en+' '+TYPES[t].zh,onclick:()=>{cur=t;[...tabs.children].forEach(x=>x.classList.toggle('on',x===bt));fill();}});tabs.appendChild(bt);});
+ const fill=()=>{grid.innerHTML='';SPLIST.filter(s=>cur==='all'||s.type===cur).forEach(s=>{const c=!!S.caught[s.id],sn=!!S.seen[s.id];
+  const btn=el('button',{class:'dexc',type:'button'},thumb(s.id,!c),el('div',null,el('b',{text:c||sn?`#${String(s.no).padStart(2,'0')} ${s.en}`:`#${String(s.no).padStart(2,'0')} ???`}),el('small',{text:c||sn?s.zh+' · '+s.catName:'未遇到'}),el('span',{class:'tchip',style:'background:'+TYPES[s.type].col,text:TYPES[s.type].en})));
+  if(c)btn.addEventListener('click',()=>dexCard(b,s));else btn.disabled=true;grid.appendChild(btn);});};
+ b.appendChild(tabs);b.appendChild(grid);fill();}
+function dexCard(b,s){b.innerHTML='';b.appendChild(el('button',{class:'mbtn',type:'button',style:'align-self:flex-start',text:'← 返圖鑑',onclick:()=>{b.innerHTML='';dexView(b);}}));
+ const card_=el('div',{class:'card'});const big=thumb(s.id);big.className='big';card_.appendChild(big);
+ card_.appendChild(el('div',{style:'font-weight:900;font-size:17px;text-align:center',text:`${s.en} ${s.zh}`}));
+ card_.appendChild(el('div',{style:'text-align:center;font-size:13px;color:var(--muted)',text:`${TYPES[s.type].en} ${TYPES[s.type].zh} · ${s.catName} · ${s.items.length} 句`}));b.appendChild(card_);
+ s.items.forEach(it=>{const d=el('div',{class:'phr'});
+  if(it.t==='P'){d.appendChild(el('div',{class:'z',text:it.zh}));vars(it).forEach((v,i)=>d.appendChild(el('div',{class:'say'},el('span',{class:i?'v':'line',text:v.t}),v.l&&i?el('span',{class:'lbl',text:v.l}):null,el('button',{class:'spk',type:'button','data-say':v.t,text:'🔊'}))));if(it.n)d.appendChild(el('div',{class:'note',text:it.n}));}
+  else if(it.t==='N'){d.appendChild(el('div',{class:'z',text:'書面：'+it.b}));d.appendChild(el('div',{class:'say'},el('span',{class:'line',text:it.n2}),el('button',{class:'spk',type:'button','data-say':it.n2,text:'🔊'})));}
+  else{d.appendChild(el('div',{class:'z',text:'✗ '+it.b}));d.appendChild(el('div',{class:'say'},el('span',{class:'line',text:it.g}),el('button',{class:'spk',type:'button','data-say':it.g,text:'🔊'})));d.appendChild(el('div',{class:'note',text:it.w}));}
+  b.appendChild(d);});$mb.scrollTop=0;}
+const itemByKey=k=>{const i=+k.slice(1);return k[0]==='p'?Object.assign({t:'P'},BANK.P[i]):k[0]==='f'?Object.assign({t:'F'},BANK.FIX[i]):Object.assign({t:'N'},BANK.NAT[i]);};
+function reviewView(b){const ks=Object.keys(S.miss).sort((a,c)=>S.miss[c]-S.miss[a]);b.appendChild(el('div',{class:'mnote',text:ks.length?`${ks.length} 句答錯過。佢哋喺戰鬥入面會出多啲；答啱夠次數就會自動消失。大聲讀多次：`:'未有答錯嘅句子。去捉多幾隻獸先！'}));
+ ks.forEach(k=>{const it=itemByKey(k);const z=it.t==='P'?it.zh:it.t==='F'?'✗ '+it.b:'書面：'+it.b;const e=it.t==='P'?clean(it.en):it.t==='F'?it.g:it.n2;b.appendChild(el('div',{class:'phr'},el('div',{class:'z',text:z}),el('div',{class:'say'},el('span',{class:'line',text:e}),el('button',{class:'spk',type:'button','data-say':e,text:'🔊'}))));});}
+function badgeView(b){const w=el('div',{class:'badges'});BADGES.forEach(x=>w.appendChild(el('div',{class:'badge'+(S.badges[x.id]?' got':'')},el('span',{class:'ic',text:x.ic}),el('div',null,el('b',{text:x.zh+' '+x.en}),el('div',{style:'font-size:12px;color:var(--muted)',text:x.where})))));b.appendChild(w);
+ b.appendChild(el('div',{class:'mnote',text:`答啱 ${S.stats.right} 題 · 答錯 ${S.stats.wrong} 題 · 最長連勝 ${S.stats.best} · 圖鑑 ${Object.keys(S.caught).length}/${SPLIST.length}${S.champ?' · 🏆 已打贏校長':''}`}));}
+function bagView(b){b.appendChild(el('div',{class:'mnote',text:`$${S.coins}。道具喺戰鬥入面用；小賣部有得買。`}));Object.keys(ITEMS).forEach(k=>b.appendChild(el('div',{class:'phr'},el('div',{class:'line',style:'font-weight:700',text:`${ITEMS[k].ic} ${ITEMS[k].zh} ${ITEMS[k].en} ×${S.items[k]||0}`}),el('div',{class:'z',text:ITEMS[k].d}))));}
+function setView(b){const t1=el('input',{type:'checkbox',id:'o-sf'});t1.checked=S.speakFirst;t1.addEventListener('change',()=>{S.speakFirst=t1.checked;save(true);});
+ const t2=el('input',{type:'checkbox',id:'o-tts'});t2.checked=S.tts;t2.addEventListener('change',()=>{S.tts=t2.checked;save(true);});
+ b.appendChild(el('label',{class:'toggle'},t1,'先講出口，再睇選項（你覺得呢？）'));b.appendChild(el('label',{class:'toggle'},t2,'答完自動讀出正確講法（en-GB）'));
+ let armed=false;const rb=el('button',{class:'mbtn',type:'button',style:'align-self:flex-start',text:'重新開始（清除進度）',onclick:()=>{if(!armed){armed=true;rb.textContent='再撳一次確定清除';return;}try{localStorage.removeItem(KEY);}catch(e){}S=fresh();closeModal();G.mode='title';setMap('hub');G.p.x=15;G.p.y=12;}});b.appendChild(rb);
+ b.appendChild(el('div',{class:'mnote',text:'題目全部嚟自 Teacher Talk Trainer：275 句 phrase、42 個文法陷阱、61 句書面→口語。進度只存喺呢部機嘅瀏覽器。'}));}
+
+/* ============ title flow ============ */
+async function titleFlow(){G.mode='title';$t.textContent='EMI-Mon 英語獸 — 撳 A 開始';
+ while(!consume('a'))await wait(1);
+ const opts=S.started?['▶ 繼續 Continue','✚ 新遊戲 New game']:['✚ 新遊戲 New game'];const c=await choose('EMI-Mon 英語獸',opts);
+ if(S.started&&c===1){const k=await choose('真係重新開始？舊進度會清除。',['唔好','確定重新開始']);if(k===1){try{localStorage.removeItem(KEY);}catch(e){}S=fresh();}}
+ setMap(S.map&&MAPS[S.map]?S.map:'hub');G.p.x=S.pos.x;G.p.y=S.pos.y;G.p.dir=S.pos.dir||'up';if(blocked(G.p.x,G.p.y)){setMap('hub');G.p.x=15;G.p.y=12;}
+ G.mode='world';G.banner=90;
+ if(!S.started){await say('九月，開學第一日。你企喺操場中間……');await say('（用方向鍵行，撳 A 同人傾偈。副校長喺你前面。）');}}
+
+/* ============ loop ============ */
+function render(){if(G.mode==='title')drawTitle();else if(G.mode==='world')drawWorld();else if(G.mode==='battle'&&G.B)drawBattle();
+ if(G.flash>0){G.flash--;if((G.flash>>2)%2===0)R(ctx,0,0,VW,VH,'#fff');}
+ if(G.fade>0){ctx.fillStyle=`rgba(0,0,0,${G.fade})`;ctx.fillRect(0,0,VW,VH);}}
+let last=0;
+function loop(ts){requestAnimationFrame(loop);if(ts-last<15)return;last=ts;G.tick++;
+ G.timers=G.timers.filter(t=>{if(--t.t<=0){t.r();return false;}return true;});
+ updateUI();if(G.mode==='world')worldUpdate();render();}
+makeTiles();
+window.__emimon={G,S:()=>S,SP,SPLIST,MAPS,NPCS,blocked:(m,x,y)=>{const o=CUR;setMap(m);const r=blocked(x,y);setMap(o);return r;},build,press,wild:id=>runScript(()=>wildFlow(id)),Q:()=>Q};
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{}).catch(()=>{});
+requestAnimationFrame(loop);
+runScript(titleFlow);
+})();
+</script>
